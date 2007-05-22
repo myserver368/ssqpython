@@ -433,21 +433,32 @@ class FrameRedFiltrate(wx.Frame):
 
         #调整位置
         self.Center()
+
         #读取开奖数据
         global data_array, redOrder, redTimes, bet_array, \
                data_para_array, filter_array, percent_array
         if len(data_array)==0:
+            
+            #读取数据时有些延迟，显示一个画面
+            image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+            bmp = image.ConvertToBitmap()
+            wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
+            wx.Yield() 
+            
+            #读取开奖数据
             data_array = readDataFileToArray()
-            #计算出球次数并排列球号
-            redOrder, redTimes = redOrderCoumput(data_array)
             #读取固定投注
             bet_array = readBetFileToArray()
-            #计算开奖数据对应的参数（24项－对应过滤条件）
-            data_para_array = dataParaCompute(data_array, redOrder, bet_array)
             #读取过滤条件
             filter_array = readFilterFileToArray()
+            #计算出球次数并排列球号
+            redOrder, redTimes = redOrderCoumput(data_array)
+            #下面这两项计算会导致界面打开有些迟钝，最好可以多进程处理
+            #计算开奖数据对应的参数（24项－对应过滤条件）
+            data_para_array = dataParaCompute(data_array, redOrder, bet_array)
             #计算百分比
             percent_array = percentCompute(filter_array, data_para_array)
+            
         #按钮显示和隐藏（控制按钮显示部分做的不太理想，太混乱）
         if step==0:
             self.buttondatabuild.Show()
@@ -585,9 +596,9 @@ class FrameRedFiltrate(wx.Frame):
 
     def OnButtondatabuildButton(self, event): #初始数据生成按钮
         '''生成初始数据（若选择全部红球即为1107568组）'''
-        global data_f, step, num_pool
+        global data_f, step, num_pool, data_para_array, percent_array
         #判断号码池是否大于等于6个号码
-        if len(num_pool)>=6:
+        if len(num_pool)>=6:           
             #将号码池中的数字按照从小到大的顺序排列
             for i in range(len(num_pool)-1, 0, -1):
                 for j in range(0, i):
@@ -1194,7 +1205,7 @@ class FrameRedFiltrate(wx.Frame):
     def OnButtonuseButton(self, event): #使用此条件按钮
         '''确定使用该条件过滤，将“否”改为“是”，
            应用相应条件对数据进行过滤，刷新显示的数据
-        '''
+        '''       
         #改为“是”
         global filter_array, data_f
         filter_array[step-1][2] = '是' + filter_array[step-1][2][2:]
@@ -1411,4 +1422,3 @@ class FrameRedFiltrate(wx.Frame):
         term = 20    
         self.Refresh() #刷新，这样就所改即所得了 
         event.Skip()
-
