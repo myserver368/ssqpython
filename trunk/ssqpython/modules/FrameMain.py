@@ -172,6 +172,12 @@ class FrameMain(wx.Frame):
     def __init__(self, parent):
         self._init_ctrls(parent)
         
+        #启动时显示画面
+        image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+        bmp = image.ConvertToBitmap()
+        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1500, None, -1)
+        wx.Yield()         
+        
         global _max_height, data_array, data_string
 
         #文本显示
@@ -346,13 +352,19 @@ class FrameMain(wx.Frame):
         
     def OnMenuCheckItemscpredictMenu(self, event): #预测数据对奖
         '''读取预测数据文件并对奖'''
+        #读取数据时有些延迟，显示一个画面
+        image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+        bmp = image.ConvertToBitmap()
+        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1200, None, -1)
+        wx.Yield()
+        
         _FrameReport = FrameReport.create(None)
         _FrameReport.Show()
             
         event.Skip()
 
     def OnMenuCheckItemscfixedMenu(self, event): #固定投注对奖
-        '''读取固定投注文件并对奖'''
+        '''读取固定投注文件并对奖'''       
         bet_array = readBetFileToArray()
         
         msg = '' #中奖信息
@@ -412,7 +424,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = "双色蟒"
-        info.Version = "0.9.4"
+        info.Version = "0.9.5"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",

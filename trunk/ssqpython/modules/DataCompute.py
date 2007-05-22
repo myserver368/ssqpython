@@ -46,9 +46,9 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
                          'Çø¼ä1':0,'Çø¼ä2':0,'Çø¼ä3':0,\
                          'Á¬ºÅ':0,'ACÖµ':0,\
                          'ÈÈºÅ':0,'ÎÂºÅ':0,'ÀäºÅ':0,\
-                         '1ÆÚÖØºÅ':0,'5ÆÚÖØºÅ':0,'1ÆÚÁÙ½üÖµ':0,\
+                         '1ÆÚÖØºÅ':0,'5ÆÚÖØºÅ':0,'10ÆÚÖØºÅ':0,'1ÆÚÁÙ½üÖµ':0,\
                          '3ÆÚ¸öÊı':0,'5ÆÚ¸öÊı':0,\
-                         '¹Ì¶¨Í¶×¢¹ıÂË':0} 
+                         '¹Ì¶¨Í¶×¢':0,'ÍùÆÚÊı¾İ':0} 
         #1ºÅÎ»
         data_para_one['1ºÅÎ»'] = int(data_array[i][1])
         #2ºÅÎ»
@@ -190,7 +190,22 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
             for j in range(1, 6+1):
                 if data_array[i][j] in l5_d:
                     repeat5_num = repeat5_num + 1
-        data_para_one['5ÆÚÖØºÅ'] = repeat5_num        
+        data_para_one['5ÆÚÖØºÅ'] = repeat5_num
+        #¼ÆËã10ÆÚÖØºÅ¸öÊı£¨¼´5ÆÚÖ®Ç°µÄ5ÆÚ£©
+        repeat10_num = 0
+        if i>=(len(data_array)-10): #Ç°10ÆÚÃ»ÓĞÇ°10ÆÚ
+            repeat10_num = 0
+        else:
+            l10_a = data_array[i+1+5][1:6+1] + data_array[i+2+5][1:6+1] + data_array[i+3+5][1:6+1] +\
+                   data_array[i+4+5][1:6+1] + data_array[i+5+5][1:6+1]#5ÆÚÖ®Ç°µÄ5ÆÚºÏ²¢ÁĞ±í
+            l10_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ5ÆÚºÏ²¢ÁĞ±í
+            for j in range(0, len(l10_a)):
+                if l10_a[j] not in l10_a[j+1:]:
+                    l10_d.append(l10_a[j])    
+            for j in range(1, 6+1):
+                if data_array[i][j] in l10_d:
+                    repeat10_num = repeat10_num + 1
+        data_para_one['10ÆÚÖØºÅ'] = repeat10_num
         #1ÆÚÁÙ½üÖµ
         near_num = 0
         if i==(len(data_array)-1): #µÚ1ÆÚÃ»ÓĞÉÏÒ»ÆÚ
@@ -232,13 +247,29 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
         #¹Ì¶¨Í¶×¢¹ıÂË
         num_fix = 0
         for j in range(0, len(bet_array)):
-            num_tmp = 0
+            num_tmp = 0 #ÁÙÊ±×î´óÖµ
             for k in range(0, 6):
                 if bet_array[j][k] in data_array[i][1:6+1]:
                     num_tmp = num_tmp + 1
             if num_tmp>num_fix:
                 num_fix = num_tmp
-        data_para_one['¹Ì¶¨Í¶×¢¹ıÂË'] = num_fix
+        data_para_one['¹Ì¶¨Í¶×¢'] = num_fix
+        #ÍùÆÚÊı¾İ
+        num_old = 0           
+        if i<(len(data_array)-1): #µÚ1ÆÚÃ»ÓĞÍùÆÚÊı¾İ
+            for j in range(i+1, len(data_array)-1): #ÕâÀïÌ«ÂıÁË
+                num_tmp = 0 #ÁÙÊ±×î´óÖµ
+                for k in range(1, 6+1):
+                    #¼ÓÒ»¸öÅĞ¶Ï£¬¼Ó¿ìËÙ¶È
+                    if k==4 and num_tmp<num_old - 2:
+                        break                    
+                    if data_array[i][k] in data_array[j][1:6+1]:
+                        num_tmp = num_tmp + 1
+                if num_tmp>num_old:
+                    num_old = num_tmp
+        else:
+            num_old = 0
+        data_para_one['ÍùÆÚÊı¾İ'] = num_old
         #Ìí¼Óµ½×ÜÁĞ±íÖĞ
         data_para_array.append(data_para_one)
     
@@ -387,7 +418,12 @@ def percentCompute(filter_array, data_para_array): #°Ù·Ö±È¼ÆËã
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['5ÆÚÖØºÅ']>=min_num and data_para_array[j]['5ÆÚÖØºÅ']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-5)) #×ÜÊıÒªÉÙ5ÆÚ            
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-5)) #×ÜÊıÒªÉÙ5ÆÚ
+        if '10ÆÚÖØºÅ' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['10ÆÚÖØºÅ']>=min_num and data_para_array[j]['10ÆÚÖØºÅ']<=max_num:
+                    count = count + 1
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-10)) #×ÜÊıÒªÉÙ10ÆÚ              
         if '1ÆÚÁÙ½üÖµ' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['1ÆÚÁÙ½üÖµ']>=min_num and data_para_array[j]['1ÆÚÁÙ½üÖµ']<=max_num:
@@ -403,11 +439,16 @@ def percentCompute(filter_array, data_para_array): #°Ù·Ö±È¼ÆËã
                 if data_para_array[j]['5ÆÚ¸öÊı']>=min_num and data_para_array[j]['5ÆÚ¸öÊı']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-4))) #×ÜÊıÒªÉÙ4ÆÚ
-        if '¹Ì¶¨Í¶×¢¹ıÂË' in filter_array[i][1]:
+        if '¹Ì¶¨Í¶×¢' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['¹Ì¶¨Í¶×¢¹ıÂË']>=min_num and data_para_array[j]['¹Ì¶¨Í¶×¢¹ıÂË']<=max_num:
+                if data_para_array[j]['¹Ì¶¨Í¶×¢']>=min_num and data_para_array[j]['¹Ì¶¨Í¶×¢']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
+        if 'ÍùÆÚÊı¾İ' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['ÍùÆÚÊı¾İ']>=min_num and data_para_array[j]['ÍùÆÚÊı¾İ']<=max_num:
+                    count = count + 1                
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-1)) #×ÜÊıÒªÉÙ1ÆÚ            
     #·µ»ØÊı¾İ    
     return percent_array
 
@@ -615,7 +656,28 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                 if data_f[i][j] in tmp_list:
                     repeat5_num = repeat5_num + 1
             if min_num<=repeat5_num<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+    if '10ÆÚÖØºÅ' in filter_array[step-1][1]:
+        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°5+4ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+        #ÔÚÌí¼Ó'10ÆÚÖØºÅ'µÄÊ±ºò¸Ğ¾õÉÏÃæÄÇ¸ö¡°4¡±ºÃÏñ²»¶Ô¡«¡«
+        for j in range(1, 6+1):
+            if int(data_array[0+5][j]) not in tmp_list:
+                tmp_list.append(int(data_array[0][j]))
+            if int(data_array[1+5][j]) not in tmp_list:
+                tmp_list.append(int(data_array[1][j]))
+            if int(data_array[2+5][j]) not in tmp_list:
+                tmp_list.append(int(data_array[2][j]))
+            if int(data_array[3+5][j]) not in tmp_list:
+                tmp_list.append(int(data_array[3][j]))
+            if int(data_array[4+5][j]) not in tmp_list:
+                tmp_list.append(int(data_array[4][j]))                  
+        for i in range(0, len(data_f)):
+            repeat10_num = 0  
+            for j in range(0, 6):
+                if data_f[i][j] in tmp_list:
+                    repeat10_num = repeat10_num + 1
+            if min_num<=repeat10_num<=max_num:
+                data_f_tmp.append(data_f[i])                  
     if '1ÆÚÁÙ½üÖµ' in filter_array[step-1][1]:
         tmp_list = [] #ÁÙÊ±Êı×é(int)£¬½«ÉÏÒ»ÆÚÖĞËùÓĞ£«1/£­1µÄÊı´æÆğÀ´
         for j in range(1, 6+1):
@@ -660,7 +722,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_l5 = num_l5 + 1
             if min_num<=num_l5<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '¹Ì¶¨Í¶×¢¹ıÂË' in filter_array[step-1][1]:
+    if '¹Ì¶¨Í¶×¢' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             num_fix = 0
             for j in range(0, len(bet_array)):
@@ -672,7 +734,25 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_fix = num_tmp            
             if min_num<=num_fix<=max_num:
                 data_f_tmp.append(data_f[i])
+    if 'ÍùÆÚÊı¾İ' in filter_array[step-1][1]: 
+        for i in range(0, len(data_f)):
+            num_old = 0
+            #ÕâÀïÌ«ÂıÁË!!!!
+            for j in range(0, len(data_array)):
+                num_tmp = 0
+                for k in range(0, 6):
+                    #¼ÓÒ»¸öÅĞ¶Ï£¬¼Ó¿ìÒ»Ğ©ËÙ¶È
+                    if k==3 and num_tmp<num_old -2:
+                        break
+                    if int(data_array[j][k]) in data_f[i]:
+                        num_tmp = num_tmp + 1
+                if num_tmp>num_old:
+                    num_old = num_tmp
+            if min_num<=num_old<=min_num:
+                data_f_tmp.append(data_f[i])
     #×ª»»»ØÈ¥
     data_f = data_f_tmp 
     #·µ»ØÊı¾İ    
-    return data_f #Ö±½Ó½«ÁÙÊ±Êı×é´«»ØÈ¥Ò²¿ÉÒÔ£¬²»ÖªµÀÄÄÑù»á¸ü¡°¾­¼Ã¡±Ò»Ğ©
+    return data_f
+    #Ö±½Ó½«ÁÙÊ±Êı×é´«»ØÈ¥Ò²¿ÉÒÔ£¬²»ÖªµÀÄÄÑù»á¸ü¡°¾­¼Ã¡±Ò»Ğ©
+
