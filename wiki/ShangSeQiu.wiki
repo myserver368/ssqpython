@@ -1,0 +1,12 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+A lottery game in China mainland.
+
+
+= Details =
+
+There are 33 red balls and 16 blue balls, you can bet 6 red balls and 1 blue ball to get 5,000,000 money.
+
+The game name is ShangSeqiu, and it just means "two colours balls" in Chinese.
