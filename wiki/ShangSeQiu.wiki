@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary It just means "two colours balls".
 
 = Introduction =
 
