@@ -1,4 +1,4 @@
-#summary It just means "two colours balls".
+#summary two colours balls
 
 = Introduction =
 
