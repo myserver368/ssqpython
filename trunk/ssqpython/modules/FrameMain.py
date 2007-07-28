@@ -1,3 +1,4 @@
+#Boa:Frame:FrameMain
 # -*- coding: cp936 -*-
 # otherrrr@gmail.com
 # 主面板
@@ -8,11 +9,12 @@ import wx.lib.scrolledpanel
 import wx.lib.dialogs
 from wx.lib.wordwrap import wordwrap
 
-from modules.DataFileIO import readDataFileToString, readDataFileToArray, writeStringToDataFile
-from modules.BetFileIO import readBetFileToArray
+from DataFileIO import readDataFileToString, readDataFileToArray, writeStringToDataFile
+from BetFileIO import readBetFileToArray
 
 import FrameRedFiltrate
 import FrameReport
+import FrameBlue
 
 _max_height = 0   #滚动窗口高度
 data_string = ''  #数据（字符串格式）
@@ -102,9 +104,9 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u7ea2\u7403\u8fc7\u6ee4',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFRED, kind=wx.ITEM_NORMAL,
               text=u'\u7ea2\u7403\u8fc7\u6ee4')
-        parent.Append(help=u'\u84dd\u7403\u8fc7\u6ee4',
+        parent.Append(help=u'\u84dd\u7403\u53f7\u7801\u63a8\u8350',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, kind=wx.ITEM_NORMAL,
-              text=u'\u84dd\u7403\u8fc7\u6ee4')
+              text=u'\u84dd\u7403\u63a8\u8350')
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsfredMenu,
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFRED)
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsfblueMenu,
@@ -189,7 +191,7 @@ class FrameMain(wx.Frame):
         #图表显示  
         data_array = readDataFileToArray()
         #_max_height = 15.4*len(data_array) - 190 #显示所有的（问题是拖动时有一些迟钝）
-        _max_height = 15.4*50 - 190 #只显示最近50期的
+        _max_height = 15.4*100 - 190 #只显示最近100期的
         self.scrolledWindow1.SetScrollbars(1, 1, 890, _max_height, 0, _max_height) #定位于数据最下方
         
 #-------------------------------------------------------------------------------
@@ -205,7 +207,7 @@ class FrameMain(wx.Frame):
         dc.SetPen(wx.Pen("#B3B3B3", 1)) #分隔线
         for i in range(1, 34-1):
             dc.DrawLine(i*16+47, 5, i*16+47, _max_height-20)
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine(49, _max_height-(i*15+39), 840, _max_height-(i*15+39))
         for i in range(1, 16+1):
             dc.DrawLine(i*16+563, 5, i*16+563, _max_height-20)
@@ -216,51 +218,51 @@ class FrameMain(wx.Frame):
             dc.DrawText('%.2d'%i, i*16+34, _max_height-25)
             
         dc.SetTextForeground('#009900') #期号（绿色）
-        for i in range(0, 50):
+        for i in range(0, 100):
             dc.DrawText(str(data_array[i][0]), 0, _max_height-(i*15+39)) #左侧
             dc.DrawText(str(data_array[i][0]), 840, _max_height-(i*15+39)) #右侧
         
         dc.SetPen(wx.Pen("RED", 1)) #红色球分布图  
         dc.SetBrush(wx.Brush(wx.RED, wx.SOLID))
-        for i in range(0, 50):
+        for i in range(0, 100):
             for j in range(1, 6+1):
                 for k in range(1, 33+1): 
                     if int(data_array[i][j])==k:
                         dc.DrawRectangle(k*16+35, _max_height-(i*15+35), 10, 10) 
         
         dc.SetPen(wx.Pen("#777777", 1)) #画走势线 灰色 1号球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][1]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][1]))*16+40, _max_height-((i+1)*15+30))
         
         dc.SetPen(wx.Pen("#990099", 1)) #画走势线 紫色 2号球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][2]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][2]))*16+40, _max_height-((i+1)*15+30))
         
         dc.SetPen(wx.Pen("#CC9900", 1)) #画走势线 棕色 3号球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][3]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][3]))*16+40, _max_height-((i+1)*15+30))
 
         dc.SetPen(wx.Pen("STEEL BLUE", 1)) #画走势线 蓝色 4号球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][4]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][4]))*16+40, _max_height-((i+1)*15+30))
                 
         dc.SetPen(wx.Pen("#6699FF", 1)) #画走势线 青色 5号球
-        for i in range(0, len(data_array)-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][5]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][5]))*16+40, _max_height-((i+1)*15+30))
                 
         dc.SetPen(wx.Pen("LIME GREEN", 1)) #画走势线 绿色 6号球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][6]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][6]))*16+40, _max_height-((i+1)*15+30))  
                       
         dc.SetPen(wx.Pen("BLUE", 1)) #蓝色球分布图  
         dc.SetBrush(wx.Brush(wx.BLUE, wx.SOLID))
-        for i in range(0, 50):
+        for i in range(0, 100):
             for j in range(1, 16+1):
                 if int(data_array[i][7])==j:
                     dc.DrawRectangle(j*16+567, _max_height-(i*15+35), 10, 10)    
                          
         dc.SetPen(wx.Pen("CADET BLUE", 1)) #画走势线 蓝色 蓝球
-        for i in range(0, 50-1):
+        for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][7]))*16+572, _max_height-(i*15+30), (int(data_array[i+1][7]))*16+572, _max_height-((i+1)*15+30)) 
             
         dc.SetTextForeground('BLUE') #蓝色球号
@@ -336,15 +338,11 @@ class FrameMain(wx.Frame):
                 
         event.Skip()  
 
-    def OnMenuFiltrateItemsfblueMenu(self, event): #蓝球过滤
-        '''蓝球过滤功能'''
-        dlg = wx.MessageDialog(self, '该功能尚未完善！', 
-                               'Sorry',
-                               wx.OK | wx.ICON_INFORMATION
-                               )
-        dlg.ShowModal()
-        dlg.Destroy()  
-                
+    def OnMenuFiltrateItemsfblueMenu(self, event): #蓝球推荐
+        '''蓝球推荐功能'''
+        _FrameBlue = FrameBlue.create(None)
+        _FrameBlue.Show() 
+        
         event.Skip()
 
 #-------------------------------------------------------------------------------
@@ -424,7 +422,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = "双色蟒"
-        info.Version = "0.9.5"
+        info.Version = "0.9.7"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",
