@@ -1,22 +1,27 @@
+#Boa:Frame:FrameRedFiltrate
 # -*- coding: cp936 -*-
 # otherrrr@gmail.com
 # 红球过滤面板
 
 import wx
 import os
+import time
 
-from modules.DataFileIO import readDataFileToArray
-from modules.FilterFileIO import readFilterFileToArray
-from modules.PredictFileIO import writePredictData
-from modules.BetFileIO import readBetFileToArray
-from modules.DataCompute import redOrderCoumput, dataParaCompute,\
-                                percentCompute, dataFiltrate
+from DataFileIO import readDataFileToArray
+from FilterFileIO import readFilterFileToArray
+from PredictFileIO import writePredictData
+from BetFileIO import readBetFileToArray
+from DataCompute import redOrderCoumpute, dataParaCompute, percentCompute, dataFiltrate
 
 data_array = []  #数据（数组格式）
 data_para_array = [] #数据的相关参数
 
 redOrder = [] #红球号码按着出球次数由大到小排列
 redTimes = [] #红球对应出号次数
+redOrder100 = [] 
+redTimes100 = []
+redOrder50 = [] 
+redTimes50 = [] 
 
 num_pool = [] #号码池
 
@@ -24,7 +29,7 @@ filter_array = [] #过滤参数
 percent_array = [] #过滤条件的百分比
 data_f = [] #过滤后生成的数据
 step = 0 #过滤步骤
-msg = ['第几步－－过滤条件名称','说明','当前剩余组数','过滤条件范围','百分比','是否已启用'] #显示信息 #这个其实可以改成dict
+msg = [] #显示信息 #这个其实可以改成dict
 
 term = 20 #过滤条件走势图显示的期数，默认显示最近20期走势
 
@@ -34,30 +39,31 @@ def create(parent):
 [wxID_FRAMEREDFILTRATE, wxID_FRAMEREDFILTRATEBUTTONDATABUILD, 
  wxID_FRAMEREDFILTRATEBUTTONEXIT, wxID_FRAMEREDFILTRATEBUTTONLASTSTEP, 
  wxID_FRAMEREDFILTRATEBUTTONLOWERMINUS, wxID_FRAMEREDFILTRATEBUTTONLOWERPLUS, 
- wxID_FRAMEREDFILTRATEBUTTONNEXTSTEP, wxID_FRAMEREDFILTRATEBUTTONSAVE, 
- wxID_FRAMEREDFILTRATEBUTTONUPPERMINUS, wxID_FRAMEREDFILTRATEBUTTONUPPERPLUS, 
- wxID_FRAMEREDFILTRATEBUTTONUSE, wxID_FRAMEREDFILTRATECHECKBOX01, 
- wxID_FRAMEREDFILTRATECHECKBOX02, wxID_FRAMEREDFILTRATECHECKBOX03, 
- wxID_FRAMEREDFILTRATECHECKBOX04, wxID_FRAMEREDFILTRATECHECKBOX05, 
- wxID_FRAMEREDFILTRATECHECKBOX06, wxID_FRAMEREDFILTRATECHECKBOX07, 
- wxID_FRAMEREDFILTRATECHECKBOX08, wxID_FRAMEREDFILTRATECHECKBOX09, 
- wxID_FRAMEREDFILTRATECHECKBOX10, wxID_FRAMEREDFILTRATECHECKBOX11, 
- wxID_FRAMEREDFILTRATECHECKBOX12, wxID_FRAMEREDFILTRATECHECKBOX13, 
- wxID_FRAMEREDFILTRATECHECKBOX14, wxID_FRAMEREDFILTRATECHECKBOX15, 
- wxID_FRAMEREDFILTRATECHECKBOX16, wxID_FRAMEREDFILTRATECHECKBOX17, 
- wxID_FRAMEREDFILTRATECHECKBOX18, wxID_FRAMEREDFILTRATECHECKBOX19, 
- wxID_FRAMEREDFILTRATECHECKBOX20, wxID_FRAMEREDFILTRATECHECKBOX21, 
- wxID_FRAMEREDFILTRATECHECKBOX22, wxID_FRAMEREDFILTRATECHECKBOX23, 
- wxID_FRAMEREDFILTRATECHECKBOX24, wxID_FRAMEREDFILTRATECHECKBOX25, 
- wxID_FRAMEREDFILTRATECHECKBOX26, wxID_FRAMEREDFILTRATECHECKBOX27, 
- wxID_FRAMEREDFILTRATECHECKBOX28, wxID_FRAMEREDFILTRATECHECKBOX29, 
- wxID_FRAMEREDFILTRATECHECKBOX30, wxID_FRAMEREDFILTRATECHECKBOX31, 
- wxID_FRAMEREDFILTRATECHECKBOX32, wxID_FRAMEREDFILTRATECHECKBOX33, 
- wxID_FRAMEREDFILTRATEPANEL1, wxID_FRAMEREDFILTRATEPANEL2, 
- wxID_FRAMEREDFILTRATEPANEL3, wxID_FRAMEREDFILTRATERADIOBUTTON10T, 
- wxID_FRAMEREDFILTRATERADIOBUTTON20T, wxID_FRAMEREDFILTRATERADIOBUTTONALLNO, 
+ wxID_FRAMEREDFILTRATEBUTTONNEXTSTEP, wxID_FRAMEREDFILTRATEBUTTONONESTEP, 
+ wxID_FRAMEREDFILTRATEBUTTONSAVE, wxID_FRAMEREDFILTRATEBUTTONUPPERMINUS, 
+ wxID_FRAMEREDFILTRATEBUTTONUPPERPLUS, wxID_FRAMEREDFILTRATEBUTTONUSE, 
+ wxID_FRAMEREDFILTRATECHECKBOX01, wxID_FRAMEREDFILTRATECHECKBOX02, 
+ wxID_FRAMEREDFILTRATECHECKBOX03, wxID_FRAMEREDFILTRATECHECKBOX04, 
+ wxID_FRAMEREDFILTRATECHECKBOX05, wxID_FRAMEREDFILTRATECHECKBOX06, 
+ wxID_FRAMEREDFILTRATECHECKBOX07, wxID_FRAMEREDFILTRATECHECKBOX08, 
+ wxID_FRAMEREDFILTRATECHECKBOX09, wxID_FRAMEREDFILTRATECHECKBOX10, 
+ wxID_FRAMEREDFILTRATECHECKBOX11, wxID_FRAMEREDFILTRATECHECKBOX12, 
+ wxID_FRAMEREDFILTRATECHECKBOX13, wxID_FRAMEREDFILTRATECHECKBOX14, 
+ wxID_FRAMEREDFILTRATECHECKBOX15, wxID_FRAMEREDFILTRATECHECKBOX16, 
+ wxID_FRAMEREDFILTRATECHECKBOX17, wxID_FRAMEREDFILTRATECHECKBOX18, 
+ wxID_FRAMEREDFILTRATECHECKBOX19, wxID_FRAMEREDFILTRATECHECKBOX20, 
+ wxID_FRAMEREDFILTRATECHECKBOX21, wxID_FRAMEREDFILTRATECHECKBOX22, 
+ wxID_FRAMEREDFILTRATECHECKBOX23, wxID_FRAMEREDFILTRATECHECKBOX24, 
+ wxID_FRAMEREDFILTRATECHECKBOX25, wxID_FRAMEREDFILTRATECHECKBOX26, 
+ wxID_FRAMEREDFILTRATECHECKBOX27, wxID_FRAMEREDFILTRATECHECKBOX28, 
+ wxID_FRAMEREDFILTRATECHECKBOX29, wxID_FRAMEREDFILTRATECHECKBOX30, 
+ wxID_FRAMEREDFILTRATECHECKBOX31, wxID_FRAMEREDFILTRATECHECKBOX32, 
+ wxID_FRAMEREDFILTRATECHECKBOX33, wxID_FRAMEREDFILTRATEPANEL1, 
+ wxID_FRAMEREDFILTRATEPANEL2, wxID_FRAMEREDFILTRATEPANEL3, 
+ wxID_FRAMEREDFILTRATERADIOBUTTON10T, wxID_FRAMEREDFILTRATERADIOBUTTON20T, 
+ wxID_FRAMEREDFILTRATERADIOBUTTON40T, wxID_FRAMEREDFILTRATERADIOBUTTONALLNO, 
  wxID_FRAMEREDFILTRATERADIOBUTTONALLYES, wxID_FRAMEREDFILTRATETEXTCTRLDATAF, 
-] = [wx.NewId() for _init_ctrls in range(52)]
+] = [wx.NewId() for _init_ctrls in range(54)]
 
 class FrameRedFiltrate(wx.Frame):
     def _init_ctrls(self, prnt):
@@ -66,8 +72,7 @@ class FrameRedFiltrate(wx.Frame):
               name=u'FrameAbnormalFiltrate', parent=prnt, pos=wx.Point(388,
               232), size=wx.Size(491, 482), style=wx.DEFAULT_FRAME_STYLE,
               title=u'\u7ea2\u7403\u8fc7\u6ee4')
-        self.SetIcon(wx.Icon(u'pic/red.ico',
-              wx.BITMAP_TYPE_ICO))
+        self.SetIcon(wx.Icon(u'pic/red.ico',wx.BITMAP_TYPE_ICO))
         self.SetClientSize(wx.Size(483, 455))
 
         self.panel1 = wx.Panel(id=wxID_FRAMEREDFILTRATEPANEL1, name='panel1',
@@ -423,45 +428,89 @@ class FrameRedFiltrate(wx.Frame):
               self.OnRadioButton20tRadiobutton,
               id=wxID_FRAMEREDFILTRATERADIOBUTTON20T)
 
+        self.radioButton40t = wx.RadioButton(id=wxID_FRAMEREDFILTRATERADIOBUTTON40T,
+              label=u'40\u671f', name=u'radioButton40t', parent=self.panel3,
+              pos=wx.Point(350, 10), size=wx.Size(54, 14), style=0)
+        self.radioButton40t.SetValue(False)
+        self.radioButton40t.Bind(wx.EVT_RADIOBUTTON,
+              self.OnRadioButton40tRadiobutton,
+              id=wxID_FRAMEREDFILTRATERADIOBUTTON40T)
+
         self.textCtrldataf = wx.TextCtrl(id=wxID_FRAMEREDFILTRATETEXTCTRLDATAF,
               name=u'textCtrldataf', parent=self.panel1, pos=wx.Point(16, 112),
-              size=wx.Size(448, 296), style=wx.TE_RICH2 | wx.TE_MULTILINE,
+              size=wx.Size(448, 296), style=wx.TE_MULTILINE,
               value=u'\u663e\u793a\u8fc7\u6ee4\u540e\u6570\u636e')
+
+        self.buttononestep = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONONESTEP,
+              label=u'\u4e00\u6b65\u8fc7\u6ee4', name=u'buttononestep',
+              parent=self.panel1, pos=wx.Point(242, 32), size=wx.Size(75, 24),
+              style=0)
+        self.buttononestep.SetForegroundColour(wx.Colour(128, 0, 255))
+        self.buttononestep.Bind(wx.EVT_BUTTON, self.OnButtononestepButton,
+              id=wxID_FRAMEREDFILTRATEBUTTONONESTEP)
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-
+       
         #调整位置
         self.Center()
-
+             
         #读取开奖数据
-        global data_array, redOrder, redTimes, bet_array, \
+        global data_array, redOrder, redOrder100, redTimes, redTimes100, \
+               redOrder50, redTimes50, bet_array, \
                data_para_array, filter_array, percent_array
-        if len(data_array)==0:
+        
+        #if len(data_array)==0: #这样就可以重新读取过滤条件了
+        #读取数据时有些延迟，显示一个画面
+        image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+        bmp = image.ConvertToBitmap()
+        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
+        wx.Yield() 
+        
+        #读取开奖数据
+        data_array = readDataFileToArray()
+        #读取固定投注
+        bet_array = readBetFileToArray()
+        #读取过滤条件
+        filter_array = readFilterFileToArray()
+        #计算出球次数并排列球号
+        redOrder, redTimes, redOrder100, redTimes100, redOrder50, redTimes50 = redOrderCoumpute(data_array)
+        #下面这两项计算会导致界面打开有些迟钝，最好可以多进程处理
+        #计算开奖数据对应的参数（24项－对应过滤条件）
+        data_para_array = dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array)
+        #计算百分比
+        percent_array = percentCompute(filter_array, data_para_array)
             
-            #读取数据时有些延迟，显示一个画面
-            image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
-            bmp = image.ConvertToBitmap()
-            wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
-            wx.Yield() 
-            
-            #读取开奖数据
-            data_array = readDataFileToArray()
-            #读取固定投注
-            bet_array = readBetFileToArray()
-            #读取过滤条件
-            filter_array = readFilterFileToArray()
-            #计算出球次数并排列球号
-            redOrder, redTimes = redOrderCoumput(data_array)
-            #下面这两项计算会导致界面打开有些迟钝，最好可以多进程处理
-            #计算开奖数据对应的参数（24项－对应过滤条件）
-            data_para_array = dataParaCompute(data_array, redOrder, bet_array)
-            #计算百分比
-            percent_array = percentCompute(filter_array, data_para_array)
+        #将上一期出现的号码改为紫色
+        checkBox_list = [self.checkBox01,self.checkBox02,self.checkBox03,\
+                         self.checkBox04,self.checkBox05,self.checkBox06,\
+                         self.checkBox07,self.checkBox08,self.checkBox09,\
+                         self.checkBox10,self.checkBox11,self.checkBox12,\
+                         self.checkBox13,self.checkBox14,self.checkBox15,\
+                         self.checkBox16,self.checkBox17,self.checkBox18,\
+                         self.checkBox19,self.checkBox20,self.checkBox21,\
+                         self.checkBox22,self.checkBox23,self.checkBox24,\
+                         self.checkBox25,self.checkBox26,self.checkBox27,\
+                         self.checkBox28,self.checkBox29,self.checkBox30,\
+                         self.checkBox32,self.checkBox32,self.checkBox33
+                         ]
+        for i in range(1, 6+1):
+            checkBox_list[int(data_array[0][i])-1].SetForegroundColour('BLUE')
+
+
+        #self.checkBox02.  
             
         #按钮显示和隐藏（控制按钮显示部分做的不太理想，太混乱）
+        #默认将step归0是不是就简单多了
+        global step
+        step = 0
+        #将号码池清空
+        global num_pool, data_f
+        num_pool = []
+        data_f = []
         if step==0:
             self.buttondatabuild.Show()
+            self.buttononestep.Show()
             self.buttonnextstep.Show(False)
             self.buttonlaststep.Show(False)
             self.buttonuse.Show(False)
@@ -472,10 +521,12 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonupperplus.Show(False)
             self.panel3.Show(False) #走势图面板不显示
             self.textCtrldataf.Show(False) #预测数据结果不显示
+        '''
         if step==1:
             self.buttonnextstep.Show()
             self.buttonlaststep.Show(False)
             self.buttondatabuild.Show(False)
+            self.buttononestep.Show(False)
             self.buttonsave.Show(False)    
             if '否' in filter_array[step-1][2]:
                 self.buttonuse.Show()
@@ -496,6 +547,7 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonnextstep.Show()
             self.buttonlaststep.Show()           
             self.buttondatabuild.Show(False)
+            self.buttononestep.Show(False)
             self.buttonsave.Show(False)
             if '否' in filter_array[step-1][2]:
                 self.buttonuse.Show()
@@ -517,6 +569,7 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonuse.Show(False)             
             self.buttonnextstep.Show(False)
             self.buttondatabuild.Show(False)
+            self.buttononestep.Show(False)
             self.buttonlowerminus.Show(False)
             self.buttonlowerplus.Show(False)
             self.buttonupperminus.Show(False)
@@ -532,7 +585,7 @@ class FrameRedFiltrate(wx.Frame):
                 show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
                            %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
             self.textCtrldataf.AppendText(show_txt)
-                        
+        '''                 
         #如果要在unicode版本的wxPython中查看汉字，就要进行unicode操作，如下：
         #print unicode(filter_array[0][1], 'mbcs')
 
@@ -550,17 +603,17 @@ class FrameRedFiltrate(wx.Frame):
             msg = ['']
             msg[0] = '开始红球过滤，选择号码后点击“生成初始数据”按钮'
         if step>0 and step<=len(filter_array):
-            msg = ['','','','','','','']
+            msg = ['','','','','','','','','']
             msg[0] = '当前为第%.2d/%d步：%s'%(step, len(filter_array), filter_array[step-1][1])
             msg[1] = '（%s）'%(filter_array[step-1][4])
             msg[2] = '当前组数为%d，过滤比为%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
             msg[3] = '当前设置范围为：【%d, %d】'%(int(filter_array[step-1][3].split("-")[0]),int(filter_array[step-1][3].split("-")[1]))
             msg[4] = '已开奖数据中的符合程度为%s'%(percent_array[step-1])+'%'
-            msg[5] = '是否使用此过滤条件：'
+            msg[5] = '是否使用此过滤条件：' 
             if '是' in filter_array[step-1][2]:
                 msg[6] = '是'
             else :
-                msg[6] = '否'            
+                msg[6] = '否'        
         if step>len(filter_array):
             msg = ['','','']
             msg[0] = '过滤完毕！'
@@ -658,6 +711,7 @@ class FrameRedFiltrate(wx.Frame):
             step = step + 1
             #按钮显示和隐藏
             self.buttondatabuild.Show(False)
+            self.buttononestep.Show(False)
             self.buttonnextstep.Show()
             self.buttonlowerminus.Show()
             self.buttonlowerplus.Show()
@@ -673,6 +727,18 @@ class FrameRedFiltrate(wx.Frame):
             self.panel3.Show() 
             #刷新
             self.Refresh()
+            
+            #创建条件选择下拉条
+            filter_name = [] #所有过滤条件名称列表
+            for i in range(0, len(filter_array)):
+                filter_name.append(filter_array[i][1])
+            self.comboBox1 = wx.ComboBox(choices=filter_name,
+                  id=-1, name='comboBox1',
+                  parent=self.panel1, pos=wx.Point(344, 17), size=wx.Size(110, 22),
+                  style=0, value=u'\u9009\u62e9\u8fc7\u6ee4\u6761\u4ef6')
+            #绑定
+            self.comboBox1.Bind(wx.EVT_TEXT, self.OnComboBox1Text, id=-1)            
+
         #号码池中的号码小于6个
         else:
             #弹出提示框
@@ -1137,6 +1203,7 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonupperminus.Show(False)
             self.buttonupperplus.Show(False)
             self.panel3.Show(False) #走势图面板不显示
+            self.comboBox1.Show(False) #条件选择下拉条不显示
             self.textCtrldataf.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) #设置一下，就能从头开始显示
             self.textCtrldataf.Show() #预测数据结果显示
             #在显示面板中写入数据
@@ -1150,10 +1217,16 @@ class FrameRedFiltrate(wx.Frame):
             #先将文本处理好再一次性添加到显示控件中会比较省时间，比较没有延迟的感觉
             #如果注数过多，后面部分没有显示出来，因为textctrl只能显示64KB的文字
             #可以改成richtext，但是只能在windows下用
-            show_txt = '过滤后数据如下：\n'
-            for i in range(0, len(data_f)):
-                show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
-                           %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
+            if len(data_f)>200:
+                show_txt = '过滤后数据如下：（最多显示200组）\n'                
+                for i in range(0, 200): #只显示200组
+                    show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
+                               %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
+            else:
+                show_txt = '过滤后数据如下：\n'  
+                for i in range(0, len(data_f)):
+                    show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
+                               %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
             self.textCtrldataf.AppendText(show_txt)
             self.textCtrldataf.SetInsertionPoint(0)
         #刷新
@@ -1183,6 +1256,7 @@ class FrameRedFiltrate(wx.Frame):
         if step<=len(filter_array):
             self.buttonnextstep.Show()
             self.panel3.Show() #走势图面板显示
+            self.comboBox1.Show() #条件选择下拉条显示
             self.buttonsave.Show(False)  
             self.textCtrldataf.Show(False) #预测数据结果不显示
         #隐藏“上一步”按钮（就是本身）
@@ -1210,7 +1284,7 @@ class FrameRedFiltrate(wx.Frame):
         global filter_array, data_f
         filter_array[step-1][2] = '是' + filter_array[step-1][2][2:]
         #过滤
-        data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+        data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, redOrder50, bet_array)
         #隐藏按钮（本身）
         self.buttonuse.Show(False) 
         #隐藏可调整范围按钮 
@@ -1304,7 +1378,7 @@ class FrameRedFiltrate(wx.Frame):
         os.startfile('%s'%(int(data_array[0][0])+1))
         #关闭窗口
         #还是一直显示着比较好一点，你说呢？
-        #self.Close() 
+        self.Close() 
         
         event.Skip()
 
@@ -1342,7 +1416,7 @@ class FrameRedFiltrate(wx.Frame):
             value_max = int(value_a*4)
             #画10个长方形
             dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #设置外边框颜色
-            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #设置内部填充颜色
+            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID)) #设置内部填充颜色
             for i in range(0, 10):
                 #参数依次为：左上角横坐标、左上角纵坐标、宽、高
                 dc.DrawRectangle(40+i*36, 270-240*value_10[9-i]/value_max, 20, 240*value_10[9-i]/value_max)
@@ -1386,7 +1460,7 @@ class FrameRedFiltrate(wx.Frame):
             value_a = value_a*1.0/20
             #最大值＝平均值×4
             value_max = int(value_a*4) #加int是因为float会导致长方形底部有时无法接触到x轴
-            #画10个长方形
+            #画20个长方形
             dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #设置外边框颜色
             dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #设置内部填充颜色
             for i in range(0, 20):
@@ -1401,13 +1475,59 @@ class FrameRedFiltrate(wx.Frame):
             dc.SetFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))  
             for i in range(3, 20, 4): #隔4期显示，要不太挤了
                 dc.DrawText('%s'%data_array[19-i][0], 30+i*18-4, 275)
-            #画出10期均值线
+            #画出20期均值线
             dc.SetPen(wx.Pen('DARK OLIVE GREEN', 1, wx.DOT_DASH))
             dc.DrawLine(20,270-240*value_a/value_max,420,270-240*value_a/value_max)
-            #在10期均值线上标注具体的数字
+            #在20期均值线上标注具体的数字
             dc.SetTextForeground('DARK OLIVE GREEN')
             dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
             dc.DrawText('20期均值%s'%value_a, 360, 270-240*value_a/value_max-15)
+        #最近40期的
+        if term==40:
+            #标题
+            dc.SetTextForeground('FIREBRICK') #耐火砖色  
+            dc.DrawText('%s走势图（最近40期）'%name_no_blank, 10, 10)
+            #画坐标线
+            dc.SetPen(wx.Pen('BLUE', 1))
+            dc.DrawLine(20,30,20,280) #竖线
+            dc.DrawLine(10,270,420,270) #横线
+            dc.DrawLine(20,30,15,35) #竖线的箭头
+            dc.DrawLine(20,30,25,35)
+            dc.DrawLine(420,270,415,265) #横线的箭头
+            dc.DrawLine(420,270,415,275)
+            #得到最近40期的值的列表
+            value_40 = []
+            for i in range(0, 40):
+                value_40.append(data_para_array[i][name_no_blank])
+            #算出平均值
+            value_a = 0.0
+            for i in range(0, 40):
+                value_a = value_a + value_40[i]
+            value_a = value_a*1.0/40
+            #最大值＝平均值×4
+            value_max = int(value_a*4) #加int是因为float会导致长方形底部有时无法接触到x轴
+            #画40个长方形
+            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #设置外边框颜色
+            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #设置内部填充颜色
+            for i in range(0, 40):
+            #参数依次为：左上角横坐标、左上角纵坐标、宽、高
+                dc.DrawRectangle(30+i*9, 270-240*value_40[39-i]/value_max, 5, 240*value_40[39-i]/value_max)
+            #在长方形顶端，标注具体数字
+            dc.SetTextForeground('ORANGE RED') 
+            for i in range(0, 40):
+                dc.DrawText('%s'%value_40[39-i], 30+i*9, (270-240*value_40[39-i]/value_max)-15)
+            #在坐标轴下方标注具体的期数
+            dc.SetTextForeground('ORCHID')
+            dc.SetFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))  
+            for i in range(3, 40, 8): #隔8期显示，要不太挤了
+                dc.DrawText('%s'%data_array[19-i][0], 30+i*18-4, 275)
+            #画出40期均值线
+            dc.SetPen(wx.Pen('DARK OLIVE GREEN', 1, wx.DOT_DASH))
+            dc.DrawLine(20,270-240*value_a/value_max,420,270-240*value_a/value_max)
+            #在40期均值线上标注具体的数字
+            dc.SetTextForeground('DARK OLIVE GREEN')
+            dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
+            dc.DrawText('40期均值%s'%value_a, 360, 270-240*value_a/value_max-15)
         
         event.Skip()
 
@@ -1420,5 +1540,129 @@ class FrameRedFiltrate(wx.Frame):
     def OnRadioButton20tRadiobutton(self, event): #显示20期走势图
         global term
         term = 20    
-        self.Refresh() #刷新，这样就所改即所得了 
+        self.Refresh() #刷新
+        event.Skip()
+        
+    def OnRadioButton40tRadiobutton(self, event): #显示40期走势图
+        global term
+        term = 40    
+        self.Refresh() #刷新
+        event.Skip()
+        
+
+    def OnButtononestepButton(self, event): #一步过滤按钮
+        '''一次性过滤'''
+        global data_f, step, num_pool,filter_array
+        if len(num_pool)>=6:
+            continue_f = True #是否继续进行过滤判断符
+            if len(num_pool)>12:
+                
+                dlg = wx.MessageDialog(self, '选择号码较多时，花费时间会比较长', 
+                                       '确定要一步过滤？',
+                                       wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION
+                                       )
+                result = dlg.ShowModal()
+                dlg.Destroy()
+                if result==wx.ID_YES: #确定了要一步过滤
+                    continue_f = True
+                if result==wx.ID_NO: #不进行一步过滤
+                    continue_f = False
+            #if continue_f==True:
+            if continue_f:
+                #开始时间
+                start_time = int(time.time())           
+                #--进度条               
+                dlg = wx.ProgressDialog("过滤中……",
+                                "请耐心等待！",
+                                maximum = len(filter_array) + 1 + 1,
+                                parent = self,
+                                style = wx.PD_APP_MODAL
+                                )
+                #关闭当前窗口（红球过滤面板） #如果不关闭窗口，因为step的变化，窗口中内容也会跟着变化
+                self.Close()                  
+                #--将号码池中的数字按照从小到大的顺序排列
+                for i in range(len(num_pool)-1, 0, -1):
+                    for j in range(0, i):
+                        if num_pool[j]>num_pool[j+1]:
+                            num_pool[j], num_pool[j+1] = num_pool[j+1], num_pool[j]
+                #--生成需要被过滤的所有数据
+                pos1 = 0
+                for t1 in num_pool[pos1:-5]:
+                    pos2 = pos1 + 1
+                    for t2 in num_pool[pos2:-4]:
+                        pos3 = pos2 + 1
+                        for t3 in num_pool[pos3:-3]:
+                            pos4 = pos3 + 1
+                            for t4 in num_pool[pos4:-2]:
+                                pos5 = pos4 + 1
+                                for t5 in num_pool[pos5:-1]:
+                                    pos6 = pos5 + 1
+                                    for t6 in num_pool[pos6:]:
+                                        data_f.append([t1,t2,t3,t4,t5,t6])                                                                             
+                                    pos5 = pos5 + 1
+                                pos4 = pos4 + 1
+                            pos3 = pos3 + 1
+                        pos2 = pos2 + 1
+                    pos1 = pos1 + 1
+                dlg.Update(1)
+                #显示原始注数
+                #print len(data_f)
+                #--开始过滤
+                for i in range(0, len(filter_array)):
+                    #+1
+                    step = step + 1
+                    #控制台输出正在进行的步骤
+                    if step==1:
+                        print '%.2d time=%d num=%d'%(step,int(time.time())-start_time,len(data_f))
+                        last_time = int(time.time())
+                    else:
+                        print '%.2d time=%d num=%d'%(step,int(time.time())-last_time,len(data_f))
+                        last_time = int(time.time())
+                    #改为“是”
+                    filter_array[step-1][2] = '是' + filter_array[step-1][2][2:]
+                    #过滤
+                    data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, redOrder50, bet_array)
+                    #更新进度条
+                    dlg.Update(step+1)
+                    #显示过滤后的注数
+                    #print len(data_f)
+                #--进度条关闭
+                dlg.Destroy()
+                #终止时间
+                stop_time = int(time.time())
+                #写数据
+                writePredictData(data_array, data_f, filter_array)              
+                #提示生成的注数，询问是否打开对应文件夹
+                tip_text = '共生成%d注，花费%d秒'%(len(data_f),stop_time-start_time)
+                dlg_f = wx.MessageDialog(self, tip_text, 
+                                        '打开对应文件夹？',
+                                        wx.YES_NO | wx.YES_DEFAULT | wx.ICON_INFORMATION
+                                        )
+                open_folder = dlg_f.ShowModal()
+                dlg_f.Destroy()
+                if open_folder==wx.ID_YES:
+                    #打开相应文件夹
+                    os.startfile('%s'%(int(data_array[0][0])+1))
+                else:
+                    pass            
+        else:
+            #弹出提示框
+            dlg = wx.MessageDialog(self, '选中的号码少于6个！', 
+                                   '请重新选择号码',
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()              
+        event.Skip()
+
+    def OnComboBox1Text(self, event):
+        #判断是选择了哪个过滤条件，并跳转到那个条件（即显示该条件的数据和参数）
+        #注意！event.GetString()得到的实际上不是string而是unicode
+        global step
+        for i in range(0, len(filter_array)):
+            if event.GetString().encode('cp936') in filter_array[i][1]:
+                step = i+1
+                self.Refresh()
+                break
+
         event.Skip()

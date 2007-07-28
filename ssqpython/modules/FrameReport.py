@@ -1,3 +1,4 @@
+#Boa:Frame:FrameReport
 # -*- coding: cp936 -*-
 # otherrrr@gmail.com
 # 过滤数据查看报告面板
@@ -5,10 +6,10 @@
 import wx
 import os
 
-from modules.DataFileIO import readDataFileToArray
-from modules.PredictFileIO import readPredictData
-from modules.BetFileIO import readBetFileToArray
-from modules.DataCompute import redOrderCoumput, dataParaCompute
+from DataFileIO import readDataFileToArray
+from PredictFileIO import readPredictData
+from BetFileIO import readBetFileToArray
+from DataCompute import redOrderCoumpute, dataParaCompute
 
 def create(parent):
     return FrameReport(parent)
@@ -40,9 +41,9 @@ class FrameReport(wx.Frame):
         #显示面板清空
         self.textCtrl1.Clear()
         #计算并得到数据参数
-        redOrder, redTimes = redOrderCoumput(data_array)
+        redOrder, redTimes, redOrder100, redTimes100, redOrder50, redTimes50 = redOrderCoumpute(data_array)
         bet_array = readBetFileToArray()
-        data_para_array = dataParaCompute(data_array, redOrder, bet_array) 
+        data_para_array = dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array) 
         #最新一期的期号
         date = int(data_array[0][0])
         for i in range(0, 3):

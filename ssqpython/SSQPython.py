@@ -1,4 +1,5 @@
 # -*- coding: cp936 -*-
+#!/usr/bin/env python
 # otherrrr@gmail.com
 # 主程序
 
