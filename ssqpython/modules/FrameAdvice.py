@@ -332,7 +332,6 @@ class FrameAdvice(wx.Frame):
         max_num = [] #最大号码
         min_num = [] #最小号码
         for i in range(0, 16):
-            #if in_advice[i]>=4: 
             if in_advice[i]==max(in_advice): #是最大
                 max_num.append('%.2d'%(i+1))
             #if in_advice[i]<=1:                 
@@ -341,10 +340,15 @@ class FrameAdvice(wx.Frame):
         #print max_num
         #print min_num
         advice_num = [] #推荐号码
+        '''
         for i in range(0, 16):
             if ('%.2d'%(i+1) not in max_num) and ('%.2d'%(i+1) not in min_num):
                 advice_num.append('%.2d'%(i+1))
-
+        '''
+        for i in range(0, 16):
+            if '%.2d'%(i+1) in max_num:
+                advice_num.append('%.2d'%(i+1))
+                
         advice_text = advice_text + '\n%s\n'%(str(advice_num))
         self.textCtrl1.AppendText(advice_text) #显示最终推荐
 

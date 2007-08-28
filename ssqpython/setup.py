@@ -14,6 +14,6 @@ setup(
                 }
                    ],
         data_files=[("pic", ["pic/logo.ico","pic/red.ico","pic/report.ico","pic/splash.jpg","pic/blue.ico","pic/advice.png"]),
-                    ("", ["固定投注.txt","过滤条件.txt","开奖数据.txt","说明文档.txt"])
+                    ("", ["固定投注.txt","过滤条件.txt","开奖数据.txt","说明文档.txt","代理设置.ini","缩水条件.txt"])
                     ],
     )

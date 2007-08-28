@@ -109,13 +109,13 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
                          '除7余0':0,'除7余1':0,'除7余2':0,'除7余3':0,'除7余4':0,'除7余5':0,'除7余6':0,\
                          '高值区':0,'低值区':0,\
                          '区间1':0,'区间2':0,'区间3':0,\
-                         '连号':0,'同尾':0,'开奖号码和':0,'AC值':0,\
+                         '连号':0,'同尾':0,'开奖号码和':0,'尾号和':0,'AC值':0,\
                          '热号全':0,'温号全':0,'冷号全':0,\
                          '热号100':0,'温号100':0,'冷号100':0,\
                          '热号50':0,'温号50':0,'冷号50':0,\
                          '1期重号':0,'3期重号':0,'5期重号':0,'10期重号':0,'1期临近值':0,\
                          '3期个数':0,'5期个数':0,'7期个数':0,'9期个数':0,\
-                         '遗漏值和':0,'固定投注':0,'往期数据':0} 
+                         '遗漏值和':0,'固定投注':0,'长列表':0,'往期数据':0} 
         #1号位
         data_para_one['1号位'] = int(data_array[i][1])
         #2号位
@@ -372,6 +372,11 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
             sum_12 = sum_12 + int(data_array[i][j])%10
             sum_12 = sum_12 + int(data_array[i][j])/10
         data_para_one['开奖号码和'] = sum_12
+        #计算尾号和
+        nail_sum = 0
+        for j in range(1, 6+1):
+            nail_sum = nail_sum + int(data_array[i][j])%10
+        data_para_one['尾号和'] = nail_sum
         #计算AC值范围
         ac_num = 0
         details = [] #具体数据，最多为15
@@ -577,6 +582,15 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
             if num_tmp>num_fix:
                 num_fix = num_tmp
         data_para_one['固定投注'] = num_fix
+        #长列表
+        long_list_num = 0
+        long_list = ['01','02','05','07','10','11','13','14',\
+                     '17','18','19','20','21','22','23','24',\
+                     '26','27','28','29','30','32','33']#5组共23个
+        for j in range(1, 6+1):
+            if data_array[i][j] in long_list:
+                long_list_num = long_list_num + 1
+        data_para_one['长列表'] = long_list_num
         #往期数据
         num_old = 0           
         if i<(len(data_array)-1): #第1期没有往期数据
@@ -861,7 +875,12 @@ def percentCompute(filter_array, data_para_array): #百分比计算
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['开奖号码和']>=min_num and data_para_array[j]['开奖号码和']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))  
+            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
+        if '尾号和' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['尾号和']>=min_num and data_para_array[j]['尾号和']<=max_num:
+                    count = count + 1
+            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))              
         if 'AC值' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['AC值']>=min_num and data_para_array[j]['AC值']<=max_num:
@@ -967,6 +986,11 @@ def percentCompute(filter_array, data_para_array): #百分比计算
                 if data_para_array[j]['固定投注']>=min_num and data_para_array[j]['固定投注']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
+        if '长列表' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['长列表']>=min_num and data_para_array[j]['长列表']<=max_num:
+                    count = count + 1                
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))            
         if '往期数据' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['往期数据']>=min_num and data_para_array[j]['往期数据']<=max_num:
@@ -1342,6 +1366,13 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, 
                 sum_12 = sum_12 + int(data_f[i][j])/10
             if min_num<=sum_12<=max_num:
                 data_f_tmp.append(data_f[i])
+    if '尾号和' in filter_array[step-1][1]:
+        for i in range(0, len(data_f)):
+            nail_sum = 0
+            for j in range(0, 6):
+                nail_sum = nail_sum + int(data_f[i][j])%10
+            if min_num<=nail_sum<=max_num:
+                data_f_tmp.append(data_f[i])                
     if 'AC值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             ac_num = 0  
@@ -1619,6 +1650,17 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, 
                     num_fix = num_tmp            
             if min_num<=num_fix<=max_num:
                 data_f_tmp.append(data_f[i])
+    if '长列表' in filter_array[step-1][1]:
+        long_list = ['01','02','05','07','10','11','13','14',\
+                     '17','18','19','20','21','22','23','24',\
+                     '26','27','28','29','30','32','33']#5组共23个        
+        for i in range(0, len(data_f)):
+            long_list_num = 0
+            for j in range(0, 6):
+                if '%.2d'%(data_f[i][j]) in long_list:
+                    long_list_num = long_list_num + 1
+            if min_num<=long_list_num<=max_num:
+                data_f_tmp.append(data_f[i])                
     if '往期数据' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             num_old = 0
