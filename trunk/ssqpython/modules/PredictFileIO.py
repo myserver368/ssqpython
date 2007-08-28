@@ -4,7 +4,7 @@
 
 import os
 
-def writePredictData(data_array, data_f, filter_array): #预测数据写入文件
+def writePredictData(data_array, data_f, filter_array, num_pool): #预测数据写入文件
     '''新建对应日期的文件夹，创建并写入预测数据文件
        创建并写入对应的过滤条件文件加
     '''
@@ -37,6 +37,10 @@ def writePredictData(data_array, data_f, filter_array): #预测数据写入文件
         f.write('%s'%(filter_array[i][3]))
         f.write('\n')
     f.write('==END===============================\n')
+    f.write('==')
+    for i in range(0, len(num_pool)):
+        f.write('%.2d'%num_pool[i]+',')
+    f.write('==\n')
     f.close()
     
 def readPredictData(date): #读取预测数据和过滤条件
@@ -53,19 +57,23 @@ def readPredictData(date): #读取预测数据和过滤条件
     f = open('%s/%s过滤条件.txt'%(date,date), 'r')
     tmp = f.readlines()
     f.close()
-    tmp = tmp[2:-1] #去掉首尾
     predict_filter = [] #使用的过滤条件
-    for i in range(0, len(tmp)):
-        if '是' in tmp[i]: #确定“使用”
+    tmp_m = tmp[2:-1]#去掉首尾
+    for i in range(0, len(tmp_m)): 
+        if '是' in tmp_m[i]: #确定“使用”
             term = ['第几项', '名称', '是否启用', '范围']
-            term[0] =  tmp[i].split('()')[0]
-            term[1] =  tmp[i].split('()')[1]
-            term[2] =  tmp[i].split('()')[2]
-            term[3] =  tmp[i].split('()')[3]
+            term[0] =  tmp_m[i].split('()')[0]
+            term[1] =  tmp_m[i].split('()')[1]
+            term[2] =  tmp_m[i].split('()')[2]
+            term[3] =  tmp_m[i].split('()')[3]
             predict_filter.append(term)
         else:
             pass
 
-    return predict_data, predict_filter
+    #读取选择号码
+    select_num = [] #号码池，这个和过滤里面那个稍有不同，那个是int型的list，这个是str型的
+    for i in range(0, (len(tmp[-1])-4)/3):
+        select_num.append(tmp[-1][i*3+2:i*3+4])
+    return predict_data, predict_filter, select_num
 
 

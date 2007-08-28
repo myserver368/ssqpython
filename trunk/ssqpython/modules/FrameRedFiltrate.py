@@ -589,60 +589,7 @@ class FrameRedFiltrate(wx.Frame):
         #如果要在unicode版本的wxPython中查看汉字，就要进行unicode操作，如下：
         #print unicode(filter_array[0][1], 'mbcs')
 
-#-------------------------------------------------------------------------------
-#----绘图----
 
-    def OnPanel1Paint(self, event):
-        dc = wx.PaintDC(self.panel1)
-        #self.panel1.DoPrepareDC(dc)
-        #画面清空       
-        dc.Clear()
-        #文字设定
-        global msg
-        if step==0:
-            msg = ['']
-            msg[0] = '开始红球过滤，选择号码后点击“生成初始数据”按钮'
-        if step>0 and step<=len(filter_array):
-            msg = ['','','','','','','','','']
-            msg[0] = '当前为第%.2d/%d步：%s'%(step, len(filter_array), filter_array[step-1][1])
-            msg[1] = '（%s）'%(filter_array[step-1][4])
-            msg[2] = '当前组数为%d，过滤比为%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
-            msg[3] = '当前设置范围为：【%d, %d】'%(int(filter_array[step-1][3].split("-")[0]),int(filter_array[step-1][3].split("-")[1]))
-            msg[4] = '已开奖数据中的符合程度为%s'%(percent_array[step-1])+'%'
-            msg[5] = '是否使用此过滤条件：' 
-            if '是' in filter_array[step-1][2]:
-                msg[6] = '是'
-            else :
-                msg[6] = '否'        
-        if step>len(filter_array):
-            msg = ['','','']
-            msg[0] = '过滤完毕！'
-            msg[1] = '当前组数为%d，过滤比为%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
-            msg[2] = '若保存数据请点击“保存过滤后数据”按钮'
-        #绘制文字
-        dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-        if len(msg)==1: #第1步
-            dc.SetTextForeground('BLUE')
-            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-            dc.DrawText(msg[0], 5, 5)
-        elif len(msg)==3: #最后1步
-            dc.SetTextForeground('BLUE')
-            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
-            for i in range(0, 3):
-                dc.DrawText(msg[i], 5, 5+i*16)
-        else : #中间步
-            dc.SetTextForeground('BLUE')
-            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
-            for i in range(0, 6):
-                dc.DrawText(msg[i], 5, 5+i*16)
-            if msg[6]=='否': #红色的“否”
-                dc.SetTextForeground('RED')
-                dc.DrawText(msg[6], 5+150, 5+5*16)
-            if msg[6]=='是': #绿色的“是”
-                dc.SetTextForeground('#009900')
-                dc.DrawText(msg[6], 5+150, 5+5*16)
-        
-        event.Skip()
 
 #-------------------------------------------------------------------------------
 #----数据生成按钮----
@@ -794,7 +741,10 @@ class FrameRedFiltrate(wx.Frame):
         num_pool = [] #先清空一下，避免号码池中已经有了一些号码
         for i in range(1, 33+1):
             num_pool.append(i)
-             
+        #显示选择了多少个球
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnRadioButtonallnoRadiobutton(self, event): #全不选按钮
@@ -836,6 +786,9 @@ class FrameRedFiltrate(wx.Frame):
         #清空号码池  
         global num_pool
         num_pool = []
+        #显示选择了多少个球
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
         
         event.Skip()
 
@@ -846,7 +799,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(1) #删除     
         else:
             num_pool.append(1) #添加
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
         
     def OnCheckBox02Checkbox(self, event): #02
@@ -856,7 +813,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(2)      
         else:
             num_pool.append(2)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
         
     def OnCheckBox03Checkbox(self, event):#03
@@ -866,7 +827,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(3)      
         else:
             num_pool.append(3)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox04Checkbox(self, event):#04
@@ -876,7 +841,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(4)      
         else:
             num_pool.append(4)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox05Checkbox(self, event):#05
@@ -886,7 +855,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(5)      
         else:
             num_pool.append(5)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+         
         event.Skip()
 
     def OnCheckBox06Checkbox(self, event):#06
@@ -896,7 +869,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(6)      
         else:
             num_pool.append(6)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
         
     def OnCheckBox07Checkbox(self, event):#07
@@ -906,7 +883,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(7)      
         else:
             num_pool.append(7)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+         
         event.Skip()
         
     def OnCheckBox08Checkbox(self, event):#08
@@ -916,7 +897,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(8)      
         else:
             num_pool.append(8)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
         
     def OnCheckBox09Checkbox(self, event):#09
@@ -926,7 +911,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(9)      
         else:
             num_pool.append(9)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+         
         event.Skip()
 
     def OnCheckBox10Checkbox(self, event):#10
@@ -936,7 +925,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(10)      
         else:
             num_pool.append(10)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox11Checkbox(self, event):#11
@@ -946,7 +939,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(11)      
         else:
             num_pool.append(11)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox12Checkbox(self, event):#12
@@ -956,7 +953,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(12)      
         else:
             num_pool.append(12)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox13Checkbox(self, event):#13
@@ -966,7 +967,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(13)      
         else:
             num_pool.append(13)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox14Checkbox(self, event):#14
@@ -976,7 +981,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(14)      
         else:
             num_pool.append(14)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox15Checkbox(self, event):#15
@@ -986,7 +995,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(15)      
         else:
             num_pool.append(15)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox16Checkbox(self, event):#16
@@ -996,7 +1009,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(16)      
         else:
             num_pool.append(16)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
         
     def OnCheckBox17Checkbox(self, event):#17
@@ -1006,7 +1023,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(17)      
         else:
             num_pool.append(17)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox18Checkbox(self, event):#18
@@ -1016,7 +1037,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(18)      
         else:
             num_pool.append(18)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox19Checkbox(self, event):#19
@@ -1026,7 +1051,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(19)      
         else:
             num_pool.append(19)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox20Checkbox(self, event):#20
@@ -1036,7 +1065,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(20)      
         else:
             num_pool.append(20)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox21Checkbox(self, event):#21
@@ -1046,7 +1079,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(21)      
         else:
             num_pool.append(21)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox22Checkbox(self, event):#22
@@ -1056,7 +1093,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(22)      
         else:
             num_pool.append(22)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox23Checkbox(self, event):#23
@@ -1066,7 +1107,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(23)      
         else:
             num_pool.append(23)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox24Checkbox(self, event):#24
@@ -1076,7 +1121,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(24)      
         else:
             num_pool.append(24)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox25Checkbox(self, event):#25
@@ -1086,7 +1135,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(25)      
         else:
             num_pool.append(25)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox26Checkbox(self, event):#26
@@ -1096,7 +1149,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(26)      
         else:
             num_pool.append(26)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox27Checkbox(self, event):#27
@@ -1106,7 +1163,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(27)      
         else:
             num_pool.append(27)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox28Checkbox(self, event):#28
@@ -1116,7 +1177,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(28)      
         else:
             num_pool.append(28)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox29Checkbox(self, event):#29
@@ -1126,7 +1191,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(29)      
         else:
             num_pool.append(29)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox30Checkbox(self, event):#30
@@ -1136,7 +1205,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(30)      
         else:
             num_pool.append(30)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox31Checkbox(self, event):#31
@@ -1146,7 +1219,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(31)      
         else:
             num_pool.append(31)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
     def OnCheckBox32Checkbox(self, event):#32
@@ -1156,7 +1233,11 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(32)      
         else:
             num_pool.append(32)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
     def OnCheckBox33Checkbox(self, event):#33
         '''将33添加到号码池中，或从号码池中删除'''
@@ -1165,9 +1246,69 @@ class FrameRedFiltrate(wx.Frame):
             num_pool.remove(33)      
         else:
             num_pool.append(33)
-            
+
+        #号码池个数显示更新
+        msg[1] = '%.2d'%(len(num_pool))
+        self.Refresh()
+        
         event.Skip()
 
+#-------------------------------------------------------------------------------
+#----绘图----
+
+    def OnPanel1Paint(self, event):
+        dc = wx.PaintDC(self.panel1)
+        #self.panel1.DoPrepareDC(dc)
+        #画面清空       
+        dc.Clear()
+        #文字设定
+        global msg
+        if step==0:
+            msg = ['','']
+            msg[0] = '开始红球过滤，选择号码后点击“生成初始数据”按钮'
+            msg[1] = '%.2d'%(len(num_pool)) #显示号码池中的号码个数
+        if step>0 and step<=len(filter_array):
+            msg = ['','','','','','','','','']
+            msg[0] = '当前为第%.2d/%d步：%s'%(step, len(filter_array), filter_array[step-1][1])
+            msg[1] = '（%s）'%(filter_array[step-1][4])
+            msg[2] = '当前组数为%d，过滤比为%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
+            msg[3] = '当前设置范围为：【%d, %d】'%(int(filter_array[step-1][3].split("-")[0]),int(filter_array[step-1][3].split("-")[1]))
+            msg[4] = '已开奖数据中的符合程度为%s'%(percent_array[step-1])+'%'
+            msg[5] = '是否使用此过滤条件：' 
+            if '是' in filter_array[step-1][2]:
+                msg[6] = '是'
+            else :
+                msg[6] = '否'        
+        if step>len(filter_array):
+            msg = ['','','']
+            msg[0] = '过滤完毕！'
+            msg[1] = '当前组数为%d，过滤比为%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
+            msg[2] = '若保存数据请点击“保存过滤后数据”按钮'
+        #绘制文字
+        dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
+        if len(msg)==2: #第1步
+            dc.SetTextForeground('BLUE')
+            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
+            dc.DrawText(msg[0], 5, 5)
+            dc.DrawText(msg[1], 450, 5)
+        elif len(msg)==3: #最后1步
+            dc.SetTextForeground('BLUE')
+            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
+            for i in range(0, 3):
+                dc.DrawText(msg[i], 5, 5+i*16)
+        else : #中间步
+            dc.SetTextForeground('BLUE')
+            #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
+            for i in range(0, 6):
+                dc.DrawText(msg[i], 5, 5+i*16)
+            if msg[6]=='否': #红色的“否”
+                dc.SetTextForeground('RED')
+                dc.DrawText(msg[6], 5+150, 5+5*16)
+            if msg[6]=='是': #绿色的“是”
+                dc.SetTextForeground('#009900')
+                dc.DrawText(msg[6], 5+150, 5+5*16)
+        
+        event.Skip()
         
 #-------------------------------------------------------------------------------
 #----常规按钮----
@@ -1373,7 +1514,7 @@ class FrameRedFiltrate(wx.Frame):
         '''保存过滤后数据及应用到的过滤条件''' 
         
         #写数据
-        writePredictData(data_array, data_f, filter_array)
+        writePredictData(data_array, data_f, filter_array, num_pool)
         #打开相应文件夹
         os.startfile('%s'%(int(data_array[0][0])+1))
         #关闭窗口
@@ -1611,13 +1752,6 @@ class FrameRedFiltrate(wx.Frame):
                 for i in range(0, len(filter_array)):
                     #+1
                     step = step + 1
-                    #控制台输出正在进行的步骤
-                    if step==1:
-                        print '%.2d time=%d num=%d'%(step,int(time.time())-start_time,len(data_f))
-                        last_time = int(time.time())
-                    else:
-                        print '%.2d time=%d num=%d'%(step,int(time.time())-last_time,len(data_f))
-                        last_time = int(time.time())
                     #改为“是”
                     filter_array[step-1][2] = '是' + filter_array[step-1][2][2:]
                     #过滤
@@ -1626,12 +1760,19 @@ class FrameRedFiltrate(wx.Frame):
                     dlg.Update(step+1)
                     #显示过滤后的注数
                     #print len(data_f)
+                    #控制台输出正在进行的步骤
+                    if step==1:
+                        print '%.2d time=%d num=%d'%(step,int(time.time())-start_time,len(data_f))
+                        last_time = int(time.time())
+                    else:
+                        print '%.2d time=%d num=%d'%(step,int(time.time())-last_time,len(data_f))
+                        last_time = int(time.time())                    
                 #--进度条关闭
                 dlg.Destroy()
                 #终止时间
                 stop_time = int(time.time())
                 #写数据
-                writePredictData(data_array, data_f, filter_array)              
+                writePredictData(data_array, data_f, filter_array, num_pool)              
                 #提示生成的注数，询问是否打开对应文件夹
                 tip_text = '共生成%d注，花费%d秒'%(len(data_f),stop_time-start_time)
                 dlg_f = wx.MessageDialog(self, tip_text, 

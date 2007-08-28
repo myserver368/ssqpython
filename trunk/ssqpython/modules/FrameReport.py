@@ -50,7 +50,7 @@ class FrameReport(wx.Frame):
             #判断是否存在预测数据（最近3期），即判断文件夹是否存在
             if '%s'%date in os.listdir(os.curdir):
                 #读取预测数据文件和使用到的过滤条件文件（数组格式）
-                predict_data, predict_filter =readPredictData(date)
+                predict_data, predict_filter, select_num =readPredictData(date)
                 #判断预测数据与开奖号码相同情况
                 same = [0,0,0,0,0,0,0]
                 for j in range(0, len(predict_data)):
@@ -59,6 +59,9 @@ class FrameReport(wx.Frame):
                         if predict_data[j][k] in data_array[i][1:6+1]:
                             count = count + 1
                     same[count] = same[count] + 1
+                    #在命令行窗口显示>=5的投注
+                    if count>=5:
+                        print predict_data[j],j+1
                 #判断过滤条件正误情况
                 filter_wrong = [] #错误情况列表
                 wrong_detail = ['条件名称','预测范围下限','预测范围上限','实际值'] #错误详细说明
@@ -74,26 +77,29 @@ class FrameReport(wx.Frame):
                         filter_wrong.append(wrong_detail)
                 #生成报告
                 report = ''
-                report = report + '====%d期==================\n'%date
+                report = report + '=%d期预测数据兑奖=\n'%date
                 report = report + '开奖号码:%s,%s,%s,%s,%s,%s+%s\n'\
                          %(data_array[i][1],data_array[i][2],data_array[i][3],\
                            data_array[i][4],data_array[i][5],data_array[i][6],data_array[i][7])
                 report = report + '预测数据:%s组\n'%(len(predict_data))
-                report = report + '----6球相同%s注\n'%same[6]
-                report = report + '----5球相同%s注\n'%same[5]
-                report = report + '----4球相同%s注\n'%same[4]
+                report = report + '选择了%d个红球\n'%(len(select_num))
+                for j in range(0, 6):#看看哪几个球没选上
+                    if data_array[i][j+1] not in select_num:
+                        report = report + '漏选了*' + data_array[i][j+1]+'*\n'
+                report = report + '----6球相同*%s注*\n'%same[6]
+                report = report + '----5球相同*%s注*\n'%same[5]
+                report = report + '----4球相同*%s注*\n'%same[4]
                 report = report + '----3球相同%s注\n'%same[3]
                 report = report + '----2球相同%s注\n'%same[2]
                 report = report + '----1球相同%s注\n'%same[1]
                 report = report + '----0球相同%s注\n'%same[0]
-                report = report + '过滤条件:%s组\n'%(len(predict_filter))
+                report = report + '使用过滤条件:%s组\n'%(len(predict_filter))
                 report = report + '----正确:%s组\n'%(len(predict_filter)-len(filter_wrong))
                 report = report + '----错误:%s组\n'%(len(filter_wrong))
                 if len(filter_wrong)!=0: #如果有错误的话就显示之
                     for j in range(0, len(filter_wrong)):
                         report = report + '--------%s--------预测范围[%s,%s]--实际值(%s)\n'\
                                  %(filter_wrong[j][0],filter_wrong[j][1],filter_wrong[j][2],filter_wrong[j][3],)
-                report = report + '==============================='
                 #将报告添加到显示面板中
                 self.textCtrl1.AppendText(report)
                 #停止查找

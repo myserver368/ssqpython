@@ -15,6 +15,7 @@ from BetFileIO import readBetFileToArray
 import FrameRedFiltrate
 import FrameReport
 import FrameBlue
+import FrameDownload
 
 _max_height = 0   #滚动窗口高度
 data_string = ''  #数据（字符串格式）
@@ -28,8 +29,8 @@ def create(parent):
 ] = [wx.NewId() for _init_ctrls in range(5)]
 
 [wxID_FRAMEMAINMENUDATAITEMSADD, wxID_FRAMEMAINMENUDATAITEMSDEL, 
- wxID_FRAMEMAINMENUDATAITEMSEXIT, 
-] = [wx.NewId() for _init_coll_menuData_Items in range(3)]
+ wxID_FRAMEMAINMENUDATAITEMSEXIT, wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD, 
+] = [wx.NewId() for _init_coll_menuData_Items in range(4)]
 
 [wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, wxID_FRAMEMAINMENUFILTRATEITEMSFRED, 
 ] = [wx.NewId() for _init_coll_menuFiltrate_Items in range(2)]
@@ -70,9 +71,8 @@ class FrameMain(wx.Frame):
     def _init_coll_menuHelp_Items(self, parent):
         # generated method, don't edit
 
-        parent.Append(help=u'\u4f7f\u7528\u8bf4\u660e',
-              id=wxID_FRAMEMAINMENUHELPITEMSFAQ, kind=wx.ITEM_NORMAL,
-              text=u'\u4f7f\u7528\u8bf4\u660e')
+        parent.Append(help=u'\u8bf4\u660e', id=wxID_FRAMEMAINMENUHELPITEMSFAQ,
+              kind=wx.ITEM_NORMAL, text=u'\u8bf4\u660e')
         parent.Append(help=u'\u5173\u4e8e', id=wxID_FRAMEMAINMENUHELPITEMSABOUT,
               kind=wx.ITEM_NORMAL, text=u'\u5173\u4e8e')
         self.Bind(wx.EVT_MENU, self.OnMenuHelpItemsaboutMenu,
@@ -83,20 +83,26 @@ class FrameMain(wx.Frame):
     def _init_coll_menuData_Items(self, parent):
         # generated method, don't edit
 
+        parent.Append(help=u'\u4e0b\u8f7d\u6570\u636e',
+              id=wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD, kind=wx.ITEM_NORMAL,
+              text=u'\u4e0b\u8f7d\u6570\u636e')
         parent.Append(help=u'\u6dfb\u52a0\u6570\u636e',
               id=wxID_FRAMEMAINMENUDATAITEMSADD, kind=wx.ITEM_NORMAL,
               text=u'\u6dfb\u52a0\u6570\u636e')
         parent.Append(help=u'\u5220\u9664\u6570\u636e',
               id=wxID_FRAMEMAINMENUDATAITEMSDEL, kind=wx.ITEM_NORMAL,
               text=u'\u5220\u9664\u6570\u636e')
-        parent.Append(help=u'\u9000\u51fa', id=wxID_FRAMEMAINMENUDATAITEMSEXIT,
-              kind=wx.ITEM_NORMAL, text=u'\u9000\u51fa')
-        self.Bind(wx.EVT_MENU, self.OnMenuDataItemsexitMenu,
-              id=wxID_FRAMEMAINMENUDATAITEMSEXIT)
+        parent.Append(help=u'\u9000\u51fa',
+              id=wxID_FRAMEMAINMENUDATAITEMSEXIT, kind=wx.ITEM_NORMAL,
+              text=u'\u9000\u51fa')
+        self.Bind(wx.EVT_MENU, self.OnMenuDataItemsdownloadMenu,
+              id=wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD)
         self.Bind(wx.EVT_MENU, self.OnMenuDataItemsaddMenu,
               id=wxID_FRAMEMAINMENUDATAITEMSADD)
         self.Bind(wx.EVT_MENU, self.OnMenuDataItemsdelMenu,
               id=wxID_FRAMEMAINMENUDATAITEMSDEL)
+        self.Bind(wx.EVT_MENU, self.OnMenuDataItemsexitMenu,
+              id=wxID_FRAMEMAINMENUDATAITEMSEXIT)
 
     def _init_coll_menuFiltrate_Items(self, parent):
         # generated method, don't edit
@@ -104,7 +110,7 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u7ea2\u7403\u8fc7\u6ee4',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFRED, kind=wx.ITEM_NORMAL,
               text=u'\u7ea2\u7403\u8fc7\u6ee4')
-        parent.Append(help=u'\u84dd\u7403\u53f7\u7801\u63a8\u8350',
+        parent.Append(help=u'\u84dd\u7403\u63a8\u8350',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, kind=wx.ITEM_NORMAL,
               text=u'\u84dd\u7403\u63a8\u8350')
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsfredMenu,
@@ -146,8 +152,7 @@ class FrameMain(wx.Frame):
         self._init_utils()
         self.SetClientSize(wx.Size(612, 388))
         self.SetMenuBar(self.menuBar1)
-        self.SetIcon(wx.Icon(u'pic/logo.ico',
-              wx.BITMAP_TYPE_ICO))
+        self.SetIcon(wx.Icon(u'pic/logo.ico',wx.BITMAP_TYPE_ICO))
 
         self.statusBar1 = wx.StatusBar(id=wxID_FRAMEMAINSTATUSBAR1,
               name='statusBar1', parent=self, style=0)
@@ -274,7 +279,20 @@ class FrameMain(wx.Frame):
         
 #-------------------------------------------------------------------------------
 #----数据----
+    def OnMenuDataItemsdownloadMenu(self, event):
+        '''下载数据'''   
+        _FrameDownload = FrameDownload.create(None)
+        _FrameDownload.Show()
 
+        data_string = readDataFileToString() #重新读取数据
+        data_array = readDataFileToArray()
+            
+        self.textCtrl1.Clear() #刷新数据
+        self.textCtrl1.AppendText(data_string)
+        self.textCtrl1.ShowPosition(0) 
+        
+        event.Skip()
+        
     def OnMenuDataItemsaddMenu(self, event):
         '''添加数据'''
         global data_string, data_array
@@ -422,7 +440,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = "双色蟒"
-        info.Version = "0.9.7"
+        info.Version = "0.9.8"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",
@@ -434,3 +452,5 @@ class FrameMain(wx.Frame):
         wx.AboutBox(info)
         
         event.Skip()        
+
+
