@@ -29,13 +29,20 @@ class FrameDownload(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #清空屏幕
+        #下载数据时有可能延迟，显示一个画面
+        image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+        bmp = image.ConvertToBitmap()
+        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
+        wx.Yield()         
+        #清空显示区
         self.textCtrl1.Clear()
         #访问网址（我的blog）
         url = 'http://hi.baidu.com/otherrrr/blog/item/30172834dfbf8c3a5bb5f500.html'
         self.textCtrl1.AppendText('访问网址：http://hi.baidu.com/otherrrr/\n')
         #导入包
         import urllib2
+        #默认不需要代理
+        using_proxy = False        
         #侦测网络是否存在Proxy
         try:
             f = urllib2.urlopen(url)
@@ -47,8 +54,6 @@ class FrameDownload(wx.Frame):
                 using_proxy = True
             else:
                 using_proxy = False
-        #默认不需要代理
-        using_proxy = False
         #判断访问网络是否出错
         net_access = True
         #不需要代理
