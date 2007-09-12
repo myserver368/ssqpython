@@ -81,35 +81,35 @@ class FrameRedFiltrate(wx.Frame):
         self.panel1.Bind(wx.EVT_PAINT, self.OnPanel1Paint)
 
         self.buttonexit = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONEXIT,
-              label=u'\u9000\u51fa', name=u'buttonexit', parent=self.panel1,
+              label=u'\u9000\u51fa(&X)', name=u'buttonexit', parent=self.panel1,
               pos=wx.Point(20, 420), size=wx.Size(60, 24), style=0)
         self.buttonexit.Bind(wx.EVT_BUTTON, self.OnButtonexitButton,
               id=wxID_FRAMEREDFILTRATEBUTTONEXIT)
 
         self.buttondatabuild = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONDATABUILD,
-              label=u'\u751f\u6210\u521d\u59cb\u6570\u636e',
-              name=u'buttondatabuild', parent=self.panel1, pos=wx.Point(96, 32),
-              size=wx.Size(90, 24), style=0)
+              label=u'\u751f\u6210\u521d\u59cb\u6570\u636e(&B)',
+              name=u'buttondatabuild', parent=self.panel1, pos=wx.Point(90, 32),
+              size=wx.Size(120, 24), style=0)
         self.buttondatabuild.SetForegroundColour(wx.Colour(255, 0, 0))
         self.buttondatabuild.Bind(wx.EVT_BUTTON, self.OnButtondatabuildButton,
               id=wxID_FRAMEREDFILTRATEBUTTONDATABUILD)
 
         self.buttonnextstep = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONNEXTSTEP,
-              label=u'\u4e0b\u4e00\u6b65', name=u'buttonnextstep',
+              label=u'\u4e0b\u4e00\u6b65(&N)', name=u'buttonnextstep',
               parent=self.panel1, pos=wx.Point(380, 420), size=wx.Size(75, 23),
               style=0)
         self.buttonnextstep.Bind(wx.EVT_BUTTON, self.OnButtonnextstepButton,
               id=wxID_FRAMEREDFILTRATEBUTTONNEXTSTEP)
 
         self.buttonlaststep = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONLASTSTEP,
-              label=u'\u4e0a\u4e00\u6b65', name=u'buttonlaststep',
+              label=u'\u4e0a\u4e00\u6b65(&L)', name=u'buttonlaststep',
               parent=self.panel1, pos=wx.Point(280, 420), size=wx.Size(75, 24),
               style=0)
         self.buttonlaststep.Bind(wx.EVT_BUTTON, self.OnButtonlaststepButton,
               id=wxID_FRAMEREDFILTRATEBUTTONLASTSTEP)
 
         self.buttonuse = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONUSE,
-              label=u'\u4f7f\u7528\u6b64\u6761\u4ef6', name=u'buttonuse',
+              label=u'\u4f7f\u7528\u6b64\u6761\u4ef6(&U)', name=u'buttonuse',
               parent=self.panel1, pos=wx.Point(312, 80), size=wx.Size(90, 24),
               style=0)
         self.buttonuse.SetForegroundColour(wx.Colour(255, 0, 0))
@@ -158,8 +158,8 @@ class FrameRedFiltrate(wx.Frame):
         self.panel2.SetBackgroundColour(wx.Colour(226, 219, 207))
 
         self.radioButtonallyes = wx.RadioButton(id=wxID_FRAMEREDFILTRATERADIOBUTTONALLYES,
-              label=u'\u5168\u9009', name=u'radioButtonallyes',
-              parent=self.panel2, pos=wx.Point(130, 30), size=wx.Size(48, 14),
+              label=u'\u5168\u9009(&A)', name=u'radioButtonallyes',
+              parent=self.panel2, pos=wx.Point(130, 30), size=wx.Size(96, 14),
               style=0)
         self.radioButtonallyes.SetValue(False)
         self.radioButtonallyes.Bind(wx.EVT_RADIOBUTTON,
@@ -167,8 +167,8 @@ class FrameRedFiltrate(wx.Frame):
               id=wxID_FRAMEREDFILTRATERADIOBUTTONALLYES)
 
         self.radioButtonallno = wx.RadioButton(id=wxID_FRAMEREDFILTRATERADIOBUTTONALLNO,
-              label=u'\u5168\u4e0d\u9009', name=u'radioButtonallno',
-              parent=self.panel2, pos=wx.Point(270, 30), size=wx.Size(56, 14),
+              label=u'\u5168\u4e0d\u9009(&N)', name=u'radioButtonallno',
+              parent=self.panel2, pos=wx.Point(270, 30), size=wx.Size(96, 14),
               style=0)
         self.radioButtonallno.SetValue(True)
         self.radioButtonallno.Bind(wx.EVT_RADIOBUTTON,
@@ -442,8 +442,8 @@ class FrameRedFiltrate(wx.Frame):
               value=u'\u663e\u793a\u8fc7\u6ee4\u540e\u6570\u636e')
 
         self.buttononestep = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONONESTEP,
-              label=u'\u4e00\u6b65\u8fc7\u6ee4', name=u'buttononestep',
-              parent=self.panel1, pos=wx.Point(242, 32), size=wx.Size(75, 24),
+              label=u'\u4e00\u6b65\u8fc7\u6ee4(&O)', name=u'buttononestep',
+              parent=self.panel1, pos=wx.Point(242, 32), size=wx.Size(100, 24),
               style=0)
         self.buttononestep.SetForegroundColour(wx.Colour(128, 0, 255))
         self.buttononestep.Bind(wx.EVT_BUTTON, self.OnButtononestepButton,
@@ -1696,7 +1696,7 @@ class FrameRedFiltrate(wx.Frame):
         global data_f, step, num_pool,filter_array
         if len(num_pool)>=6:
             continue_f = True #是否继续进行过滤判断符
-            if len(num_pool)>12:
+            if len(num_pool)>20:
                 
                 dlg = wx.MessageDialog(self, '选择号码较多时，花费时间会比较长', 
                                        '确定要一步过滤？',
