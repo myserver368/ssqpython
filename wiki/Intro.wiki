@@ -1,4 +1,4 @@
-#labels Featured,Phase-Design,Phase-Requirements
+#labels Featured,Phase-Design,介绍
 #双色蟒介绍
 
 = Introduction =
@@ -24,4 +24,5 @@ _蟒，英文Python，即程序所用语言_
   1、“7期个数”的百分比有些问题，数值明显偏小
   2、使用全部33个红球之后“一步过滤”，速度太慢
 
+ 
  
