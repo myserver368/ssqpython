@@ -22,7 +22,8 @@
 === 程序安装 ===
 下载zip版本之后直接解压，双击SSQPython.exe即运行。
 
-源代码版本使用svn下载，然后下载Python（www.python.org）和wxPython（www.wxpython.org），最好是最新版。然后需要设置一下环境变量，即把python所在目录加入环境变量就可以了。
+源代码版本使用svn下载，然后下载Python（http://www.python.org）和wxPython（http://www.wxpython.org），最好是最新版。然后需要设置一下环境变量，即把python所在目录加入环境变量就可以了。
+
 === 快速上手 ===
  * 先按F2下载最新的开奖数据（如果你用的是代理上网，请设置代理设置.ini文件）
  * 看看分布图，就在数据显示旁边
@@ -36,6 +37,7 @@
  * 7期个数的百分比有些问题，数值明显偏小
  * 使用全部33个红球之后一步过滤，速度太慢
 
+ 
  
  
  
