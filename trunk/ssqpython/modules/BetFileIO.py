@@ -3,7 +3,7 @@
 # 固定投注文件读取
 
 def readBetFileToArray():
-    f = open('固定投注.txt', 'r')
+    f = open('data/固定投注.txt', 'r')
     bet_array_temp  = f.readlines()
     f.close()
 
@@ -22,5 +22,8 @@ def readBetFileToArray():
         bet_term[6] =  bet_array_temp[i].split('+')[1][0:2]
 
         bet_array.append(bet_term)
-        
+
+    #命令行提示
+    print '读取固定投注%d组'%(len(bet_array))
+    
     return bet_array

@@ -30,68 +30,14 @@ def redOrderCoumpute(data_array): #红球冷热温号全计算
                 redOrder[j] = redOrder[j+1]
                 redOrder[j+1] = tmp
     '''            
-    #---------------------------------------------------------------------------
-    #热号100
-    redOrder100 = [] #按序排列的球号
-    redTimes100 = [] #对应球号的次数
-    '''
-    for i in range(0, 33):
-        redTimes100.append(0) #次数初始化
-        redOrder100.append('%.2d'%(i+1)) #球号初始化
- 
-    for i in range(0, 100): #计算出出球次数－100
-        for j in range(1, 6+1):
-            redTimes100[int(data_array[i][j])-1] = redTimes100[int(data_array[i][j])-1] + 1
-
-    #从大到小排序
-    for i in range(0, 33):
-        for j in range(0, len(redTimes100)-1):
-            if redTimes100[j]<redTimes100[j+1]:
-                #替换－次数
-                tmp = redTimes100[j]
-                redTimes100[j] = redTimes100[j+1]
-                redTimes100[j+1] = tmp
-                #替换－球号
-                tmp = redOrder100[j]
-                redOrder100[j] = redOrder100[j+1]
-                redOrder100[j+1] = tmp
-    '''
-    #---------------------------------------------------------------------------
-    #热号50
-    redOrder50 = [] #按序排列的球号
-    redTimes50 = [] #对应球号的次数
-    '''
-    for i in range(0, 33):
-        redTimes50.append(0) #次数初始化
-        redOrder50.append('%.2d'%(i+1)) #球号初始化
- 
-    for i in range(0, 50): #计算出出球次数－50
-        for j in range(1, 6+1):
-            redTimes50[int(data_array[i][j])-1] = redTimes50[int(data_array[i][j])-1] + 1
-
-    #从大到小排序
-    for i in range(0, 33):
-        for j in range(0, len(redTimes50)-1):
-            if redTimes50[j]<redTimes50[j+1]:
-                #替换－次数
-                tmp = redTimes50[j]
-                redTimes50[j] = redTimes50[j+1]
-                redTimes50[j+1] = tmp
-                #替换－球号
-                tmp = redOrder50[j]
-                redOrder50[j] = redOrder50[j+1]
-                redOrder50[j+1] = tmp
-    '''
     #固定之
     redOrder = ['20','14','30','32','03','21','01','26','04','07','08',\
                 '18','17','16','27','05','31','11','12','10','25','13',\
                 '19','22','28','02','06','09','23','29','33','24','15']
     #print redOrder
-    #print redOrder100
-    #print redOrder50
-    return redOrder, redTimes, redOrder100, redTimes100, redOrder50, redTimes50
+    return redOrder, redTimes
 
-def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #开奖数据的参数计算
+def dataParaCompute(data_array, redOrder, bet_array): #开奖数据的参数计算
     '''根据开奖数据计算出各项参数，可用来计算百分比，也可以用来单独显示'''
     #为什么要单独算这个呢？是因为将来如果需要单独显示其中的某一项就可以直接用了
     data_para_array = [] #所有数据参数列表
@@ -100,7 +46,8 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
         #数据参数中的一期（共69项，与过滤条件数目相同） #0.9.7
         data_para_one = {'1号位':0,'2号位':0,'3号位':0,\
                          '4号位':0,'5号位':0,'6号位':0,\
-                         '合值':0,'奇数':0,'偶数':0,\
+                         '总和值':0,'前4位和值':0,'后4位和值':0,\
+                         '奇数':0,'偶数':0,\
                          '61间隔':0,'21间隔':0,'41间隔':0,'43间隔':0,'52间隔':0,'63间隔':0,'65间隔':0,'质数':0,\
                          '除3余0':0,'除3余1':0,'除3余2':0,\
                          '除4余0':0,'除4余1':0,'除4余2':0,'除4余3':0,\
@@ -111,11 +58,11 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
                          '区间1':0,'区间2':0,'区间3':0,\
                          '连号':0,'同尾':0,'开奖号码和':0,'尾号和':0,'AC值':0,\
                          '热号全':0,'温号全':0,'冷号全':0,\
-                         '热号100':0,'温号100':0,'冷号100':0,\
-                         '热号50':0,'温号50':0,'冷号50':0,\
                          '1期重号':0,'3期重号':0,'5期重号':0,'10期重号':0,'1期临近值':0,\
                          '3期个数':0,'5期个数':0,'7期个数':0,'9期个数':0,\
-                         '遗漏值和':0,'固定投注':0,'长列表':0,'往期数据':0} 
+                         '遗漏值和':0,'固定投注':0,'长列表':0,\
+                         '三分之一':0,'三分之二':0,'三分之三':0,\
+                         '往期数据':0} 
         #1号位
         data_para_one['1号位'] = int(data_array[i][1])
         #2号位
@@ -128,11 +75,21 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
         data_para_one['5号位'] = int(data_array[i][5])
         #6号位
         data_para_one['6号位'] = int(data_array[i][6])
-        #计算合值
+        #计算总和值
         sum_num = 0 
         for j in range(1, 6+1):
             sum_num = sum_num + int(data_array[i][j])
-        data_para_one['合值'] = sum_num
+        data_para_one['总和值'] = sum_num
+        #计算前4位和值
+        sum14_num = 0 
+        for j in range(1, 4+1):
+            sum14_num = sum14_num + int(data_array[i][j])
+        data_para_one['前4位和值'] = sum14_num
+        #计算后4位和值
+        sum36_num = 0 
+        for j in range(3, 6+1):
+            sum36_num = sum36_num + int(data_array[i][j])
+        data_para_one['后4位和值'] = sum36_num
         #计算奇数个数
         odd_num = 0 
         for j in range(1, 6+1):
@@ -405,43 +362,7 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
         for j in range(1, 6+1):
             if data_array[i][j] in redOrder[22:]:
                 cold_num = cold_num + 1
-        data_para_one['冷号全'] = cold_num
-        #计算热号100的个数
-        hot100_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder100[:11]: 
-                hot100_num = hot100_num + 1
-        data_para_one['热号100'] = hot100_num
-        #计算温号100个数
-        warm100_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder100[11:22]:
-                warm100_num = warm100_num + 1
-        data_para_one['温号100'] = warm100_num
-        #计算冷号100个数
-        cold100_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder100[22:]:
-                cold100_num = cold100_num + 1
-        data_para_one['冷号100'] = cold100_num
-        #计算热号50的个数
-        hot50_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder50[:11]: 
-                hot50_num = hot50_num + 1
-        data_para_one['热号50'] = hot50_num
-        #计算温号50个数
-        warm50_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder50[11:22]:
-                warm50_num = warm50_num + 1
-        data_para_one['温号50'] = warm50_num
-        #计算冷号50个数
-        cold50_num = 0
-        for j in range(1, 6+1):
-            if data_array[i][j] in redOrder50[22:]:
-                cold50_num = cold50_num + 1
-        data_para_one['冷号50'] = cold50_num        
+        data_para_one['冷号全'] = cold_num    
         #计算1期重号个数
         repeat1_num = 0
         if i==(len(data_array)-1): #第1期没有上一期
@@ -591,6 +512,30 @@ def dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array): #
             if data_array[i][j] in long_list:
                 long_list_num = long_list_num + 1
         data_para_one['长列表'] = long_list_num
+        #三分之一
+        div31_num = 0
+        div31_list = ['01','03','04','05','07','08','14','17',\
+                      '18','20','22','26','27','30','32']#共15个
+        for j in range(1, 6+1):
+            if data_array[i][j] in div31_list:
+                div31_num = div31_num + 1
+        data_para_one['三分之一'] = div31_num
+        #三分之二
+        div32_num = 0
+        div32_list = ['01','02','03','04','05','07','08','14',\
+                      '17','18','20','21','27','30','32']#共15个
+        for j in range(1, 6+1):
+            if data_array[i][j] in div32_list:
+                div32_num = div32_num + 1
+        data_para_one['三分之二'] = div32_num
+        #三分之三（只有204/619!!）
+        div33_num = 0
+        div33_list = ['02','03','04','05','08','14','17','18',\
+                      '20','21','22','26','27','30','32']#共15个
+        for j in range(1, 6+1):
+            if data_array[i][j] in div33_list:
+                div33_num = div33_num + 1
+        data_para_one['三分之三'] = div33_num         
         #往期数据
         num_old = 0           
         if i<(len(data_array)-1): #第1期没有往期数据
@@ -656,11 +601,21 @@ def percentCompute(filter_array, data_para_array): #百分比计算
                 if data_para_array[j]['6号位']>=min_num and data_para_array[j]['6号位']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '合值' in filter_array[i][1]:
+        if '总和值' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['合值']>=min_num and data_para_array[j]['合值']<=max_num:
+                if data_para_array[j]['总和值']>=min_num and data_para_array[j]['总和值']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
+            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
+        if '前4位和值' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['前4位和值']>=min_num and data_para_array[j]['前4位和值']<=max_num:
+                    count = count + 1
+            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
+        if '后4位和值' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['后4位和值']>=min_num and data_para_array[j]['后4位和值']<=max_num:
+                    count = count + 1
+            percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))             
         if '奇数' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['奇数']>=min_num and data_para_array[j]['奇数']<=max_num:
@@ -901,36 +856,6 @@ def percentCompute(filter_array, data_para_array): #百分比计算
                 if data_para_array[j]['冷号全']>=min_num and data_para_array[j]['冷号全']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '热号100' in filter_array[i][1]:
-            for j in range(0, 100):
-                if data_para_array[j]['热号100']>=min_num and data_para_array[j]['热号100']<=max_num:
-                    count = count + 1                    
-            percent_array[i] = '%.2f'%(count*100.0/100)
-        if '温号100' in filter_array[i][1]:
-            for j in range(0, 100):
-                if data_para_array[j]['温号100']>=min_num and data_para_array[j]['温号100']<=max_num:
-                    count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/100) 
-        if '冷号100' in filter_array[i][1]:
-            for j in range(0, 100):
-                if data_para_array[j]['冷号100']>=min_num and data_para_array[j]['冷号100']<=max_num:
-                    count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/100)
-        if '热号50' in filter_array[i][1]:
-            for j in range(0, 50):
-                if data_para_array[j]['热号50']>=min_num and data_para_array[j]['热号50']<=max_num:
-                    count = count + 1                    
-            percent_array[i] = '%.2f'%(count*100.0/50)
-        if '温号50' in filter_array[i][1]:
-            for j in range(0, 50):
-                if data_para_array[j]['温号50']>=min_num and data_para_array[j]['温号50']<=max_num:
-                    count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/50)
-        if '冷号50' in filter_array[i][1]:
-            for j in range(0, 50):
-                if data_para_array[j]['冷号50']>=min_num and data_para_array[j]['冷号50']<=max_num:
-                    count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/50)
         if '1期重号' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['1期重号']>=min_num and data_para_array[j]['1期重号']<=max_num:
@@ -990,7 +915,22 @@ def percentCompute(filter_array, data_para_array): #百分比计算
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['长列表']>=min_num and data_para_array[j]['长列表']<=max_num:
                     count = count + 1                
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))            
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
+        if '三分之一' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['三分之一']>=min_num and data_para_array[j]['三分之一']<=max_num:
+                    count = count + 1                
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
+        if '三分之二' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['三分之二']>=min_num and data_para_array[j]['三分之二']<=max_num:
+                    count = count + 1                
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
+        if '三分之三' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)):
+                if data_para_array[j]['三分之三']>=min_num and data_para_array[j]['三分之三']<=max_num:
+                    count = count + 1                
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))                
         if '往期数据' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
                 if data_para_array[j]['往期数据']>=min_num and data_para_array[j]['往期数据']<=max_num:
@@ -999,7 +939,7 @@ def percentCompute(filter_array, data_para_array): #百分比计算
     #返回数据    
     return percent_array
 
-def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, redOrder50, bet_array):#数据过滤
+def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#数据过滤
     '''过滤数据，并返回结果'''
     #最大值/最小值均为str格式。范围均包含本身
     min_num = int(filter_array[step-1][3].split('-')[0]) #最小值
@@ -1031,13 +971,27 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, 
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][5]<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if '合值' in filter_array[step-1][1]:
+    if '总和值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum_num = 0
             for j in range(0, 6):
                 sum_num = sum_num + data_f[i][j]
             if min_num<=sum_num<=max_num:
-                data_f_tmp.append(data_f[i])       
+                data_f_tmp.append(data_f[i])
+    if '前4位和值' in filter_array[step-1][1]:
+        for i in range(0, len(data_f)):
+            sum14_num = 0
+            for j in range(0, 4):
+                sum14_num = sum14_num + data_f[i][j]
+            if min_num<=sum14_num<=max_num:
+                data_f_tmp.append(data_f[i])
+    if '后4位和值' in filter_array[step-1][1]:
+        for i in range(0, len(data_f)):
+            sum36_num = 0
+            for j in range(2, 6):
+                sum36_num = sum36_num + data_f[i][j]
+            if min_num<=sum36_num<=max_num:
+                data_f_tmp.append(data_f[i])                 
     if '奇数' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             odd_num = 0 
@@ -1418,46 +1372,6 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, 
                     hot100_num = hot100_num + 1
             if min_num<=hot100_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '温号100' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            warm100_num = 0  
-            for j in range(0, 6):
-                if '%.2d'%(data_f[i][j]) in redOrder100[11:22]:
-                    warm100_num = warm100_num + 1
-            if min_num<=warm100_num<=max_num:
-                data_f_tmp.append(data_f[i])  
-    if '冷号100' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            cold100_num = 0  
-            for j in range(0, 6):
-                if '%.2d'%(data_f[i][j]) in redOrder100[22:]:
-                    cold100_num = cold100_num + 1
-            if min_num<=cold100_num<=max_num:
-                data_f_tmp.append(data_f[i])
-    if '热号50' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            hot50_num = 0  
-            for j in range(0, 6):
-                if '%.2d'%(data_f[i][j]) in redOrder50[:11]:
-                    hot50_num = hot50_num + 1
-            if min_num<=hot50_num<=max_num:
-                data_f_tmp.append(data_f[i])
-    if '温号50' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            warm50_num = 0  
-            for j in range(0, 6):
-                if '%.2d'%(data_f[i][j]) in redOrder50[11:22]:
-                    warm50_num = warm50_num + 1
-            if min_num<=warm50_num<=max_num:
-                data_f_tmp.append(data_f[i])
-    if '冷号50' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            cold50_num = 0  
-            for j in range(0, 6):
-                if '%.2d'%(data_f[i][j]) in redOrder50[22:]:
-                    cold50_num = cold50_num + 1
-            if min_num<=cold50_num<=max_num:
-                data_f_tmp.append(data_f[i])                
     if '1期重号' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             repeat1_num = 0  
@@ -1660,7 +1574,37 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, redOrder100, 
                 if '%.2d'%(data_f[i][j]) in long_list:
                     long_list_num = long_list_num + 1
             if min_num<=long_list_num<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+    if '三分之一' in filter_array[step-1][1]:
+        div31_list = ['01','03','04','05','07','08','14','17',\
+                     '18','20','22','26','27','30','32']#共15个        
+        for i in range(0, len(data_f)):
+            div31_num = 0
+            for j in range(0, 6):
+                if '%.2d'%(data_f[i][j]) in div31_list:
+                    div31_num = div31_num + 1
+            if min_num<=div31_num<=max_num:
+                data_f_tmp.append(data_f[i])
+    if '三分之二' in filter_array[step-1][1]: 
+        div32_list = ['01','02','03','04','05','07','08','14',\
+                      '17','18','20','21','27','30','32']#共15个        
+        for i in range(0, len(data_f)):
+            div32_num = 0
+            for j in range(0, 6):
+                if '%.2d'%(data_f[i][j]) in div32_list:
+                    div32_num = div32_num + 1
+            if min_num<=div32_num<=max_num:
+                data_f_tmp.append(data_f[i])
+    if '三分之三' in filter_array[step-1][1]: #只有204/614!!
+        div33_list = ['02','03','04','05','08','14','17','18',\
+                      '20','21','22','26','27','30','32']#共15个        
+        for i in range(0, len(data_f)):
+            div33_num = 0
+            for j in range(0, 6):
+                if '%.2d'%(data_f[i][j]) in div33_list:
+                    div33_num = div33_num + 1
+            if min_num<=div33_num<=max_num:                
+                data_f_tmp.append(data_f[i])                 
     if '往期数据' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             num_old = 0

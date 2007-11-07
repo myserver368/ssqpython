@@ -4,7 +4,7 @@
 
 def readDataFileToString(): #读取开奖数据
     '''读取开奖数据.txt，得到string变量'''
-    f = open('开奖数据.txt', 'r')
+    f = open('data/开奖数据.txt', 'r')
     data_string  = f.read()
     f.close()
 
@@ -12,7 +12,7 @@ def readDataFileToString(): #读取开奖数据
     
 def readDataFileToArray(): #读取开奖数据
     '''读取开奖数据.txt，得到list变量'''
-    f = open('开奖数据.txt', 'r')
+    f = open('data/开奖数据.txt', 'r')
     data_array_temp  = f.readlines()
     f.close()
 
@@ -31,10 +31,17 @@ def readDataFileToArray(): #读取开奖数据
         data_term[7] =  data_array_temp[i].split('+')[1][0:2]
 
         data_array.append(data_term)
+
+    #命令行提示
+    print '读取开奖数据%d组'%(len(data_array))
+    
     return data_array
 
 def writeStringToDataFile(data_string): #写入开奖数据
     '''将string写入开奖数据.txt中'''
-    f = open('开奖数据.txt', 'w')
+    f = open('data/开奖数据.txt', 'w')
     f.write(data_string)
     f.close()
+
+    #命令行提示
+    print '写入开奖数据'    

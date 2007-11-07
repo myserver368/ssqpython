@@ -35,19 +35,21 @@ class FrameReport(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
+        #命令行提示
+        print 'FrameReport启动'
         
         #读取开奖数据
         data_array = readDataFileToArray()
         #显示面板清空
         self.textCtrl1.Clear()
         #计算并得到数据参数
-        redOrder, redTimes, redOrder100, redTimes100, redOrder50, redTimes50 = redOrderCoumpute(data_array)
+        redOrder, redTimes = redOrderCoumpute(data_array)
         bet_array = readBetFileToArray()
-        data_para_array = dataParaCompute(data_array, redOrder, redOrder100, redOrder50, bet_array) 
+        data_para_array = dataParaCompute(data_array, redOrder, bet_array) 
         #最新一期的期号
         date = int(data_array[0][0])
-        for i in range(0, 3):
-            #判断是否存在预测数据（最近3期），即判断文件夹是否存在
+        for i in range(0, 10):
+            #判断是否存在预测数据（最近10期），即判断文件夹是否存在
             if '%s'%date in os.listdir(os.curdir):
                 #读取预测数据文件和使用到的过滤条件文件（数组格式）
                 predict_data, predict_filter, select_num =readPredictData(date)
@@ -108,7 +110,7 @@ class FrameReport(wx.Frame):
                 self.textCtrl1.AppendText('未找到%s期预测数据！\n\n'%date)
                 #期号-1，继续查找
                 date = date - 1
-        #如果3期之后还未找到，给一个提示
-        if date==(int(data_array[0][0])-3):
-            self.textCtrl1.AppendText('最近3期均无预测数据！')
+        #如果10期之后还未找到，给一个提示
+        if date==(int(data_array[0][0])-10):
+            self.textCtrl1.AppendText('目录下无最近10期预测数据！')
         
