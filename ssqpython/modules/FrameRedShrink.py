@@ -5,6 +5,7 @@
 
 import wx
 import os
+import random
 
 from DataFileIO import readDataFileToArray
 from PredictFileIO import readPredictData
@@ -17,9 +18,9 @@ def create(parent):
     return FrameRedShrink(parent)
 
 [wxID_FRAMEREDSHRINK, wxID_FRAMEREDSHRINKBUTTON1, wxID_FRAMEREDSHRINKBUTTON2, 
- wxID_FRAMEREDSHRINKBUTTON3, wxID_FRAMEREDSHRINKPANEL1, 
- wxID_FRAMEREDSHRINKTEXTCTRL1, 
-] = [wx.NewId() for _init_ctrls in range(6)]
+ wxID_FRAMEREDSHRINKBUTTON3, wxID_FRAMEREDSHRINKBUTTON4, 
+ wxID_FRAMEREDSHRINKPANEL1, wxID_FRAMEREDSHRINKTEXTCTRL1, 
+] = [wx.NewId() for _init_ctrls in range(7)]
 
 class FrameRedShrink(wx.Frame):
     def _init_ctrls(self, prnt):
@@ -48,21 +49,30 @@ class FrameRedShrink(wx.Frame):
 
         self.button2 = wx.Button(id=wxID_FRAMEREDSHRINKBUTTON2,
               label=u'\u56db\u5143\u7f29\u6c34', name='button2',
-              parent=self.panel1, pos=wx.Point(180, 272), size=wx.Size(75, 24),
+              parent=self.panel1, pos=wx.Point(130, 272), size=wx.Size(75, 24),
               style=0)
         self.button2.Bind(wx.EVT_BUTTON, self.OnButton2Button,
               id=wxID_FRAMEREDSHRINKBUTTON2)
 
         self.button3 = wx.Button(id=wxID_FRAMEREDSHRINKBUTTON3,
-              label=u'\u4fdd\u5b58\u6570\u636e', name='button3',
-              parent=self.panel1, pos=wx.Point(330, 272), size=wx.Size(75, 24),
+              label=u'\u4e2d6\u4fdd4', name='button3',
+              parent=self.panel1, pos=wx.Point(230, 272), size=wx.Size(75, 24),
               style=0)
         self.button3.Bind(wx.EVT_BUTTON, self.OnButton3Button,
               id=wxID_FRAMEREDSHRINKBUTTON3)
 
+        self.button4 = wx.Button(id=wxID_FRAMEREDSHRINKBUTTON4,
+              label=u'\u4fdd\u5b58\u6570\u636e', name='button4',
+              parent=self.panel1, pos=wx.Point(330, 272), size=wx.Size(75, 24),
+              style=0)
+        self.button4.Bind(wx.EVT_BUTTON, self.OnButton4Button,
+              id=wxID_FRAMEREDSHRINKBUTTON4)
+
     def __init__(self, parent):
         self._init_ctrls(parent)
-
+        #命令行提示
+        print 'FrameRedShrink启动'
+        
         #显示面板清空
         self.textCtrl1.Clear()
         #读取开奖数据
@@ -80,7 +90,7 @@ class FrameRedShrink(wx.Frame):
         data_s = predict_data #初始时，过滤后数据等于预测数据
         
     def OnButton1Button(self, event):
-        #第1个缩水条件
+        '''第1个缩水条件'''
         self.textCtrl1.AppendText('使用缩水条件1（均匀分布）\n')
         #求得第1个缩水条件
         t_num = [] #33个号码
@@ -107,9 +117,10 @@ class FrameRedShrink(wx.Frame):
         self.textCtrl1.AppendText('1区：%s\n'%(str(c_num)))
         self.textCtrl1.AppendText('2区：%s\n'%(str(w_num)))
         self.textCtrl1.AppendText('3区：%s\n'%(str(h_num)))
-        self.textCtrl1.AppendText('每一区分布个数在0～3之间\n')
+        self.textCtrl1.AppendText('每一区分布个数在0～4之间\n')
         #使用第1个缩水条件
-        global data_s #调用总的缩水后数据 
+        global data_s #调用总的缩水后数据
+        print len(data_s) #命令行显示一下
         data_s1 = [] #使用缩水条件1后的数据
         for i in range(0, len(data_s)):
             c_t = 0
@@ -122,8 +133,9 @@ class FrameRedShrink(wx.Frame):
                     w_t = w_t + 1
                 if h_num[t1] in data_s[i]:
                     h_t = h_t + 1
-            if 0<=c_t<=3 and 0<=w_t<=3 and 0<=h_t<=3:
+            if 0<=c_t<=4 and 0<=w_t<=4 and 0<=h_t<=4:
                 data_s1.append(data_s[i])
+        print len(data_s1) #命令行显示一下
         self.textCtrl1.AppendText('（缩水后的数据：%d组）\n'%len(data_s1))
         #传递值
         data_s = data_s1
@@ -140,7 +152,7 @@ class FrameRedShrink(wx.Frame):
         '''第2个缩水条件'''
         self.textCtrl1.AppendText('使用缩水条件2（四元缩水）\n')
         #求得第2个缩水条件
-        f = open('缩水条件.txt', 'r')
+        f = open('data/缩水条件.txt', 'r')
         s = f.readlines()
         f.close()
         m4 = []
@@ -152,7 +164,8 @@ class FrameRedShrink(wx.Frame):
         self.textCtrl1.AppendText('四元组个数：%d\n'%len(m4))
         self.textCtrl1.AppendText('每个四元组分布个数在0～2之间\n')
         #使用第2个缩水条件
-        global data_s #调用总的缩水后数据 
+        global data_s #调用总的缩水后数据
+        print len(data_s) #命令行显示一下
         data_s2 = [] #使用缩水条件2后的数据
         for i in range(0, len(data_s)):
             Judge = True
@@ -166,6 +179,7 @@ class FrameRedShrink(wx.Frame):
                     break
             if Judge:
                 data_s2.append(data_s[i])
+        print len(data_s2) #命令行显示一下
         self.textCtrl1.AppendText('（缩水后的数据：%d组）\n'%len(data_s2))
         #传递值      
         data_s = data_s2        
@@ -179,8 +193,48 @@ class FrameRedShrink(wx.Frame):
         event.Skip()
 
     def OnButton3Button(self, event):
-        '''保存数据'''
+        '''第3个缩水条件'''
+        self.textCtrl1.AppendText('使用缩水条件3（中6保4）\n')       
+        #使用第3个缩水条件
+        global data_s #调用总的缩水后数据
+        print len(data_s) #命令行显示一下
+        data_s3 = [] #使用缩水条件3后的数据
+        while True:
+            t = data_s[random.randint(0, len(data_s)-1)]
+            data_s3.append(t) #添加
+            data_s.remove(t) #删除
+            t_del = [] #要删除的数据
+            for i in range(0, len(data_s)): #循环添加
+                option = 0
+                for j in range(0, len(t)):
+                    if t[j] in data_s[i]:
+                        option = option + 1
+                if option>=4:
+                    t_del.append(data_s[i])
+            for i in range(0, len(t_del)): #循环删除
+                data_s.remove(t_del[i])
+            print len(data_s),len(data_s3) #命令行显示一下
+            #判断是否只剩最后一注
+            if len(data_s)==1:
+                data_s3.append(data_s[0])
+                break
+            #如果已经全部过滤完了，就直接退出
+            if len(data_s)==0:
+                break
+        self.textCtrl1.AppendText('（缩水后的数据：%d组）\n'%len(data_s3))
+        #传递值
+        data_s = data_s3
+        #判断是否组数大于10，若大于10则不显示
+        if len(data_s)>10:
+            pass
+        else:
+            for i in range(0, len(data_s)):
+                self.textCtrl1.AppendText('%s\n'%str(data_s[i]))
+        
+        event.Skip()
 
+    def OnButton4Button(self, event):
+        '''保存数据'''
         #写出生成数据
         f = open('%s/%s缩水数据.txt'%(date+1,date+1), 'w')
         #写数据

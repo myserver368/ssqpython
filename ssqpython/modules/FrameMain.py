@@ -13,6 +13,7 @@ from DataFileIO import readDataFileToString, readDataFileToArray, writeStringToD
 from BetFileIO import readBetFileToArray
 
 import FrameRedFiltrate
+import FrameRedFiltratePanel
 import FrameReport
 import FrameBlue
 import FrameDownload
@@ -20,17 +21,20 @@ import FrameRedShrink
 
 import os
 import random
+import sqlite3
 
 _max_height = 0   #滚动窗口高度
 data_string = ''  #数据（字符串格式）
 data_array = []   #数据（数组格式）
+choice_num = ''   #选择的号码
 
 def create(parent):
     return FrameMain(parent)
 
-[wxID_FRAMEMAIN, wxID_FRAMEMAINNOTEBOOK1, wxID_FRAMEMAINSCROLLEDWINDOW1, 
- wxID_FRAMEMAINSTATUSBAR1, wxID_FRAMEMAINTEXTCTRL1, 
-] = [wx.NewId() for _init_ctrls in range(5)]
+[wxID_FRAMEMAIN, wxID_FRAMEMAINNOTEBOOK1, wxID_FRAMEMAINPANEL1, 
+ wxID_FRAMEMAINSCROLLEDWINDOW1, wxID_FRAMEMAINSTATUSBAR1, 
+ wxID_FRAMEMAINTEXTCTRL1, 
+] = [wx.NewId() for _init_ctrls in range(6)]
 
 [wxID_FRAMEMAINMENUDATAITEMSADD, wxID_FRAMEMAINMENUDATAITEMSDEL, 
  wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD, wxID_FRAMEMAINMENUDATAITEMSEXIT, 
@@ -154,10 +158,18 @@ class FrameMain(wx.Frame):
     def _init_coll_notebook1_Pages(self, parent):
         # generated method, don't edit
 
-        parent.AddPage(imageId=-1, page=self.textCtrl1, select=True,
+        parent.AddPage(imageId=-1, page=self.textCtrl1, select=False,
               text=u'\u6570\u636e\u6587\u672c')
         parent.AddPage(imageId=-1, page=self.scrolledWindow1, select=False,
               text=u'\u5206\u5e03\u56fe')
+        parent.AddPage(imageId=-1, page=self.panel1, select=True,
+              text=u'Flash')
+
+    def _init_sizers(self):
+        # generated method, don't edit
+        self.boxSizer1 = wx.BoxSizer(orient=wx.VERTICAL)
+
+        self.panel1.SetSizer(self.boxSizer1)
 
     def _init_utils(self):
         # generated method, don't edit
@@ -211,11 +223,19 @@ class FrameMain(wx.Frame):
               style=wx.SUNKEN_BORDER | wx.HSCROLL | wx.VSCROLL)
         self.scrolledWindow1.Bind(wx.EVT_PAINT, self.OnScrolledWindow1Paint)
 
+        self.panel1 = wx.Panel(id=wxID_FRAMEMAINPANEL1, name='panel1',
+              parent=self.notebook1, pos=wx.Point(0, 0), size=wx.Size(604, 322),
+              style=wx.TAB_TRAVERSAL)
+
         self._init_coll_notebook1_Pages(self.notebook1)
+
+        self._init_sizers()
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        
+        #命令行提示
+        print 'FrameMain启动'
+                
         #启动时显示画面
         image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
         bmp = image.ConvertToBitmap()
@@ -229,13 +249,66 @@ class FrameMain(wx.Frame):
         self.textCtrl1.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) 
         self.textCtrl1.Clear()
         self.textCtrl1.AppendText(data_string)
-
+        
         #图表显示  
         data_array = readDataFileToArray()
         #_max_height = 15.4*len(data_array) - 190 #显示所有的（问题是拖动时有一些迟钝）
         _max_height = 15.4*100 - 190 #只显示最近100期的
         self.scrolledWindow1.SetScrollbars(1, 1, 890, _max_height, 0, _max_height) #定位于数据最下方
 
+        #创建Flash显示会调用到的xml
+        f = open('data/近期数据.xml', 'w')
+        f.write('<?xml version="1.0" encoding="utf-8"?>\n')
+        ##最近9期数据
+        f.write('<datas>\n') 
+        for i in range(0, 9):
+            f.write('    <data0%d>\n'%i)
+            f.write('        <data date=\'%s\''%data_array[i][0])
+            for j in range(1, 6+1):
+                f.write(' red0%d=\'%d\''%(j,int(data_array[i][j])))
+            f.write('/>\n')
+            f.write('    </data0%d>\n'%i)
+        f.write('</datas>\n')
+        ##每个号码持续未出现的期数
+        periods = [0]*33
+        for i in range(1, 33+1):
+            for j in range(0, len(data_array)):
+                if '%.2d'%i in data_array[j][1:6+1]:
+                    periods[i-1] = j
+                    break
+            
+        f.write('<periods>\n')
+        for i in range(1, 33+1):
+            f.write('    <period%.2d>\n'%i)
+            f.write('        <period period=\'%d\'/>\n'%periods[i-1])
+            f.write('    </period%.2d>\n'%i)
+        f.write('</periods>\n')
+        f.close()
+        
+        #Flash显示
+        if wx.Platform == '__WXMSW__': #必须是Windows平台
+            from wx.lib.flashwin import FlashWindow
+            
+            self.panel1.flash = FlashWindow(self.panel1, style=wx.SUNKEN_BORDER)
+            #self.panel1.flash.LoadMovie(0, 'file://' + os.path.abspath('flash/flash.swf'))
+            #像上面这样加file就不行
+            self.panel1.flash.LoadMovie(0, os.path.abspath('flash/flash.swf'))
+
+            self.boxSizer1.Add(self.panel1.flash, proportion=1, flag=wx.EXPAND)
+
+            self.boxSizer1.SetDimension(0, 0, 604, 322) #强迫sizer重新定位及刷新大小
+            
+            from wx.lib.flashwin import EVT_FSCommand #调用Flash的FSCommand
+            self.Bind(EVT_FSCommand, self.getFlashVars) #将Flash ocx的消息事件绑定到getFlashVars函数上
+                        
+        else:
+            #如果是其他平台，应该给出提示哦～
+            #根据google analytics的分析(20071010)
+            #98%的访问者是windows用户
+            #97%的访问者使用Flash
+            #92%的访问者来自中国
+            pass
+        
         #设置焦点（主要是为了捕捉键盘输入）
         self.SetFocus()
         
@@ -320,7 +393,9 @@ class FrameMain(wx.Frame):
 #-------------------------------------------------------------------------------
 #----数据----
     def OnMenuDataItemsdownloadMenu(self, event):
-        '''下载数据'''   
+        '''下载数据'''
+        global data_string, data_array
+        
         _FrameDownload = FrameDownload.create(None)
         _FrameDownload.Show()
 
@@ -398,10 +473,10 @@ class FrameMain(wx.Frame):
 #-------------------------------------------------------------------------------
 #----过滤----
    
-    def OnMenuFiltrateItemsfredMenu(self, event): #红球过滤
-        '''红球过滤功能'''
-        _FrameRedFiltrate = FrameRedFiltrate.create(None)
-        _FrameRedFiltrate.Show() 
+    def OnMenuFiltrateItemsfredMenu(self, event): #红球过滤选好面板
+        '''红球过滤功能选号面板'''
+        _FrameRedFiltratePanel = FrameRedFiltratePanel.create(None, choice_num)
+        _FrameRedFiltratePanel.Show() 
                 
         event.Skip()  
 
@@ -436,7 +511,7 @@ class FrameMain(wx.Frame):
 #----机选----
     def OnMenuRandomItemsdrMenu(self, event):
         '''直接机选'''
-        while True: #不做任何判断
+        while True: 
             num = []
             for i in range(0, 6): #得到随机数
                 num.append('%.2d'%(random.randint(1,33)))
@@ -445,11 +520,27 @@ class FrameMain(wx.Frame):
                 if num[i]>=num[i+1]:
                     big = False
                     break
-            if big==True:
-                num.append('%.2d'%(random.randint(1,16))) #机选篮球
+            #简单的判断，否则会出一些很不合理的值，比如01 02 03 04 05 06+BB
+            option = True
+            if int(num[0])>19: #1.一号位在1－19之间
+                option = False
+            if int(num[1])>24: #2.二号位在2－24之间
+                option = False
+            if int(num[2])>28: #3.三号位在3－28之间
+                option = False
+            if int(num[3])<5 or int(num[3])>31: #4.四号位在5－31之间
+                option = False
+            if int(num[4])<7: #5.五号位在7－32之间
+                option = False
+            if int(num[5])<11: #6.六号位在11－33之间
+                option = False
+            #机选篮球
+            if big==True and option==True:
+                num.append('%.2d'%(random.randint(1,16))) 
                 break
 
         str_num = '%s %s %s %s %s %s+%s'%(num[0],num[1],num[2],num[3],num[4],num[5],num[6])
+        print str_num #命令行显示一下
         dlg = wx.MessageDialog(self, '%s'%(str_num), 
                                '直接机选号码如下：',
                                wx.OK | wx.ICON_INFORMATION
@@ -471,12 +562,14 @@ class FrameMain(wx.Frame):
             s = f.readlines()                     
             f.close()
             #号码显示
-            dlg = wx.MessageDialog(self, '%s'%s[random.randint(0,len(s)-1)], 
+            num_t = random.randint(0,len(s)-1) #随机数
+            print s[num_t].split('\n')[0], num_t #命令行显示一下            
+            dlg = wx.MessageDialog(self, '%s'%s[num_t], 
                                    '过滤机选号码如下：（红）',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
-            dlg.Destroy()            
+            dlg.Destroy()
         except:
             #错误提示
             dlg = wx.MessageDialog(self, '未找到对应文件', 
@@ -499,7 +592,9 @@ class FrameMain(wx.Frame):
             s = f.readlines()                     
             f.close()
             #号码显示
-            dlg = wx.MessageDialog(self, '%s'%s[random.randint(0,len(s)-1)], 
+            num_t = random.randint(0,len(s)-1) #随机数
+            print s[num_t].split('\n')[0], num_t #命令行显示一下                 
+            dlg = wx.MessageDialog(self, '%s'%s[num_t], 
                                    '缩水机选号码如下：（红）',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
@@ -583,7 +678,7 @@ class FrameMain(wx.Frame):
 
     def OnMenuHelpItemsfaqMenu(self, event): #使用说明
         '''读取并显示说明文档文件'''
-        f = open("说明文档.txt", "r")
+        f = open("data/说明文档.txt", "r")
         msg = f.read()
         f.close()
 
@@ -596,7 +691,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = "双色蟒"
-        info.Version = "0.9.9"
+        info.Version = "1.0.0b"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",
@@ -669,4 +764,14 @@ class FrameMain(wx.Frame):
             self.OnMenuDataItemsexitMenu(event)
             
         event.Skip()
-        
+
+#-------------------------------------------------------------------------------
+#----Flash FSCommand传递值过来----
+    def getFlashVars(self, evt):
+        #print '选择的号码为',evt.args #即FSCommand中的第二个值（第一个值我现在还不会用）
+        if len(evt.args)!=0:
+            global choice_num #全局变量
+            choice_num = str(evt.args)
+            self.OnMenuFiltrateItemsfredMenu(evt) #打开选号面板
+            
+            

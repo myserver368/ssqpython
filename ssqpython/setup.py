@@ -13,7 +13,11 @@ setup(
                     "icon_resources": [(1, "SSQPython.ico")]
                 }
                    ],
-        data_files=[("pic", ["pic/logo.ico","pic/red.ico","pic/report.ico","pic/splash.jpg","pic/blue.ico","pic/advice.png"]),
-                    ("", ["固定投注.txt","过滤条件.txt","开奖数据.txt","说明文档.txt","代理设置.ini","缩水条件.txt"])
+        data_files=[("pic", ["pic/logo.ico","pic/red.ico","pic/report.ico",\
+                             "pic/splash.jpg","pic/blue.ico","pic/advice.png"]),
+                    ("data", ["data/固定投注.txt","data/过滤条件.txt","data/开奖数据.txt",\
+                              "data/说明文档.txt","data/代理设置.ini","data/缩水条件.txt"]),
+                    ("flash", ["flash/flash.swf"]),
+                    ("", ["readme.txt"])
                     ],
     )

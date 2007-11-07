@@ -30,8 +30,8 @@ class FrameBlue(wx.Frame):
               style=wx.DEFAULT_FRAME_STYLE,
               title=u'\u84dd\u7403\uff08\u4e0d\u5305\u62ec\u5feb\u4e50\u661f\u671f\u5929\u548c\u5feb\u4e50\u5047\u65e5\uff09')
         self.SetClientSize(wx.Size(600, 330))
-        self.SetIcon(wx.Icon(u'pic/blue.ico',
-              wx.BITMAP_TYPE_ICO))
+        self.SetIcon(wx.Icon(u'pic/blue.ico',wx.BITMAP_TYPE_ICO))
+        self.Bind(wx.EVT_CHAR, self.OnFrameBlueChar)
 
         self.panel1 = wx.Panel(id=wxID_FRAMEBLUEPANEL1, name='panel1',
               parent=self, pos=wx.Point(0, 0), size=wx.Size(600, 330),
@@ -60,7 +60,9 @@ class FrameBlue(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-
+        #命令行提示
+        print 'FrameBlue启动'
+        
         #调整位置
         self.Center()
         
@@ -70,6 +72,9 @@ class FrameBlue(wx.Frame):
         #蓝球数据统计及计算
         blue_times, blue_step, blue_drop = blueCoumpute(data_array)   
 
+        #设置焦点（主要是为了捕捉键盘输入）
+        self.SetFocus()
+        
     def OnPanel1Paint(self, event):
         #绘制图表
         pdc = wx.PaintDC(self.panel1)
@@ -194,6 +199,18 @@ class FrameBlue(wx.Frame):
         '''查看篮球推荐情况'''
         _FrameAdvice = FrameAdvice.create(None)
         _FrameAdvice.Show()
+        event.Skip()
+
+    def OnFrameBlueChar(self, event):
+        '''快捷键'''
+        #得到键值
+        keycode = event.GetKeyCode()
+        print keycode
+
+        #输入t就直接弹出推荐情况
+        if keycode==116: #t=116
+            self.OnBitmapButtonadviceButton(event)
+            
         event.Skip()
 
             

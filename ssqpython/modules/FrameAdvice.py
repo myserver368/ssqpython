@@ -32,7 +32,8 @@ class FrameAdvice(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        
+        #命令行提示
+        print 'FrameAdvice启动'
         
         data_array = readDataFileToArray() #读取开奖数据
         blue_times, blue_step, blue_drop = blueCoumpute(data_array) #读取篮球出球次数
@@ -337,6 +338,8 @@ class FrameAdvice(wx.Frame):
             #if in_advice[i]<=1:                 
             if in_advice[i]==min(in_advice): #是最小
                 min_num.append('%.2d'%(i+1))
+        #命令行显示一下
+        print '本期推荐因子为%d（5为满分）'%(max(in_advice))                
         #print max_num
         #print min_num
         advice_num = [] #推荐号码
@@ -348,9 +351,12 @@ class FrameAdvice(wx.Frame):
         for i in range(0, 16):
             if '%.2d'%(i+1) in max_num:
                 advice_num.append('%.2d'%(i+1))
-                
+
         advice_text = advice_text + '\n%s\n'%(str(advice_num))
+        advice_text = advice_text + '本期推荐因子为%d（5为满分）'%(max(in_advice))
         self.textCtrl1.AppendText(advice_text) #显示最终推荐
+        #命令行显示一下
+        print '推荐号码为:%s'%advice_text
 
 
 

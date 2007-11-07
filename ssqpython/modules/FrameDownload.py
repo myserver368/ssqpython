@@ -29,6 +29,9 @@ class FrameDownload(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
+        #命令行提示
+        print 'FrameDownload启动'
+        
         #下载数据时有可能延迟，显示一个画面
         image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
         bmp = image.ConvertToBitmap()
@@ -71,7 +74,7 @@ class FrameDownload(wx.Frame):
         if using_proxy==True:
             self.textCtrl1.AppendText('访问网络中……（使用代理服务）\n')            
             #访问“代理设置.ini”得到参数
-            f = open('代理设置.ini', 'r')
+            f = open('data/代理设置.ini', 'r')
             s = f.readlines()
             f.close()
             server = s[1].split(':')[1][:-1] #服务器

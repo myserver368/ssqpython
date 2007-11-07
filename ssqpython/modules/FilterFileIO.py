@@ -4,10 +4,13 @@
 
 def readFilterFileToArray(): #读取过滤参数
     '''将过滤条件.txt读出，并转换成数组'''
-    f = open('过滤条件.txt', 'r')
+    f = open('data/过滤条件.txt', 'r')
     filter_array_temp = f.readlines()
     f.close()
 
+    #显示一下
+    print '读取过滤条件%d组'%(len(filter_array_temp)-3)
+    
     for i in range(0, len(filter_array_temp)):
         if '==BEGIN==' in filter_array_temp[i]:
             pos_begin = i #开始位置
