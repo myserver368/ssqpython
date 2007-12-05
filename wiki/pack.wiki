@@ -1,5 +1,5 @@
 #summary 打包说明
-#labels 打包,exe,py2exe
+#labels py2exe
 
 = Introduction =
 
