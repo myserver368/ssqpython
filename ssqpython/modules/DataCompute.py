@@ -1,320 +1,333 @@
-# -*- coding: cp936 -*-
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 # otherrrr@gmail.com
-# Êı¾İ¼ÆËã
+# æ•°æ®è®¡ç®—
 
-def redOrderCoumpute(data_array): #ºìÇòÀäÈÈÎÂºÅÈ«¼ÆËã
-    '''¼ÆËãºìÇò¸÷¸öÇòµÄ³öÇò´ÎÊı£¬²¢°´ÕÕ´ÎÊıÅÅÁĞ'''
+import time
+import locale
+
+def redOrderCoumpute(data_array): #çº¢çƒå†·çƒ­æ¸©å·å…¨è®¡ç®—
+    '''è®¡ç®—çº¢çƒå„ä¸ªçƒçš„å‡ºçƒæ¬¡æ•°ï¼Œå¹¶æŒ‰ç…§æ¬¡æ•°æ’åˆ—'''
+    #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+    print (u'è®¡ç®—çº¢çƒå†·çƒ­æ¸©å·ï¼ˆå›ºå®šï¼‰').encode(locale.getdefaultlocale()[1])
     #---------------------------------------------------------------------------
-    #ÈÈºÅÈ«
-    redOrder = [] #°´ĞòÅÅÁĞµÄÇòºÅ
-    redTimes = [] #¶ÔÓ¦ÇòºÅµÄ´ÎÊı
+    #çƒ­å·å…¨
+    redOrder = [] #æŒ‰åºæ’åˆ—çš„çƒå·
+    redTimes = [] #å¯¹åº”çƒå·çš„æ¬¡æ•°
+    for i in range(0, 33):
+        redTimes.append(0) #æ¬¡æ•°åˆå§‹åŒ–
+    for i in range(0, len(data_array)): #è®¡ç®—å‡ºå‡ºçƒæ¬¡æ•°
+        for j in range(1, 6+1):
+            redTimes[int(data_array[i][j])-1] = redTimes[int(data_array[i][j])-1] + 1    
     '''
     for i in range(0, 33):
-        redTimes.append(0) #´ÎÊı³õÊ¼»¯
-        redOrder.append('%.2d'%(i+1)) #ÇòºÅ³õÊ¼»¯
+        redTimes.append(0) #æ¬¡æ•°åˆå§‹åŒ–
+        redOrder.append('%.2d'%(i+1)) #çƒå·åˆå§‹åŒ–
  
-    for i in range(0, len(data_array)): #¼ÆËã³ö³öÇò´ÎÊı
+    for i in range(0, len(data_array)): #è®¡ç®—å‡ºå‡ºçƒæ¬¡æ•°
         for j in range(1, 6+1):
             redTimes[int(data_array[i][j])-1] = redTimes[int(data_array[i][j])-1] + 1
 
-    #´Ó´óµ½Ğ¡ÅÅĞò
+    #ä»å¤§åˆ°å°æ’åº
     for i in range(0, 33):
         for j in range(0, len(redTimes)-1):
             if redTimes[j]<redTimes[j+1]:
-                #Ìæ»»£­´ÎÊı
+                #æ›¿æ¢ï¼æ¬¡æ•°
                 tmp = redTimes[j]
                 redTimes[j] = redTimes[j+1]
                 redTimes[j+1] = tmp
-                #Ìæ»»£­ÇòºÅ
+                #æ›¿æ¢ï¼çƒå·
                 tmp = redOrder[j]
                 redOrder[j] = redOrder[j+1]
                 redOrder[j+1] = tmp
     '''            
-    #¹Ì¶¨Ö®
+    #å›ºå®šä¹‹ï¼ˆåŸå› ï¼šå¦‚æœå‡ºç°æ¸©å·å‡çº§çƒ­å·çš„æƒ…å†µï¼Œåˆ™ç»Ÿè®¡ä¸Šæœ‰å¤±è¯¯ï¼‰
     redOrder = ['20','14','30','32','03','21','01','26','04','07','08',\
                 '18','17','16','27','05','31','11','12','10','25','13',\
                 '19','22','28','02','06','09','23','29','33','24','15']
     #print redOrder
     return redOrder, redTimes
 
-def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
-    '''¸ù¾İ¿ª½±Êı¾İ¼ÆËã³ö¸÷Ïî²ÎÊı£¬¿ÉÓÃÀ´¼ÆËã°Ù·Ö±È£¬Ò²¿ÉÒÔÓÃÀ´µ¥¶ÀÏÔÊ¾'''
-    #ÎªÊ²Ã´Òªµ¥¶ÀËãÕâ¸öÄØ£¿ÊÇÒòÎª½«À´Èç¹ûĞèÒªµ¥¶ÀÏÔÊ¾ÆäÖĞµÄÄ³Ò»Ïî¾Í¿ÉÒÔÖ±½ÓÓÃÁË
-    data_para_array = [] #ËùÓĞÊı¾İ²ÎÊıÁĞ±í
+def dataParaCompute(data_array, redOrder, bet_array): #å¼€å¥–æ•°æ®çš„å‚æ•°è®¡ç®—
+    '''æ ¹æ®å¼€å¥–æ•°æ®è®¡ç®—å‡ºå„é¡¹å‚æ•°ï¼Œå¯ç”¨æ¥è®¡ç®—ç™¾åˆ†æ¯”ï¼Œä¹Ÿå¯ä»¥ç”¨æ¥å•ç‹¬æ˜¾ç¤º'''
+    #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+    print (u'è®¡ç®—å¼€å¥–æ•°æ®çš„å‚æ•°').encode(locale.getdefaultlocale()[1])
+    #ä¸ºä»€ä¹ˆè¦å•ç‹¬ç®—è¿™ä¸ªå‘¢ï¼Ÿæ˜¯å› ä¸ºå°†æ¥å¦‚æœéœ€è¦å•ç‹¬æ˜¾ç¤ºå…¶ä¸­çš„æŸä¸€é¡¹å°±å¯ä»¥ç›´æ¥ç”¨äº†
+    data_para_array = [] #æ‰€æœ‰æ•°æ®å‚æ•°åˆ—è¡¨
 
     for i in range(0, len(data_array)):
-        #Êı¾İ²ÎÊıÖĞµÄÒ»ÆÚ£¨¹²69Ïî£¬Óë¹ıÂËÌõ¼şÊıÄ¿ÏàÍ¬£© #0.9.7
-        data_para_one = {'1ºÅÎ»':0,'2ºÅÎ»':0,'3ºÅÎ»':0,\
-                         '4ºÅÎ»':0,'5ºÅÎ»':0,'6ºÅÎ»':0,\
-                         '×ÜºÍÖµ':0,'Ç°4Î»ºÍÖµ':0,'ºó4Î»ºÍÖµ':0,\
-                         'ÆæÊı':0,'Å¼Êı':0,\
-                         '61¼ä¸ô':0,'21¼ä¸ô':0,'41¼ä¸ô':0,'43¼ä¸ô':0,'52¼ä¸ô':0,'63¼ä¸ô':0,'65¼ä¸ô':0,'ÖÊÊı':0,\
-                         '³ı3Óà0':0,'³ı3Óà1':0,'³ı3Óà2':0,\
-                         '³ı4Óà0':0,'³ı4Óà1':0,'³ı4Óà2':0,'³ı4Óà3':0,\
-                         '³ı5Óà0':0,'³ı5Óà1':0,'³ı5Óà2':0,'³ı5Óà3':0,'³ı5Óà4':0,\
-                         '³ı6Óà0':0,'³ı6Óà1':0,'³ı6Óà2':0,'³ı6Óà3':0,'³ı6Óà4':0,'³ı6Óà5':0,\
-                         '³ı7Óà0':0,'³ı7Óà1':0,'³ı7Óà2':0,'³ı7Óà3':0,'³ı7Óà4':0,'³ı7Óà5':0,'³ı7Óà6':0,\
-                         '¸ßÖµÇø':0,'µÍÖµÇø':0,\
-                         'Çø¼ä1':0,'Çø¼ä2':0,'Çø¼ä3':0,\
-                         'Á¬ºÅ':0,'Í¬Î²':0,'¿ª½±ºÅÂëºÍ':0,'Î²ºÅºÍ':0,'ACÖµ':0,\
-                         'ÈÈºÅÈ«':0,'ÎÂºÅÈ«':0,'ÀäºÅÈ«':0,\
-                         '1ÆÚÖØºÅ':0,'3ÆÚÖØºÅ':0,'5ÆÚÖØºÅ':0,'10ÆÚÖØºÅ':0,'1ÆÚÁÙ½üÖµ':0,\
-                         '3ÆÚ¸öÊı':0,'5ÆÚ¸öÊı':0,'7ÆÚ¸öÊı':0,'9ÆÚ¸öÊı':0,\
-                         'ÒÅÂ©ÖµºÍ':0,'¹Ì¶¨Í¶×¢':0,'³¤ÁĞ±í':0,\
-                         'Èı·ÖÖ®Ò»':0,'Èı·ÖÖ®¶ş':0,'Èı·ÖÖ®Èı':0,\
-                         'ÍùÆÚÊı¾İ':0} 
-        #1ºÅÎ»
-        data_para_one['1ºÅÎ»'] = int(data_array[i][1])
-        #2ºÅÎ»
-        data_para_one['2ºÅÎ»'] = int(data_array[i][2])
-        #3ºÅÎ»
-        data_para_one['3ºÅÎ»'] = int(data_array[i][3])
-        #4ºÅÎ»
-        data_para_one['4ºÅÎ»'] = int(data_array[i][4])
-        #5ºÅÎ»
-        data_para_one['5ºÅÎ»'] = int(data_array[i][5])
-        #6ºÅÎ»
-        data_para_one['6ºÅÎ»'] = int(data_array[i][6])
-        #¼ÆËã×ÜºÍÖµ
+        #æ•°æ®å‚æ•°ä¸­çš„ä¸€æœŸï¼ˆå…±72é¡¹ï¼Œä¸è¿‡æ»¤æ¡ä»¶æ•°ç›®ç›¸åŒï¼‰ #1.0.3
+        data_para_one = {'1å·ä½':0,'2å·ä½':0,'3å·ä½':0,\
+                         '4å·ä½':0,'5å·ä½':0,'6å·ä½':0,\
+                         'æ€»å’Œå€¼':0,'å‰4ä½å’Œå€¼':0,'å4ä½å’Œå€¼':0,\
+                         'å¥‡æ•°':0,'å¶æ•°':0,\
+                         '61é—´éš”':0,'21é—´éš”':0,'41é—´éš”':0,'43é—´éš”':0,'52é—´éš”':0,'63é—´éš”':0,'65é—´éš”':0,'è´¨æ•°':0,\
+                         'é™¤3ä½™0':0,'é™¤3ä½™1':0,'é™¤3ä½™2':0,\
+                         'é™¤4ä½™0':0,'é™¤4ä½™1':0,'é™¤4ä½™2':0,'é™¤4ä½™3':0,\
+                         'é™¤5ä½™0':0,'é™¤5ä½™1':0,'é™¤5ä½™2':0,'é™¤5ä½™3':0,'é™¤5ä½™4':0,\
+                         'é™¤6ä½™0':0,'é™¤6ä½™1':0,'é™¤6ä½™2':0,'é™¤6ä½™3':0,'é™¤6ä½™4':0,'é™¤6ä½™5':0,\
+                         'é™¤7ä½™0':0,'é™¤7ä½™1':0,'é™¤7ä½™2':0,'é™¤7ä½™3':0,'é™¤7ä½™4':0,'é™¤7ä½™5':0,'é™¤7ä½™6':0,\
+                         'é«˜å€¼åŒº':0,'ä½å€¼åŒº':0,\
+                         'åŒºé—´1':0,'åŒºé—´2':0,'åŒºé—´3':0,\
+                         'è¿å·':0,'åŒå°¾':0,'å¼€å¥–å·ç å’Œ':0,'å°¾å·å’Œ':0,'ACå€¼':0,\
+                         'çƒ­å·å…¨':0,'æ¸©å·å…¨':0,'å†·å·å…¨':0,\
+                         '1æœŸé‡å·':0,'3æœŸé‡å·':0,'5æœŸé‡å·':0,'1æœŸä¸´è¿‘å€¼':0,\
+                         '3æœŸä¸ªæ•°':0,'5æœŸä¸ªæ•°':0,'7æœŸä¸ªæ•°':0,'9æœŸä¸ªæ•°':0,\
+                         'é—æ¼å€¼å’Œ':0,'å›ºå®šæŠ•æ³¨':0,'é•¿åˆ—è¡¨':0,\
+                         'ä¸‰åˆ†ä¹‹ä¸€':0,'ä¸‰åˆ†ä¹‹äºŒ':0,'ä¸‰åˆ†ä¹‹ä¸‰':0,\
+                         'å¾€æœŸæ•°æ®':0} 
+        #1å·ä½
+        data_para_one['1å·ä½'] = int(data_array[i][1])
+        #2å·ä½
+        data_para_one['2å·ä½'] = int(data_array[i][2])
+        #3å·ä½
+        data_para_one['3å·ä½'] = int(data_array[i][3])
+        #4å·ä½
+        data_para_one['4å·ä½'] = int(data_array[i][4])
+        #5å·ä½
+        data_para_one['5å·ä½'] = int(data_array[i][5])
+        #6å·ä½
+        data_para_one['6å·ä½'] = int(data_array[i][6])
+        #è®¡ç®—æ€»å’Œå€¼
         sum_num = 0 
         for j in range(1, 6+1):
             sum_num = sum_num + int(data_array[i][j])
-        data_para_one['×ÜºÍÖµ'] = sum_num
-        #¼ÆËãÇ°4Î»ºÍÖµ
+        data_para_one['æ€»å’Œå€¼'] = sum_num
+        #è®¡ç®—å‰4ä½å’Œå€¼
         sum14_num = 0 
         for j in range(1, 4+1):
             sum14_num = sum14_num + int(data_array[i][j])
-        data_para_one['Ç°4Î»ºÍÖµ'] = sum14_num
-        #¼ÆËãºó4Î»ºÍÖµ
+        data_para_one['å‰4ä½å’Œå€¼'] = sum14_num
+        #è®¡ç®—å4ä½å’Œå€¼
         sum36_num = 0 
         for j in range(3, 6+1):
             sum36_num = sum36_num + int(data_array[i][j])
-        data_para_one['ºó4Î»ºÍÖµ'] = sum36_num
-        #¼ÆËãÆæÊı¸öÊı
+        data_para_one['å4ä½å’Œå€¼'] = sum36_num
+        #è®¡ç®—å¥‡æ•°ä¸ªæ•°
         odd_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j])%2==1:
                 odd_num = odd_num + 1
-        data_para_one['ÆæÊı'] = odd_num
-        #¼ÆËãÅ¼Êı¸öÊı
+        data_para_one['å¥‡æ•°'] = odd_num
+        #è®¡ç®—å¶æ•°ä¸ªæ•°
         even_num = 6 - odd_num
-        data_para_one['Å¼Êı'] = even_num
-        #¼ÆËã61¼ä¸ô£¨×î´ó¼ä¸ôÖµ£©
+        data_para_one['å¶æ•°'] = even_num
+        #è®¡ç®—61é—´éš”ï¼ˆæœ€å¤§é—´éš”å€¼ï¼‰
         max_space_61 = int(data_array[i][6]) - int(data_array[i][1]) 
-        data_para_one['61¼ä¸ô'] = max_space_61
-        #¼ÆËã21¼ä¸ô
+        data_para_one['61é—´éš”'] = max_space_61
+        #è®¡ç®—21é—´éš”
         max_space_21 = int(data_array[i][2]) - int(data_array[i][1]) 
-        data_para_one['21¼ä¸ô'] = max_space_21        
-        #¼ÆËã41¼ä¸ô
+        data_para_one['21é—´éš”'] = max_space_21        
+        #è®¡ç®—41é—´éš”
         max_space_41 = int(data_array[i][4]) - int(data_array[i][1]) 
-        data_para_one['41¼ä¸ô'] = max_space_41
-        #¼ÆËã43¼ä¸ô
+        data_para_one['41é—´éš”'] = max_space_41
+        #è®¡ç®—43é—´éš”
         max_space_43 = int(data_array[i][4]) - int(data_array[i][3]) 
-        data_para_one['43¼ä¸ô'] = max_space_43        
-        #¼ÆËã52¼ä¸ô
+        data_para_one['43é—´éš”'] = max_space_43        
+        #è®¡ç®—52é—´éš”
         max_space_52 = int(data_array[i][5]) - int(data_array[i][2]) 
-        data_para_one['52¼ä¸ô'] = max_space_52
-        #¼ÆËã63¼ä¸ô
+        data_para_one['52é—´éš”'] = max_space_52
+        #è®¡ç®—63é—´éš”
         max_space_63 = int(data_array[i][6]) - int(data_array[i][3]) 
-        data_para_one['63¼ä¸ô'] = max_space_63
-        #¼ÆËã65¼ä¸ô
+        data_para_one['63é—´éš”'] = max_space_63
+        #è®¡ç®—65é—´éš”
         max_space_65 = int(data_array[i][6]) - int(data_array[i][5]) 
-        data_para_one['65¼ä¸ô'] = max_space_65           
-        #¼ÆËãÖÊÊı¸öÊı
+        data_para_one['65é—´éš”'] = max_space_65           
+        #è®¡ç®—è´¨æ•°ä¸ªæ•°
         prime_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,3,5,7,11,13,17,19,23,29,31]:
                 prime_num = prime_num + 1   
-        data_para_one['ÖÊÊı'] = prime_num  
-        #¼ÆËã³ı3Óà0¸öÊı
+        data_para_one['è´¨æ•°'] = prime_num  
+        #è®¡ç®—é™¤3ä½™0ä¸ªæ•°
         residue_num30 = 0 
         for j in range(1, 6+1):
-            if int(data_array[i][j]) in [3,6,9,12,15,18,21,24,27,30,33]: #Õâ¸öÒ²¿ÉÒÔ»»³É#if int(data_array[i][j])%3==0:
+            if int(data_array[i][j]) in [3,6,9,12,15,18,21,24,27,30,33]: #è¿™ä¸ªä¹Ÿå¯ä»¥æ¢æˆ#if int(data_array[i][j])%3==0:
                 residue_num30 = residue_num30 + 1
-        data_para_one['³ı3Óà0'] = residue_num30       
-        #¼ÆËã³ı3Óà1¸öÊı
+        data_para_one['é™¤3ä½™0'] = residue_num30       
+        #è®¡ç®—é™¤3ä½™1ä¸ªæ•°
         residue_num31 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [1,4,7,10,13,16,19,22,25,28,31]:
                 residue_num31 = residue_num31 + 1
-        data_para_one['³ı3Óà1'] = residue_num31  
-        #¼ÆËã³ı3Óà2¸öÊı
+        data_para_one['é™¤3ä½™1'] = residue_num31  
+        #è®¡ç®—é™¤3ä½™2ä¸ªæ•°
         residue_num32 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,5,8,11,14,17,20,23,26,29,32]:
                 residue_num32 = residue_num32 + 1
-        data_para_one['³ı3Óà2'] = residue_num32
-        #¼ÆËã³ı4Óà0¸öÊı
+        data_para_one['é™¤3ä½™2'] = residue_num32
+        #è®¡ç®—é™¤4ä½™0ä¸ªæ•°
         residue_num40 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [4,8,12,16,20,24,28,32]:
                 residue_num40 = residue_num40 + 1
-        data_para_one['³ı4Óà0'] = residue_num40
-        #¼ÆËã³ı4Óà1¸öÊı
+        data_para_one['é™¤4ä½™0'] = residue_num40
+        #è®¡ç®—é™¤4ä½™1ä¸ªæ•°
         residue_num41 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [1,5,9,13,17,21,25,29,33]:
                 residue_num41 = residue_num41 + 1
-        data_para_one['³ı4Óà1'] = residue_num41
-        #¼ÆËã³ı4Óà2¸öÊı
+        data_para_one['é™¤4ä½™1'] = residue_num41
+        #è®¡ç®—é™¤4ä½™2ä¸ªæ•°
         residue_num42 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,6,10,14,18,22,26,30]:
                 residue_num42 = residue_num42 + 1
-        data_para_one['³ı4Óà2'] = residue_num42
-        #¼ÆËã³ı4Óà3¸öÊı
+        data_para_one['é™¤4ä½™2'] = residue_num42
+        #è®¡ç®—é™¤4ä½™3ä¸ªæ•°
         residue_num43 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [3,7,11,15,19,23,27,31]:
                 residue_num43 = residue_num43 + 1
-        data_para_one['³ı4Óà3'] = residue_num43        
-        #¼ÆËã³ı5Óà0¸öÊı
+        data_para_one['é™¤4ä½™3'] = residue_num43        
+        #è®¡ç®—é™¤5ä½™0ä¸ªæ•°
         residue_num50 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [5,10,15,20,25,30]:
                 residue_num50 = residue_num50 + 1
-        data_para_one['³ı5Óà0'] = residue_num50
-        #¼ÆËã³ı5Óà1¸öÊı
+        data_para_one['é™¤5ä½™0'] = residue_num50
+        #è®¡ç®—é™¤5ä½™1ä¸ªæ•°
         residue_num51 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [1,6,11,16,21,26,31]:
                 residue_num51 = residue_num51 + 1
-        data_para_one['³ı5Óà1'] = residue_num51
-        #¼ÆËã³ı5Óà2¸öÊı
+        data_para_one['é™¤5ä½™1'] = residue_num51
+        #è®¡ç®—é™¤5ä½™2ä¸ªæ•°
         residue_num52 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,7,12,17,22,27,32]:
                 residue_num52 = residue_num52 + 1
-        data_para_one['³ı5Óà2'] = residue_num52
-        #¼ÆËã³ı5Óà3¸öÊı
+        data_para_one['é™¤5ä½™2'] = residue_num52
+        #è®¡ç®—é™¤5ä½™3ä¸ªæ•°
         residue_num53 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [3,8,13,18,23,28,33]:
                 residue_num53 = residue_num53 + 1
-        data_para_one['³ı5Óà3'] = residue_num53
-        #¼ÆËã³ı5Óà4¸öÊı
+        data_para_one['é™¤5ä½™3'] = residue_num53
+        #è®¡ç®—é™¤5ä½™4ä¸ªæ•°
         residue_num54 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [4,9,14,19,24,29]:
                 residue_num54 = residue_num54 + 1
-        data_para_one['³ı5Óà4'] = residue_num54
-        #¼ÆËã³ı6Óà0¸öÊı
+        data_para_one['é™¤5ä½™4'] = residue_num54
+        #è®¡ç®—é™¤6ä½™0ä¸ªæ•°
         residue_num60 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [6,12,18,24,30]:
                 residue_num60 = residue_num60 + 1
-        data_para_one['³ı6Óà0'] = residue_num60
-        #¼ÆËã³ı6Óà1¸öÊı
+        data_para_one['é™¤6ä½™0'] = residue_num60
+        #è®¡ç®—é™¤6ä½™1ä¸ªæ•°
         residue_num61 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [1,7,13,19,25,31]:
                 residue_num61 = residue_num61 + 1
-        data_para_one['³ı6Óà1'] = residue_num61
-        #¼ÆËã³ı6Óà2¸öÊı
+        data_para_one['é™¤6ä½™1'] = residue_num61
+        #è®¡ç®—é™¤6ä½™2ä¸ªæ•°
         residue_num62 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,8,14,20,26,32]:
                 residue_num62 = residue_num62 + 1
-        data_para_one['³ı6Óà2'] = residue_num62
-        #¼ÆËã³ı6Óà3¸öÊı
+        data_para_one['é™¤6ä½™2'] = residue_num62
+        #è®¡ç®—é™¤6ä½™3ä¸ªæ•°
         residue_num63 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [3,9,15,21,27,33]:
                 residue_num63 = residue_num63 + 1
-        data_para_one['³ı6Óà3'] = residue_num63
-        #¼ÆËã³ı6Óà4¸öÊı
+        data_para_one['é™¤6ä½™3'] = residue_num63
+        #è®¡ç®—é™¤6ä½™4ä¸ªæ•°
         residue_num64 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [4,10,16,22,28]:
                 residue_num64 = residue_num64 + 1
-        data_para_one['³ı6Óà4'] = residue_num64
-        #¼ÆËã³ı6Óà5¸öÊı
+        data_para_one['é™¤6ä½™4'] = residue_num64
+        #è®¡ç®—é™¤6ä½™5ä¸ªæ•°
         residue_num65 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [5,11,17,23,29]:
                 residue_num65 = residue_num65 + 1
-        data_para_one['³ı6Óà5'] = residue_num65         
-        #¼ÆËã³ı7Óà0¸öÊı
+        data_para_one['é™¤6ä½™5'] = residue_num65         
+        #è®¡ç®—é™¤7ä½™0ä¸ªæ•°
         residue_num70 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [7,14,21,28]:
                 residue_num70 = residue_num70 + 1
-        data_para_one['³ı7Óà0'] = residue_num70
-        #¼ÆËã³ı7Óà1¸öÊı
+        data_para_one['é™¤7ä½™0'] = residue_num70
+        #è®¡ç®—é™¤7ä½™1ä¸ªæ•°
         residue_num71 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [1,8,15,22,29]:
                 residue_num71 = residue_num71 + 1
-        data_para_one['³ı7Óà1'] = residue_num71
-        #¼ÆËã³ı7Óà2¸öÊı
+        data_para_one['é™¤7ä½™1'] = residue_num71
+        #è®¡ç®—é™¤7ä½™2ä¸ªæ•°
         residue_num72 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [2,9,16,23,30]:
                 residue_num72 = residue_num72 + 1
-        data_para_one['³ı7Óà2'] = residue_num72
-        #¼ÆËã³ı7Óà3¸öÊı
+        data_para_one['é™¤7ä½™2'] = residue_num72
+        #è®¡ç®—é™¤7ä½™3ä¸ªæ•°
         residue_num73 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [3,10,17,24,31]:
                 residue_num73 = residue_num73 + 1
-        data_para_one['³ı7Óà3'] = residue_num73
-        #¼ÆËã³ı7Óà4¸öÊı
+        data_para_one['é™¤7ä½™3'] = residue_num73
+        #è®¡ç®—é™¤7ä½™4ä¸ªæ•°
         residue_num74 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [4,11,18,25,32]:
                 residue_num74 = residue_num74 + 1
-        data_para_one['³ı7Óà4'] = residue_num74
-        #¼ÆËã³ı7Óà5¸öÊı
+        data_para_one['é™¤7ä½™4'] = residue_num74
+        #è®¡ç®—é™¤7ä½™5ä¸ªæ•°
         residue_num75 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [5,12,19,26,33]:
                 residue_num75 = residue_num75 + 1
-        data_para_one['³ı7Óà5'] = residue_num75
-        #¼ÆËã³ı7Óà6¸öÊı
+        data_para_one['é™¤7ä½™5'] = residue_num75
+        #è®¡ç®—é™¤7ä½™6ä¸ªæ•°
         residue_num76 = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j]) in [6,13,20,27]:
                 residue_num76 = residue_num76 + 1
-        data_para_one['³ı7Óà6'] = residue_num76         
-        #¼ÆËã¸ßÖµÇøÖĞµÄ³öºÅ¸öÊı
+        data_para_one['é™¤7ä½™6'] = residue_num76         
+        #è®¡ç®—é«˜å€¼åŒºä¸­çš„å‡ºå·ä¸ªæ•°
         high_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j])>17:
                 high_num = high_num + 1   
-        data_para_one['¸ßÖµÇø'] = high_num  
-        #¼ÆËãµÍÖµÇøÖĞµÄ³öºÅ¸öÊı
+        data_para_one['é«˜å€¼åŒº'] = high_num  
+        #è®¡ç®—ä½å€¼åŒºä¸­çš„å‡ºå·ä¸ªæ•°
         low_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j])<17:
                 low_num = low_num + 1  
-        data_para_one['µÍÖµÇø'] = low_num 
-        #¼ÆËãÇø¼ä1ÖĞµÄ³öºÅ¸öÊı
+        data_para_one['ä½å€¼åŒº'] = low_num 
+        #è®¡ç®—åŒºé—´1ä¸­çš„å‡ºå·ä¸ªæ•°
         area1_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j])<12:
                 area1_num = area1_num + 1
-        data_para_one['Çø¼ä1'] = area1_num
-        #¼ÆËãÇø¼ä2ÖĞµÄ³öºÅ¸öÊı
+        data_para_one['åŒºé—´1'] = area1_num
+        #è®¡ç®—åŒºé—´2ä¸­çš„å‡ºå·ä¸ªæ•°
         area2_num = 0 
         for j in range(1, 6+1):
             if 11<int(data_array[i][j])<23:
                 area2_num = area2_num + 1        
-        data_para_one['Çø¼ä2'] = area2_num  
-        #¼ÆËãÇø¼ä3ÖĞµÄ³öºÅ¸öÊı
+        data_para_one['åŒºé—´2'] = area2_num  
+        #è®¡ç®—åŒºé—´3ä¸­çš„å‡ºå·ä¸ªæ•°
         area3_num = 0 
         for j in range(1, 6+1):
             if int(data_array[i][j])>22:
                 area3_num = area3_num + 1
-        data_para_one['Çø¼ä3'] = area3_num  
-        #¼ÆËãÁ¬ºÅ¸öÊı
+        data_para_one['åŒºé—´3'] = area3_num  
+        #è®¡ç®—è¿å·ä¸ªæ•°
         continuous_num = 0 
         for j in range(1, 5+1):
             if int(data_array[i][j+1])-int(data_array[i][j])==1:
                 continuous_num = continuous_num + 1 
-        data_para_one['Á¬ºÅ'] = continuous_num
-        #¼ÆËãÍ¬Î²×éÊı
+        data_para_one['è¿å·'] = continuous_num
+        #è®¡ç®—åŒå°¾ç»„æ•°
         same_nail_num = 0
-        times = [] #´ÎÊı
+        times = [] #æ¬¡æ•°
         for j in range(0, 9+1):
             times.append(0) 
         for j in range(1, 6+1):
@@ -322,169 +335,169 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
         for j in range(0, 9+1):
             if times[j]>1:
                 same_nail_num = same_nail_num + 1
-        data_para_one['Í¬Î²'] = same_nail_num
-        #¼ÆËã¿ª½±ºÅÂëºÍ£¨¿ª½±ºÅÂë²ğ·ÖÎª12¸öÊı×Ö£¬ËüÃÇµÄºÍ£©
+        data_para_one['åŒå°¾'] = same_nail_num
+        #è®¡ç®—å¼€å¥–å·ç å’Œï¼ˆå¼€å¥–å·ç æ‹†åˆ†ä¸º12ä¸ªæ•°å­—ï¼Œå®ƒä»¬çš„å’Œï¼‰
         sum_12 = 0
         for j in range(1, 6+1):
             sum_12 = sum_12 + int(data_array[i][j])%10
             sum_12 = sum_12 + int(data_array[i][j])/10
-        data_para_one['¿ª½±ºÅÂëºÍ'] = sum_12
-        #¼ÆËãÎ²ºÅºÍ
+        data_para_one['å¼€å¥–å·ç å’Œ'] = sum_12
+        #è®¡ç®—å°¾å·å’Œ
         nail_sum = 0
         for j in range(1, 6+1):
             nail_sum = nail_sum + int(data_array[i][j])%10
-        data_para_one['Î²ºÅºÍ'] = nail_sum
-        #¼ÆËãACÖµ·¶Î§
+        data_para_one['å°¾å·å’Œ'] = nail_sum
+        #è®¡ç®—ACå€¼èŒƒå›´
         ac_num = 0
-        details = [] #¾ßÌåÊı¾İ£¬×î¶àÎª15
+        details = [] #å…·ä½“æ•°æ®ï¼Œæœ€å¤šä¸º15
         for t1 in range(1, 6+1):
             for t2 in range(t1+1, 6+1):
                 if (int(data_array[i][t2]) - int(data_array[i][t1])) in details:
                     continue
                 else:
                     details.append(int(data_array[i][t2]) - int(data_array[i][t1]))
-        ac_num = len(details) - (6-1) #ÎªÊ²Ã´ÊÇ(6-1)£¬È¥°Ù¶ÈÒ»ÏÂ°É£¬ÕâÀïÖ»ÄÜ¸æËßÄã£¬6ÊÇÒòÎªÓĞ6¸öºìÇò£¬ºÇºÇ
-        data_para_one['ACÖµ'] = ac_num   
-        #¼ÆËãÈÈºÅÈ«¸öÊı
+        ac_num = len(details) - (6-1) #ä¸ºä»€ä¹ˆæ˜¯(6-1)ï¼Œå»ç™¾åº¦ä¸€ä¸‹å§ï¼Œè¿™é‡Œåªèƒ½å‘Šè¯‰ä½ ï¼Œ6æ˜¯å› ä¸ºæœ‰6ä¸ªçº¢çƒï¼Œå‘µå‘µ
+        data_para_one['ACå€¼'] = ac_num   
+        #è®¡ç®—çƒ­å·å…¨ä¸ªæ•°
         hot_num = 0
         for j in range(1, 6+1):
-            if data_array[i][j] in redOrder[:11]: #ÈÈºÅ¾ÍÊÇ³öÇò´ÎÊıÅÅÔÚÇ°11Î»µÄ
+            if data_array[i][j] in redOrder[:11]: #çƒ­å·å°±æ˜¯å‡ºçƒæ¬¡æ•°æ’åœ¨å‰11ä½çš„
                 hot_num = hot_num + 1
-        data_para_one['ÈÈºÅÈ«'] = hot_num
-        #¼ÆËãÎÂºÅÈ«¸öÊı
+        data_para_one['çƒ­å·å…¨'] = hot_num
+        #è®¡ç®—æ¸©å·å…¨ä¸ªæ•°
         warm_num = 0
         for j in range(1, 6+1):
             if data_array[i][j] in redOrder[11:22]:
                 warm_num = warm_num + 1
-        data_para_one['ÎÂºÅÈ«'] = warm_num
-        #¼ÆËãÀäºÅÈ«¸öÊı
+        data_para_one['æ¸©å·å…¨'] = warm_num
+        #è®¡ç®—å†·å·å…¨ä¸ªæ•°
         cold_num = 0
         for j in range(1, 6+1):
             if data_array[i][j] in redOrder[22:]:
                 cold_num = cold_num + 1
-        data_para_one['ÀäºÅÈ«'] = cold_num    
-        #¼ÆËã1ÆÚÖØºÅ¸öÊı
+        data_para_one['å†·å·å…¨'] = cold_num    
+        #è®¡ç®—1æœŸé‡å·ä¸ªæ•°
         repeat1_num = 0
-        if i==(len(data_array)-1): #µÚ1ÆÚÃ»ÓĞÉÏÒ»ÆÚ
+        if i==(len(data_array)-1): #ç¬¬1æœŸæ²¡æœ‰ä¸Šä¸€æœŸ
             repeat1_num = 0
         else:
             for j in range(1, 6+1):
                 if data_array[i][j] in data_array[i+1][1:6+1]:
                     repeat1_num = repeat1_num + 1
-        data_para_one['1ÆÚÖØºÅ'] = repeat1_num
-        #¼ÆËã3ÆÚÖØºÅ¸öÊı
+        data_para_one['1æœŸé‡å·'] = repeat1_num
+        #è®¡ç®—3æœŸé‡å·ä¸ªæ•°
         repeat3_num = 0
-        if i>=(len(data_array)-3): #Ç°3ÆÚÃ»ÓĞÇ°3ÆÚ
+        if i>=(len(data_array)-3): #å‰3æœŸæ²¡æœ‰å‰3æœŸ
             repeat3_num = 0
         else:
-            l3_a = data_array[i+1][1:6+1] + data_array[i+2][1:6+1] + data_array[i+3][1:6+1] #3ÆÚºÏ²¢ÁĞ±í
-            l3_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ3ÆÚºÏ²¢ÁĞ±í
+            l3_a = data_array[i+1][1:6+1] + data_array[i+2][1:6+1] + data_array[i+3][1:6+1] #3æœŸåˆå¹¶åˆ—è¡¨
+            l3_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„3æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l3_a)):
                 if l3_a[j] not in l3_a[j+1:]:
                     l3_d.append(l3_a[j])    
             for j in range(1, 6+1):
                 if data_array[i][j] in l3_d:
                     repeat3_num = repeat3_num + 1
-        data_para_one['3ÆÚÖØºÅ'] = repeat3_num        
-        #¼ÆËã5ÆÚÖØºÅ¸öÊı
+        data_para_one['3æœŸé‡å·'] = repeat3_num        
+        #è®¡ç®—5æœŸé‡å·ä¸ªæ•°
         repeat5_num = 0
-        if i>=(len(data_array)-5): #Ç°5ÆÚÃ»ÓĞÇ°5ÆÚ
+        if i>=(len(data_array)-5): #å‰5æœŸæ²¡æœ‰å‰5æœŸ
             repeat5_num = 0
         else:
             l5_a = data_array[i+1][1:6+1] + data_array[i+2][1:6+1] + data_array[i+3][1:6+1] +\
-                   data_array[i+4][1:6+1] + data_array[i+5][1:6+1]#5ÆÚºÏ²¢ÁĞ±í
-            l5_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ5ÆÚºÏ²¢ÁĞ±í
+                   data_array[i+4][1:6+1] + data_array[i+5][1:6+1]#5æœŸåˆå¹¶åˆ—è¡¨
+            l5_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„5æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l5_a)):
                 if l5_a[j] not in l5_a[j+1:]:
                     l5_d.append(l5_a[j])    
             for j in range(1, 6+1):
                 if data_array[i][j] in l5_d:
                     repeat5_num = repeat5_num + 1
-        data_para_one['5ÆÚÖØºÅ'] = repeat5_num
-        #¼ÆËã10ÆÚÖØºÅ¸öÊı£¨¼´5ÆÚÖ®Ç°µÄ5ÆÚ£©
+        data_para_one['5æœŸé‡å·'] = repeat5_num
+        #è®¡ç®—10æœŸé‡å·ä¸ªæ•°ï¼ˆå³5æœŸä¹‹å‰çš„5æœŸï¼‰
         repeat10_num = 0
-        if i>=(len(data_array)-10): #Ç°10ÆÚÃ»ÓĞÇ°10ÆÚ
+        if i>=(len(data_array)-10): #å‰10æœŸæ²¡æœ‰å‰10æœŸ
             repeat10_num = 0
         else:
             l10_a = data_array[i+1+5][1:6+1] + data_array[i+2+5][1:6+1] + data_array[i+3+5][1:6+1] +\
-                   data_array[i+4+5][1:6+1] + data_array[i+5+5][1:6+1]#5ÆÚÖ®Ç°µÄ5ÆÚºÏ²¢ÁĞ±í
-            l10_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ5ÆÚºÏ²¢ÁĞ±í
+                   data_array[i+4+5][1:6+1] + data_array[i+5+5][1:6+1]#5æœŸä¹‹å‰çš„5æœŸåˆå¹¶åˆ—è¡¨
+            l10_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„5æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l10_a)):
                 if l10_a[j] not in l10_a[j+1:]:
                     l10_d.append(l10_a[j])    
             for j in range(1, 6+1):
                 if data_array[i][j] in l10_d:
                     repeat10_num = repeat10_num + 1
-        data_para_one['10ÆÚÖØºÅ'] = repeat10_num
-        #1ÆÚÁÙ½üÖµ
+        data_para_one['10æœŸé‡å·'] = repeat10_num
+        #1æœŸä¸´è¿‘å€¼
         near_num = 0
-        if i==(len(data_array)-1): #µÚ1ÆÚÃ»ÓĞÉÏÒ»ÆÚ
+        if i==(len(data_array)-1): #ç¬¬1æœŸæ²¡æœ‰ä¸Šä¸€æœŸ
             near_num = 0
         else:
-            tmp_list = [] #ÁÙÊ±Êı×é£¬½«ÉÏÒ»ÆÚÖĞËùÓĞ£«1/£­1µÄÊı´æÆğÀ´£¬×¢ÒâÊÇintĞÍ
+            tmp_list = [] #ä¸´æ—¶æ•°ç»„ï¼Œå°†ä¸Šä¸€æœŸä¸­æ‰€æœ‰ï¼‹1/ï¼1çš„æ•°å­˜èµ·æ¥ï¼Œæ³¨æ„æ˜¯intå‹
             for j in range(1, 6+1):
                 tmp_list.append(int(data_array[i+1][j])-1)
                 tmp_list.append(int(data_array[i+1][j])+1)
             for j in range(1, 6+1):
                 if int(data_array[i][j]) in tmp_list:
                     near_num = near_num + 1
-        data_para_one['1ÆÚÁÙ½üÖµ'] = near_num
-        #3ÆÚ¸öÊı
+        data_para_one['1æœŸä¸´è¿‘å€¼'] = near_num
+        #3æœŸä¸ªæ•°
         num_l3 = 0
-        if i>=(len(data_array)-2): #Ç°2ÆÚ²»ĞĞÑ½
+        if i>=(len(data_array)-2): #å‰2æœŸä¸è¡Œå‘€
             num_l3 = 0
         else:
-            l3_a = data_array[i][1:6+1] + data_array[i+1][1:6+1] + data_array[i+2][1:6+1] #3ÆÚºÏ²¢ÁĞ±í
-            l3_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ3ÆÚºÏ²¢ÁĞ±í
+            l3_a = data_array[i][1:6+1] + data_array[i+1][1:6+1] + data_array[i+2][1:6+1] #3æœŸåˆå¹¶åˆ—è¡¨
+            l3_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„3æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l3_a)):
                 if l3_a[j] not in l3_a[j+1:]:
                     l3_d.append(l3_a[j])
             num_l3 = len(l3_d)
-        data_para_one['3ÆÚ¸öÊı'] = num_l3
-        #5ÆÚ¸öÊı
+        data_para_one['3æœŸä¸ªæ•°'] = num_l3
+        #5æœŸä¸ªæ•°
         num_l5 = 0
-        if i>=(len(data_array)-4): #Ç°4ÆÚ²»ĞĞÑ½
+        if i>=(len(data_array)-4): #å‰4æœŸä¸è¡Œå‘€
             num_l5 = 0
         else:
             l5_a = data_array[i][1:6+1] + data_array[i+1][1:6+1] + data_array[i+2][1:6+1] +\
-                   data_array[i+3][1:6+1] + data_array[i+4][1:6+1]#5ÆÚºÏ²¢ÁĞ±í
-            l5_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ5ÆÚºÏ²¢ÁĞ±í
+                   data_array[i+3][1:6+1] + data_array[i+4][1:6+1]#5æœŸåˆå¹¶åˆ—è¡¨
+            l5_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„5æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l5_a)):
                 if l5_a[j] not in l5_a[j+1:]:
                     l5_d.append(l5_a[j])
             num_l5 = len(l5_d)
-        data_para_one['5ÆÚ¸öÊı'] = num_l5
-        #7ÆÚ¸öÊı
+        data_para_one['5æœŸä¸ªæ•°'] = num_l5
+        #7æœŸä¸ªæ•°
         num_l7 = 0
-        if i>=(len(data_array)-6): #Ç°6ÆÚ²»ĞĞÑ½
+        if i>=(len(data_array)-6): #å‰6æœŸä¸è¡Œå‘€
             num_l7 = 0
         else:
             l7_a = data_array[i][1:6+1] + data_array[i+1][1:6+1] + data_array[i+2][1:6+1] +\
                    data_array[i+3][1:6+1] + data_array[i+4][1:6+1] + data_array[i+5][1:6+1] +\
-                   data_array[i+6][1:6+1]#7ÆÚºÏ²¢ÁĞ±í
-            l7_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ7ÆÚºÏ²¢ÁĞ±í
+                   data_array[i+6][1:6+1]#7æœŸåˆå¹¶åˆ—è¡¨
+            l7_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„7æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l7_a)):
                 if l7_a[j] not in l7_a[j+1:]:
                     l7_d.append(l7_a[j])
             num_l7 = len(l7_d)
-        data_para_one['7ÆÚ¸öÊı'] = num_l7
-        #9ÆÚ¸öÊı
+        data_para_one['7æœŸä¸ªæ•°'] = num_l7
+        #9æœŸä¸ªæ•°
         num_l9 = 0
-        if i>=(len(data_array)-8): #Ç°8ÆÚ²»ĞĞÑ½
+        if i>=(len(data_array)-8): #å‰8æœŸä¸è¡Œå‘€
             num_l9 = 0
         else:
             l9_a = data_array[i][1:6+1] + data_array[i+1][1:6+1] + data_array[i+2][1:6+1] +\
                    data_array[i+3][1:6+1] + data_array[i+4][1:6+1] + data_array[i+5][1:6+1] +\
-                   data_array[i+6][1:6+1] + data_array[i+7][1:6+1] + data_array[i+8][1:6+1]#9ÆÚºÏ²¢ÁĞ±í
-            l9_d = [] #É¾³ıÏàÍ¬ÏîÖ®ºóµÄ9ÆÚºÏ²¢ÁĞ±í
+                   data_array[i+6][1:6+1] + data_array[i+7][1:6+1] + data_array[i+8][1:6+1]#9æœŸåˆå¹¶åˆ—è¡¨
+            l9_d = [] #åˆ é™¤ç›¸åŒé¡¹ä¹‹åçš„9æœŸåˆå¹¶åˆ—è¡¨
             for j in range(0, len(l9_a)):
                 if l9_a[j] not in l9_a[j+1:]:
                     l9_d.append(l9_a[j])
             num_l9 = len(l9_d)
-        data_para_one['9ÆÚ¸öÊı'] = num_l9
-        #ÒÅÂ©ÖµºÍ
+        data_para_one['9æœŸä¸ªæ•°'] = num_l9
+        #é—æ¼å€¼å’Œ
         miss_sum = 0
-        if i>=(len(data_array)-26): #Ç°26ÆÚÎŞ
+        if i>=(len(data_array)-26): #å‰26æœŸæ— 
             miss_sum = 0
         else:
             for j in range(1, 6+1):
@@ -492,57 +505,58 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
                     if data_array[i][j] in data_array[k][1:6+1]:
                         miss_sum = miss_sum + (k-i)
                         break
-        data_para_one['ÒÅÂ©ÖµºÍ'] = miss_sum
-        #¹Ì¶¨Í¶×¢¹ıÂË
+        data_para_one['é—æ¼å€¼å’Œ'] = miss_sum
+        #å›ºå®šæŠ•æ³¨è¿‡æ»¤
         num_fix = 0
         for j in range(0, len(bet_array)):
-            num_tmp = 0 #ÁÙÊ±×î´óÖµ
+            num_tmp = 0 #ä¸´æ—¶æœ€å¤§å€¼
             for k in range(0, 6):
                 if bet_array[j][k] in data_array[i][1:6+1]:
                     num_tmp = num_tmp + 1
             if num_tmp>num_fix:
                 num_fix = num_tmp
-        data_para_one['¹Ì¶¨Í¶×¢'] = num_fix
-        #³¤ÁĞ±í
+        data_para_one['å›ºå®šæŠ•æ³¨'] = num_fix
+        #é•¿åˆ—è¡¨
         long_list_num = 0
         long_list = ['01','02','05','07','10','11','13','14',\
                      '17','18','19','20','21','22','23','24',\
-                     '26','27','28','29','30','32','33']#5×é¹²23¸ö
+                     '26','27','28','29','30','32','33']#5ç»„å…±23ä¸ª
         for j in range(1, 6+1):
             if data_array[i][j] in long_list:
                 long_list_num = long_list_num + 1
-        data_para_one['³¤ÁĞ±í'] = long_list_num
-        #Èı·ÖÖ®Ò»
+        data_para_one['é•¿åˆ—è¡¨'] = long_list_num
+        #ä¸‰åˆ†ä¹‹ä¸€
         div31_num = 0
         div31_list = ['01','03','04','05','07','08','14','17',\
-                      '18','20','22','26','27','30','32']#¹²15¸ö
+                      '18','20','22','26','27','30','32']#å…±15ä¸ª
         for j in range(1, 6+1):
             if data_array[i][j] in div31_list:
                 div31_num = div31_num + 1
-        data_para_one['Èı·ÖÖ®Ò»'] = div31_num
-        #Èı·ÖÖ®¶ş
+        data_para_one['ä¸‰åˆ†ä¹‹ä¸€'] = div31_num
+        #ä¸‰åˆ†ä¹‹äºŒ
         div32_num = 0
         div32_list = ['01','02','03','04','05','07','08','14',\
-                      '17','18','20','21','27','30','32']#¹²15¸ö
+                      '17','18','20','21','27','30','32']#å…±15ä¸ª
         for j in range(1, 6+1):
             if data_array[i][j] in div32_list:
                 div32_num = div32_num + 1
-        data_para_one['Èı·ÖÖ®¶ş'] = div32_num
-        #Èı·ÖÖ®Èı£¨Ö»ÓĞ204/619!!£©
+        data_para_one['ä¸‰åˆ†ä¹‹äºŒ'] = div32_num
+        #ä¸‰åˆ†ä¹‹ä¸‰ï¼ˆåªæœ‰204/619!!ï¼‰
         div33_num = 0
         div33_list = ['02','03','04','05','08','14','17','18',\
-                      '20','21','22','26','27','30','32']#¹²15¸ö
+                      '20','21','22','26','27','30','32']#å…±15ä¸ª
         for j in range(1, 6+1):
             if data_array[i][j] in div33_list:
                 div33_num = div33_num + 1
-        data_para_one['Èı·ÖÖ®Èı'] = div33_num         
-        #ÍùÆÚÊı¾İ
+        data_para_one['ä¸‰åˆ†ä¹‹ä¸‰'] = div33_num         
+        #å¾€æœŸæ•°æ®
+        ##å…¶å®ç±»ä¼¼è¿™ç§çš„ï¼Œéƒ½åº”è¯¥ä»ç¬¬100æœŸå¼€å§‹ç®—åšæ­£å¸¸æ•°æ®
         num_old = 0           
-        if i<(len(data_array)-1): #µÚ1ÆÚÃ»ÓĞÍùÆÚÊı¾İ
-            for j in range(i+1, len(data_array)-1): #ÕâÀïÌ«ÂıÁË
-                num_tmp = 0 #ÁÙÊ±×î´óÖµ
+        if i<(len(data_array)-1): #ç¬¬1æœŸæ²¡æœ‰å¾€æœŸæ•°æ®
+            for j in range(i+1, len(data_array)-1): #è¿™é‡Œå¤ªæ…¢äº†
+                num_tmp = 0 #ä¸´æ—¶æœ€å¤§å€¼
                 for k in range(1, 6+1):
-                    #¼ÓÒ»¸öÅĞ¶Ï£¬¼Ó¿ìËÙ¶È
+                    #åŠ ä¸€ä¸ªåˆ¤æ–­ï¼ŒåŠ å¿«é€Ÿåº¦
                     if k==4 and num_tmp<num_old - 2:
                         break                    
                     if data_array[i][k] in data_array[j][1:6+1]:
@@ -551,448 +565,452 @@ def dataParaCompute(data_array, redOrder, bet_array): #¿ª½±Êı¾İµÄ²ÎÊı¼ÆËã
                     num_old = num_tmp
         else:
             num_old = 0
-        data_para_one['ÍùÆÚÊı¾İ'] = num_old
-        #Ìí¼Óµ½×ÜÁĞ±íÖĞ
+        data_para_one['å¾€æœŸæ•°æ®'] = num_old
+        #æ·»åŠ åˆ°æ€»åˆ—è¡¨ä¸­
         data_para_array.append(data_para_one)
     
     return data_para_array
 
-def percentCompute(filter_array, data_para_array): #°Ù·Ö±È¼ÆËã
-    '''¸ù¾İ¹ıÂË²ÎÊı¼ÆËã¹ıÂËÕıÈ·³Ì¶ÈµÄ°Ù·Ö±È'''
-    #°Ù·Ö±È
+def percentCompute(filter_array, data_para_array): #ç™¾åˆ†æ¯”è®¡ç®—
+    '''æ ¹æ®è¿‡æ»¤å‚æ•°è®¡ç®—è¿‡æ»¤æ­£ç¡®ç¨‹åº¦çš„ç™¾åˆ†æ¯”'''
+    #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+    #print u'è®¡ç®—è¿‡æ»¤å‚æ•°çš„ç™¾åˆ†æ¯”'
+    #ç™¾åˆ†æ¯”
     percent_array = []
     
     for i in range(0, len(filter_array)):
-        #³õÊ¼»¯Îª0
+        #åˆå§‹åŒ–ä¸º0
         percent_array.append(0) 
-        #×î´óÖµ/×îĞ¡Öµ¾ùÎªstr¸ñÊ½¡£·¶Î§¾ù°üº¬±¾Éí
-        min_num = int(filter_array[i][3].split('-')[0]) #×îĞ¡Öµ
-        max_num = int(filter_array[i][3].split('-')[1]) #×î´óÖµ
-        count = 0 #¼ÆÊı  
-        #¸÷¹ıÂËÌõ¼ş
-        if '1ºÅÎ»' in filter_array[i][1]:
+        #æœ€å¤§å€¼/æœ€å°å€¼å‡ä¸ºstræ ¼å¼ã€‚èŒƒå›´å‡åŒ…å«æœ¬èº«
+        min_num = int(filter_array[i][3].split('-')[0]) #æœ€å°å€¼
+        max_num = int(filter_array[i][3].split('-')[1]) #æœ€å¤§å€¼
+        count = 0 #è®¡æ•°  
+        #å„è¿‡æ»¤æ¡ä»¶
+        if '1å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['1ºÅÎ»']>=min_num and data_para_array[j]['1ºÅÎ»']<=max_num:
+                if data_para_array[j]['1å·ä½']>=min_num and data_para_array[j]['1å·ä½']<=max_num:
                     count = count + 1
-            #¼ÆËã°Ù·Ö±È
+            #è®¡ç®—ç™¾åˆ†æ¯”
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))                     
-        if '2ºÅÎ»' in filter_array[i][1]:
+        if '2å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['2ºÅÎ»']>=min_num and data_para_array[j]['2ºÅÎ»']<=max_num:
+                if data_para_array[j]['2å·ä½']>=min_num and data_para_array[j]['2å·ä½']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '3ºÅÎ»' in filter_array[i][1]:
+        if '3å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['3ºÅÎ»']>=min_num and data_para_array[j]['3ºÅÎ»']<=max_num:
+                if data_para_array[j]['3å·ä½']>=min_num and data_para_array[j]['3å·ä½']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '4ºÅÎ»' in filter_array[i][1]:
+        if '4å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['4ºÅÎ»']>=min_num and data_para_array[j]['4ºÅÎ»']<=max_num:
+                if data_para_array[j]['4å·ä½']>=min_num and data_para_array[j]['4å·ä½']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '5ºÅÎ»' in filter_array[i][1]:
+        if '5å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['5ºÅÎ»']>=min_num and data_para_array[j]['5ºÅÎ»']<=max_num:
+                if data_para_array[j]['5å·ä½']>=min_num and data_para_array[j]['5å·ä½']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '6ºÅÎ»' in filter_array[i][1]:
+        if '6å·ä½' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['6ºÅÎ»']>=min_num and data_para_array[j]['6ºÅÎ»']<=max_num:
+                if data_para_array[j]['6å·ä½']>=min_num and data_para_array[j]['6å·ä½']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '×ÜºÍÖµ' in filter_array[i][1]:
+        if 'æ€»å’Œå€¼' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['×ÜºÍÖµ']>=min_num and data_para_array[j]['×ÜºÍÖµ']<=max_num:
+                if data_para_array[j]['æ€»å’Œå€¼']>=min_num and data_para_array[j]['æ€»å’Œå€¼']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if 'Ç°4Î»ºÍÖµ' in filter_array[i][1]:
+        if 'å‰4ä½å’Œå€¼' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Ç°4Î»ºÍÖµ']>=min_num and data_para_array[j]['Ç°4Î»ºÍÖµ']<=max_num:
+                if data_para_array[j]['å‰4ä½å’Œå€¼']>=min_num and data_para_array[j]['å‰4ä½å’Œå€¼']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if 'ºó4Î»ºÍÖµ' in filter_array[i][1]:
+        if 'å4ä½å’Œå€¼' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ºó4Î»ºÍÖµ']>=min_num and data_para_array[j]['ºó4Î»ºÍÖµ']<=max_num:
+                if data_para_array[j]['å4ä½å’Œå€¼']>=min_num and data_para_array[j]['å4ä½å’Œå€¼']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))             
-        if 'ÆæÊı' in filter_array[i][1]:
+        if 'å¥‡æ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÆæÊı']>=min_num and data_para_array[j]['ÆæÊı']<=max_num:
+                if data_para_array[j]['å¥‡æ•°']>=min_num and data_para_array[j]['å¥‡æ•°']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'Å¼Êı' in filter_array[i][1]:
+        if 'å¶æ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Å¼Êı']>=min_num and data_para_array[j]['Å¼Êı']<=max_num:
+                if data_para_array[j]['å¶æ•°']>=min_num and data_para_array[j]['å¶æ•°']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '61¼ä¸ô' in filter_array[i][1]:
+        if '61é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['61¼ä¸ô']>=min_num and data_para_array[j]['61¼ä¸ô']<=max_num:
+                if data_para_array[j]['61é—´éš”']>=min_num and data_para_array[j]['61é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '21¼ä¸ô' in filter_array[i][1]:
+        if '21é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['21¼ä¸ô']>=min_num and data_para_array[j]['21¼ä¸ô']<=max_num:
+                if data_para_array[j]['21é—´éš”']>=min_num and data_para_array[j]['21é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))            
-        if '41¼ä¸ô' in filter_array[i][1]:
+        if '41é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['41¼ä¸ô']>=min_num and data_para_array[j]['41¼ä¸ô']<=max_num:
+                if data_para_array[j]['41é—´éš”']>=min_num and data_para_array[j]['41é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '43¼ä¸ô' in filter_array[i][1]:
+        if '43é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['43¼ä¸ô']>=min_num and data_para_array[j]['43¼ä¸ô']<=max_num:
+                if data_para_array[j]['43é—´éš”']>=min_num and data_para_array[j]['43é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))            
-        if '52¼ä¸ô' in filter_array[i][1]:
+        if '52é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['52¼ä¸ô']>=min_num and data_para_array[j]['52¼ä¸ô']<=max_num:
+                if data_para_array[j]['52é—´éš”']>=min_num and data_para_array[j]['52é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '63¼ä¸ô' in filter_array[i][1]:
+        if '63é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['63¼ä¸ô']>=min_num and data_para_array[j]['63¼ä¸ô']<=max_num:
+                if data_para_array[j]['63é—´éš”']>=min_num and data_para_array[j]['63é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '65¼ä¸ô' in filter_array[i][1]:
+        if '65é—´éš”' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['65¼ä¸ô']>=min_num and data_para_array[j]['65¼ä¸ô']<=max_num:
+                if data_para_array[j]['65é—´éš”']>=min_num and data_para_array[j]['65é—´éš”']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))              
-        if 'ÖÊÊı' in filter_array[i][1]:
+        if 'è´¨æ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÖÊÊı']>=min_num and data_para_array[j]['ÖÊÊı']<=max_num:
+                if data_para_array[j]['è´¨æ•°']>=min_num and data_para_array[j]['è´¨æ•°']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '³ı3Óà0' in filter_array[i][1]:
+        if 'é™¤3ä½™0' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı3Óà0']>=min_num and data_para_array[j]['³ı3Óà0']<=max_num:
+                if data_para_array[j]['é™¤3ä½™0']>=min_num and data_para_array[j]['é™¤3ä½™0']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '³ı3Óà1' in filter_array[i][1]:
+        if 'é™¤3ä½™1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı3Óà1']>=min_num and data_para_array[j]['³ı3Óà1']<=max_num:
+                if data_para_array[j]['é™¤3ä½™1']>=min_num and data_para_array[j]['é™¤3ä½™1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '³ı3Óà2' in filter_array[i][1]:
+        if 'é™¤3ä½™2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı3Óà2']>=min_num and data_para_array[j]['³ı3Óà2']<=max_num:
+                if data_para_array[j]['é™¤3ä½™2']>=min_num and data_para_array[j]['é™¤3ä½™2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı4Óà0' in filter_array[i][1]:
+        if 'é™¤4ä½™0' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı4Óà0']>=min_num and data_para_array[j]['³ı4Óà0']<=max_num:
+                if data_para_array[j]['é™¤4ä½™0']>=min_num and data_para_array[j]['é™¤4ä½™0']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı4Óà1' in filter_array[i][1]:
+        if 'é™¤4ä½™1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı4Óà1']>=min_num and data_para_array[j]['³ı4Óà1']<=max_num:
+                if data_para_array[j]['é™¤4ä½™1']>=min_num and data_para_array[j]['é™¤4ä½™1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı4Óà2' in filter_array[i][1]:
+        if 'é™¤4ä½™2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı4Óà2']>=min_num and data_para_array[j]['³ı4Óà2']<=max_num:
+                if data_para_array[j]['é™¤4ä½™2']>=min_num and data_para_array[j]['é™¤4ä½™2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı4Óà3' in filter_array[i][1]:
+        if 'é™¤4ä½™3' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı4Óà3']>=min_num and data_para_array[j]['³ı4Óà3']<=max_num:
+                if data_para_array[j]['é™¤4ä½™3']>=min_num and data_para_array[j]['é™¤4ä½™3']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))                  
-        if '³ı5Óà0' in filter_array[i][1]:
+        if 'é™¤5ä½™0' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı5Óà0']>=min_num and data_para_array[j]['³ı5Óà0']<=max_num:
+                if data_para_array[j]['é™¤5ä½™0']>=min_num and data_para_array[j]['é™¤5ä½™0']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı5Óà1' in filter_array[i][1]:
+        if 'é™¤5ä½™1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı5Óà1']>=min_num and data_para_array[j]['³ı5Óà1']<=max_num:
+                if data_para_array[j]['é™¤5ä½™1']>=min_num and data_para_array[j]['é™¤5ä½™1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı5Óà2' in filter_array[i][1]:
+        if 'é™¤5ä½™2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı5Óà2']>=min_num and data_para_array[j]['³ı5Óà2']<=max_num:
+                if data_para_array[j]['é™¤5ä½™2']>=min_num and data_para_array[j]['é™¤5ä½™2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı5Óà3' in filter_array[i][1]:
+        if 'é™¤5ä½™3' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı5Óà3']>=min_num and data_para_array[j]['³ı5Óà3']<=max_num:
+                if data_para_array[j]['é™¤5ä½™3']>=min_num and data_para_array[j]['é™¤5ä½™3']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı5Óà4' in filter_array[i][1]:
+        if 'é™¤5ä½™4' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı5Óà4']>=min_num and data_para_array[j]['³ı5Óà4']<=max_num:
+                if data_para_array[j]['é™¤5ä½™4']>=min_num and data_para_array[j]['é™¤5ä½™4']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà0' in filter_array[i][1]:
+        if 'é™¤6ä½™0' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà0']>=min_num and data_para_array[j]['³ı6Óà0']<=max_num:
+                if data_para_array[j]['é™¤6ä½™0']>=min_num and data_para_array[j]['é™¤6ä½™0']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà1' in filter_array[i][1]:
+        if 'é™¤6ä½™1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà1']>=min_num and data_para_array[j]['³ı6Óà1']<=max_num:
+                if data_para_array[j]['é™¤6ä½™1']>=min_num and data_para_array[j]['é™¤6ä½™1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà2' in filter_array[i][1]:
+        if 'é™¤6ä½™2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà2']>=min_num and data_para_array[j]['³ı6Óà2']<=max_num:
+                if data_para_array[j]['é™¤6ä½™2']>=min_num and data_para_array[j]['é™¤6ä½™2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà3' in filter_array[i][1]:
+        if 'é™¤6ä½™3' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà3']>=min_num and data_para_array[j]['³ı6Óà3']<=max_num:
+                if data_para_array[j]['é™¤6ä½™3']>=min_num and data_para_array[j]['é™¤6ä½™3']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà4' in filter_array[i][1]:
+        if 'é™¤6ä½™4' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà4']>=min_num and data_para_array[j]['³ı6Óà4']<=max_num:
+                if data_para_array[j]['é™¤6ä½™4']>=min_num and data_para_array[j]['é™¤6ä½™4']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı6Óà5' in filter_array[i][1]:
+        if 'é™¤6ä½™5' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı6Óà5']>=min_num and data_para_array[j]['³ı6Óà5']<=max_num:
+                if data_para_array[j]['é™¤6ä½™5']>=min_num and data_para_array[j]['é™¤6ä½™5']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))                
-        if '³ı7Óà0' in filter_array[i][1]:
+        if 'é™¤7ä½™0' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà0']>=min_num and data_para_array[j]['³ı7Óà0']<=max_num:
+                if data_para_array[j]['é™¤7ä½™0']>=min_num and data_para_array[j]['é™¤7ä½™0']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà1' in filter_array[i][1]:
+        if 'é™¤7ä½™1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà1']>=min_num and data_para_array[j]['³ı7Óà1']<=max_num:
+                if data_para_array[j]['é™¤7ä½™1']>=min_num and data_para_array[j]['é™¤7ä½™1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà2' in filter_array[i][1]:
+        if 'é™¤7ä½™2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà2']>=min_num and data_para_array[j]['³ı7Óà2']<=max_num:
+                if data_para_array[j]['é™¤7ä½™2']>=min_num and data_para_array[j]['é™¤7ä½™2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà3' in filter_array[i][1]:
+        if 'é™¤7ä½™3' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà3']>=min_num and data_para_array[j]['³ı7Óà3']<=max_num:
+                if data_para_array[j]['é™¤7ä½™3']>=min_num and data_para_array[j]['é™¤7ä½™3']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà4' in filter_array[i][1]:
+        if 'é™¤7ä½™4' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà4']>=min_num and data_para_array[j]['³ı7Óà4']<=max_num:
+                if data_para_array[j]['é™¤7ä½™4']>=min_num and data_para_array[j]['é™¤7ä½™4']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà5' in filter_array[i][1]:
+        if 'é™¤7ä½™5' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà5']>=min_num and data_para_array[j]['³ı7Óà5']<=max_num:
+                if data_para_array[j]['é™¤7ä½™5']>=min_num and data_para_array[j]['é™¤7ä½™5']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '³ı7Óà6' in filter_array[i][1]:
+        if 'é™¤7ä½™6' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³ı7Óà6']>=min_num and data_para_array[j]['³ı7Óà6']<=max_num:
+                if data_para_array[j]['é™¤7ä½™6']>=min_num and data_para_array[j]['é™¤7ä½™6']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))              
-        if '¸ßÖµÇø' in filter_array[i][1]:
+        if 'é«˜å€¼åŒº' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['¸ßÖµÇø']>=min_num and data_para_array[j]['¸ßÖµÇø']<=max_num:
+                if data_para_array[j]['é«˜å€¼åŒº']>=min_num and data_para_array[j]['é«˜å€¼åŒº']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'µÍÖµÇø' in filter_array[i][1]:
+        if 'ä½å€¼åŒº' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['µÍÖµÇø']>=min_num and data_para_array[j]['µÍÖµÇø']<=max_num:
+                if data_para_array[j]['ä½å€¼åŒº']>=min_num and data_para_array[j]['ä½å€¼åŒº']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'Çø¼ä1' in filter_array[i][1]:
+        if 'åŒºé—´1' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Çø¼ä1']>=min_num and data_para_array[j]['Çø¼ä1']<=max_num:
+                if data_para_array[j]['åŒºé—´1']>=min_num and data_para_array[j]['åŒºé—´1']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'Çø¼ä2' in filter_array[i][1]:
+        if 'åŒºé—´2' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Çø¼ä2']>=min_num and data_para_array[j]['Çø¼ä2']<=max_num:
+                if data_para_array[j]['åŒºé—´2']>=min_num and data_para_array[j]['åŒºé—´2']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if 'Çø¼ä3' in filter_array[i][1]:
+        if 'åŒºé—´3' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Çø¼ä3']>=min_num and data_para_array[j]['Çø¼ä3']<=max_num:
+                if data_para_array[j]['åŒºé—´3']>=min_num and data_para_array[j]['åŒºé—´3']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'Á¬ºÅ' in filter_array[i][1]:
+        if 'è¿å·' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Á¬ºÅ']>=min_num and data_para_array[j]['Á¬ºÅ']<=max_num:
+                if data_para_array[j]['è¿å·']>=min_num and data_para_array[j]['è¿å·']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if 'Í¬Î²' in filter_array[i][1]:
+        if 'åŒå°¾' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Í¬Î²']>=min_num and data_para_array[j]['Í¬Î²']<=max_num:
+                if data_para_array[j]['åŒå°¾']>=min_num and data_para_array[j]['åŒå°¾']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if '¿ª½±ºÅÂëºÍ' in filter_array[i][1]:
+        if 'å¼€å¥–å·ç å’Œ' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['¿ª½±ºÅÂëºÍ']>=min_num and data_para_array[j]['¿ª½±ºÅÂëºÍ']<=max_num:
+                if data_para_array[j]['å¼€å¥–å·ç å’Œ']>=min_num and data_para_array[j]['å¼€å¥–å·ç å’Œ']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))
-        if 'Î²ºÅºÍ' in filter_array[i][1]:
+        if 'å°¾å·å’Œ' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Î²ºÅºÍ']>=min_num and data_para_array[j]['Î²ºÅºÍ']<=max_num:
+                if data_para_array[j]['å°¾å·å’Œ']>=min_num and data_para_array[j]['å°¾å·å’Œ']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array))              
-        if 'ACÖµ' in filter_array[i][1]:
+        if 'ACå€¼' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ACÖµ']>=min_num and data_para_array[j]['ACÖµ']<=max_num:
+                if data_para_array[j]['ACå€¼']>=min_num and data_para_array[j]['ACå€¼']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'ÈÈºÅÈ«' in filter_array[i][1]:
+        if 'çƒ­å·å…¨' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÈÈºÅÈ«']>=min_num and data_para_array[j]['ÈÈºÅÈ«']<=max_num:
+                if data_para_array[j]['çƒ­å·å…¨']>=min_num and data_para_array[j]['çƒ­å·å…¨']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'ÎÂºÅÈ«' in filter_array[i][1]:
+        if 'æ¸©å·å…¨' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÎÂºÅÈ«']>=min_num and data_para_array[j]['ÎÂºÅÈ«']<=max_num:
+                if data_para_array[j]['æ¸©å·å…¨']>=min_num and data_para_array[j]['æ¸©å·å…¨']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if 'ÀäºÅÈ«' in filter_array[i][1]:
+        if 'å†·å·å…¨' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÀäºÅÈ«']>=min_num and data_para_array[j]['ÀäºÅÈ«']<=max_num:
+                if data_para_array[j]['å†·å·å…¨']>=min_num and data_para_array[j]['å†·å·å…¨']<=max_num:
                     count = count + 1
             percent_array[i] = '%.2f'%(count*100.0/len(data_para_array)) 
-        if '1ÆÚÖØºÅ' in filter_array[i][1]:
-            for j in range(0, len(data_para_array)):
-                if data_para_array[j]['1ÆÚÖØºÅ']>=min_num and data_para_array[j]['1ÆÚÖØºÅ']<=max_num:
+        if '1æœŸé‡å·' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)-1):
+                if data_para_array[j]['1æœŸé‡å·']>=min_num and data_para_array[j]['1æœŸé‡å·']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-1)) #×ÜÊıÒªÉÙ1ÆÚ
-        if '3ÆÚÖØºÅ' in filter_array[i][1]:
-            for j in range(0, len(data_para_array)):
-                if data_para_array[j]['3ÆÚÖØºÅ']>=min_num and data_para_array[j]['3ÆÚÖØºÅ']<=max_num:
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-1)) #æ€»æ•°è¦å°‘1æœŸ
+        if '3æœŸé‡å·' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)-3):
+                if data_para_array[j]['3æœŸé‡å·']>=min_num and data_para_array[j]['3æœŸé‡å·']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-3)) #×ÜÊıÒªÉÙ3ÆÚ                    
-        if '5ÆÚÖØºÅ' in filter_array[i][1]:
-            for j in range(0, len(data_para_array)):
-                if data_para_array[j]['5ÆÚÖØºÅ']>=min_num and data_para_array[j]['5ÆÚÖØºÅ']<=max_num:
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-3)) #æ€»æ•°è¦å°‘3æœŸ                    
+        if '5æœŸé‡å·' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)-5):
+                if data_para_array[j]['5æœŸé‡å·']>=min_num and data_para_array[j]['5æœŸé‡å·']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-5)) #×ÜÊıÒªÉÙ5ÆÚ
-        if '10ÆÚÖØºÅ' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-5)) #æ€»æ•°è¦å°‘5æœŸ
+        if '10æœŸé‡å·' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['10ÆÚÖØºÅ']>=min_num and data_para_array[j]['10ÆÚÖØºÅ']<=max_num:
+                if data_para_array[j]['10æœŸé‡å·']>=min_num and data_para_array[j]['10æœŸé‡å·']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-10)) #×ÜÊıÒªÉÙ10ÆÚ              
-        if '1ÆÚÁÙ½üÖµ' in filter_array[i][1]:
-            for j in range(0, len(data_para_array)):
-                if data_para_array[j]['1ÆÚÁÙ½üÖµ']>=min_num and data_para_array[j]['1ÆÚÁÙ½üÖµ']<=max_num:
+            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-10)) #æ€»æ•°è¦å°‘10æœŸ              
+        if '1æœŸä¸´è¿‘å€¼' in filter_array[i][1]:
+            for j in range(0, len(data_para_array)-1):
+                if data_para_array[j]['1æœŸä¸´è¿‘å€¼']>=min_num and data_para_array[j]['1æœŸä¸´è¿‘å€¼']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-1))) #×ÜÊıÒªÉÙ1ÆÚ
-        if '3ÆÚ¸öÊı' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-1))) #æ€»æ•°è¦å°‘1æœŸ
+        if '3æœŸä¸ªæ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['3ÆÚ¸öÊı']>=min_num and data_para_array[j]['3ÆÚ¸öÊı']<=max_num:
+                if data_para_array[j]['3æœŸä¸ªæ•°']>=min_num and data_para_array[j]['3æœŸä¸ªæ•°']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-2))) #×ÜÊıÒªÉÙ2ÆÚ
-        if '5ÆÚ¸öÊı' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-2))) #æ€»æ•°è¦å°‘2æœŸ
+        if '5æœŸä¸ªæ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['5ÆÚ¸öÊı']>=min_num and data_para_array[j]['5ÆÚ¸öÊı']<=max_num:
+                if data_para_array[j]['5æœŸä¸ªæ•°']>=min_num and data_para_array[j]['5æœŸä¸ªæ•°']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-4))) #×ÜÊıÒªÉÙ4ÆÚ
-        if '7ÆÚ¸öÊı' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-4))) #æ€»æ•°è¦å°‘4æœŸ
+        if '7æœŸä¸ªæ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['7ÆÚ¸öÊı']>=min_num and data_para_array[j]['7ÆÚ¸öÊı']<=max_num:
+                if data_para_array[j]['7æœŸä¸ªæ•°']>=min_num and data_para_array[j]['7æœŸä¸ªæ•°']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-6))) #×ÜÊıÒªÉÙ6ÆÚ
-        if '9ÆÚ¸öÊı' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-6))) #æ€»æ•°è¦å°‘6æœŸ
+        if '9æœŸä¸ªæ•°' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['9ÆÚ¸öÊı']>=min_num and data_para_array[j]['9ÆÚ¸öÊı']<=max_num:
+                if data_para_array[j]['9æœŸä¸ªæ•°']>=min_num and data_para_array[j]['9æœŸä¸ªæ•°']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-8))) #×ÜÊıÒªÉÙ8ÆÚ
-        if 'ÒÅÂ©ÖµºÍ' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-8))) #æ€»æ•°è¦å°‘8æœŸ
+        if 'é—æ¼å€¼å’Œ' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÒÅÂ©ÖµºÍ']>=min_num and data_para_array[j]['ÒÅÂ©ÖµºÍ']<=max_num:
+                if data_para_array[j]['é—æ¼å€¼å’Œ']>=min_num and data_para_array[j]['é—æ¼å€¼å’Œ']<=max_num:
                     count = count + 1
-            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-26))) #×ÜÊıÒªÉÙ26ÆÚ#ÒòÎª×îºó³öÏÖµÄºÅ29ÊÇÔÚµÚ26ÆÚ³öÏÖµÄ           
-        if '¹Ì¶¨Í¶×¢' in filter_array[i][1]:
+            percent_array[i] = '%.2f'%(count*100.0/((len(data_para_array)-26))) #æ€»æ•°è¦å°‘26æœŸ#å› ä¸ºæœ€åå‡ºç°çš„å·29æ˜¯åœ¨ç¬¬26æœŸå‡ºç°çš„           
+        if 'å›ºå®šæŠ•æ³¨' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['¹Ì¶¨Í¶×¢']>=min_num and data_para_array[j]['¹Ì¶¨Í¶×¢']<=max_num:
+                if data_para_array[j]['å›ºå®šæŠ•æ³¨']>=min_num and data_para_array[j]['å›ºå®šæŠ•æ³¨']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
-        if '³¤ÁĞ±í' in filter_array[i][1]:
+        if 'é•¿åˆ—è¡¨' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['³¤ÁĞ±í']>=min_num and data_para_array[j]['³¤ÁĞ±í']<=max_num:
+                if data_para_array[j]['é•¿åˆ—è¡¨']>=min_num and data_para_array[j]['é•¿åˆ—è¡¨']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
-        if 'Èı·ÖÖ®Ò»' in filter_array[i][1]:
+        if 'ä¸‰åˆ†ä¹‹ä¸€' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Èı·ÖÖ®Ò»']>=min_num and data_para_array[j]['Èı·ÖÖ®Ò»']<=max_num:
+                if data_para_array[j]['ä¸‰åˆ†ä¹‹ä¸€']>=min_num and data_para_array[j]['ä¸‰åˆ†ä¹‹ä¸€']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
-        if 'Èı·ÖÖ®¶ş' in filter_array[i][1]:
+        if 'ä¸‰åˆ†ä¹‹äºŒ' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Èı·ÖÖ®¶ş']>=min_num and data_para_array[j]['Èı·ÖÖ®¶ş']<=max_num:
+                if data_para_array[j]['ä¸‰åˆ†ä¹‹äºŒ']>=min_num and data_para_array[j]['ä¸‰åˆ†ä¹‹äºŒ']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))
-        if 'Èı·ÖÖ®Èı' in filter_array[i][1]:
+        if 'ä¸‰åˆ†ä¹‹ä¸‰' in filter_array[i][1]:
             for j in range(0, len(data_para_array)):
-                if data_para_array[j]['Èı·ÖÖ®Èı']>=min_num and data_para_array[j]['Èı·ÖÖ®Èı']<=max_num:
+                if data_para_array[j]['ä¸‰åˆ†ä¹‹ä¸‰']>=min_num and data_para_array[j]['ä¸‰åˆ†ä¹‹ä¸‰']<=max_num:
                     count = count + 1                
             percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)))                
-        if 'ÍùÆÚÊı¾İ' in filter_array[i][1]:
-            for j in range(0, len(data_para_array)):
-                if data_para_array[j]['ÍùÆÚÊı¾İ']>=min_num and data_para_array[j]['ÍùÆÚÊı¾İ']<=max_num:
+        if 'å¾€æœŸæ•°æ®' in filter_array[i][1]:
+            for j in range(0, 100): #åªè€ƒè™‘æœ€è¿‘100æœŸï¼ˆ20071129ï¼‰
+            #for j in range(0, len(data_para_array)):
+                if data_para_array[j]['å¾€æœŸæ•°æ®']>=min_num and data_para_array[j]['å¾€æœŸæ•°æ®']<=max_num:
                     count = count + 1                
-            percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-1)) #×ÜÊıÒªÉÙ1ÆÚ            
-    #·µ»ØÊı¾İ    
+            #percent_array[i] = '%.2f'%(count*100.0/(len(data_para_array)-1)) #æ€»æ•°è¦å°‘1æœŸ
+            percent_array[i] = '%.2f'%(count*100.0/100)
+    #è¿”å›æ•°æ®    
     return percent_array
 
-def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Êı¾İ¹ıÂË
-    '''¹ıÂËÊı¾İ£¬²¢·µ»Ø½á¹û'''
-    #×î´óÖµ/×îĞ¡Öµ¾ùÎªstr¸ñÊ½¡£·¶Î§¾ù°üº¬±¾Éí
-    min_num = int(filter_array[step-1][3].split('-')[0]) #×îĞ¡Öµ
-    max_num = int(filter_array[step-1][3].split('-')[1]) #×î´óÖµ
-    #ÁÙÊ±Êı×é
+def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#æ•°æ®è¿‡æ»¤
+    '''è¿‡æ»¤æ•°æ®ï¼Œå¹¶è¿”å›ç»“æœ'''
+    #æœ€å¤§å€¼/æœ€å°å€¼å‡ä¸ºstræ ¼å¼ã€‚èŒƒå›´å‡åŒ…å«æœ¬èº«
+    min_num = int(filter_array[step-1][3].split('-')[0]) #æœ€å°å€¼
+    max_num = int(filter_array[step-1][3].split('-')[1]) #æœ€å¤§å€¼
+    #ä¸´æ—¶æ•°ç»„
     data_f_tmp = [] 
-    #¸÷¹ıÂËÌõ¼ş
-    if '1ºÅÎ»' in filter_array[step-1][1]:
+    #å„è¿‡æ»¤æ¡ä»¶
+    if '1å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][0]<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '2ºÅÎ»' in filter_array[step-1][1]:
+    if '2å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][1]<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '3ºÅÎ»' in filter_array[step-1][1]:
+    if '3å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][2]<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '4ºÅÎ»' in filter_array[step-1][1]:
+    if '4å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][3]<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '5ºÅÎ»' in filter_array[step-1][1]:
+    if '5å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][4]<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '6ºÅÎ»' in filter_array[step-1][1]:
+    if '6å·ä½' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][5]<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if '×ÜºÍÖµ' in filter_array[step-1][1]:
+    if 'æ€»å’Œå€¼' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum_num = 0
             for j in range(0, 6):
                 sum_num = sum_num + data_f[i][j]
             if min_num<=sum_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Ç°4Î»ºÍÖµ' in filter_array[step-1][1]:
+    if 'å‰4ä½å’Œå€¼' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum14_num = 0
             for j in range(0, 4):
                 sum14_num = sum14_num + data_f[i][j]
             if min_num<=sum14_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'ºó4Î»ºÍÖµ' in filter_array[step-1][1]:
+    if 'å4ä½å’Œå€¼' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum36_num = 0
             for j in range(2, 6):
                 sum36_num = sum36_num + data_f[i][j]
             if min_num<=sum36_num<=max_num:
                 data_f_tmp.append(data_f[i])                 
-    if 'ÆæÊı' in filter_array[step-1][1]:
+    if 'å¥‡æ•°' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             odd_num = 0 
             for j in range(0, 6):
@@ -1000,7 +1018,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     odd_num = odd_num + 1
             if min_num<=odd_num<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if 'Å¼Êı' in filter_array[step-1][1]:
+    if 'å¶æ•°' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             even_num = 0 
             for j in range(0, 6):
@@ -1008,42 +1026,42 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     even_num = even_num + 1
             if min_num<=even_num<=max_num:
                 data_f_tmp.append(data_f[i])   
-    if '61¼ä¸ô' in filter_array[step-1][1]:
+    if '61é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_61 = data_f[i][5] - data_f[i][0]
             if min_num<=max_space_61<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '21¼ä¸ô' in filter_array[step-1][1]:
+    if '21é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_21 = data_f[i][1] - data_f[i][0]
             if min_num<=max_space_21<=max_num:
                 data_f_tmp.append(data_f[i])                
-    if '41¼ä¸ô' in filter_array[step-1][1]:
+    if '41é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_41 = data_f[i][3] - data_f[i][0]
             if min_num<=max_space_41<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '43¼ä¸ô' in filter_array[step-1][1]:
+    if '43é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_43 = data_f[i][3] - data_f[i][2]
             if min_num<=max_space_43<=max_num:
                 data_f_tmp.append(data_f[i])                
-    if '52¼ä¸ô' in filter_array[step-1][1]:
+    if '52é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_52 = data_f[i][4] - data_f[i][1]
             if min_num<=max_space_52<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '63¼ä¸ô' in filter_array[step-1][1]:
+    if '63é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_63 = data_f[i][5] - data_f[i][2]
             if min_num<=max_space_63<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '65¼ä¸ô' in filter_array[step-1][1]:
+    if '65é—´éš”' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_65 = data_f[i][5] - data_f[i][4]
             if min_num<=max_space_65<=max_num:
                 data_f_tmp.append(data_f[i])                  
-    if 'ÖÊÊı' in filter_array[step-1][1]:
+    if 'è´¨æ•°' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             prime_num = 0  
             for j in range(0, 6):
@@ -1051,7 +1069,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     prime_num = prime_num + 1
             if min_num<=prime_num<=max_num:
                 data_f_tmp.append(data_f[i]) 
-    if '³ı3Óà0' in filter_array[step-1][1]:
+    if 'é™¤3ä½™0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num30 = 0  
             for j in range(0, 6):
@@ -1059,7 +1077,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num30 = residue_num30 + 1
             if min_num<=residue_num30<=max_num:
                 data_f_tmp.append(data_f[i]) 
-    if '³ı3Óà1' in filter_array[step-1][1]:
+    if 'é™¤3ä½™1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num31 = 0  
             for j in range(0, 6):
@@ -1067,7 +1085,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num31 = residue_num31 + 1
             if min_num<=residue_num31<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if '³ı3Óà2' in filter_array[step-1][1]:
+    if 'é™¤3ä½™2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num32 = 0  
             for j in range(0, 6):
@@ -1075,7 +1093,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num32 = residue_num32 + 1
             if min_num<=residue_num32<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı4Óà0' in filter_array[step-1][1]:
+    if 'é™¤4ä½™0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num40 = 0  
             for j in range(0, 6):
@@ -1083,7 +1101,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num40 = residue_num40 + 1
             if min_num<=residue_num40<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı4Óà1' in filter_array[step-1][1]:
+    if 'é™¤4ä½™1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num41 = 0  
             for j in range(0, 6):
@@ -1091,7 +1109,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num41 = residue_num41 + 1
             if min_num<=residue_num41<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı4Óà2' in filter_array[step-1][1]:
+    if 'é™¤4ä½™2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num42 = 0  
             for j in range(0, 6):
@@ -1099,7 +1117,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num42 = residue_num42 + 1
             if min_num<=residue_num42<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı4Óà3' in filter_array[step-1][1]:
+    if 'é™¤4ä½™3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num43 = 0  
             for j in range(0, 6):
@@ -1107,7 +1125,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num43 = residue_num43 + 1
             if min_num<=residue_num43<=max_num:
                 data_f_tmp.append(data_f[i])                 
-    if '³ı5Óà0' in filter_array[step-1][1]:
+    if 'é™¤5ä½™0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num50 = 0  
             for j in range(0, 6):
@@ -1115,7 +1133,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num50 = residue_num50 + 1
             if min_num<=residue_num50<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı5Óà1' in filter_array[step-1][1]:
+    if 'é™¤5ä½™1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num51 = 0  
             for j in range(0, 6):
@@ -1123,7 +1141,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num51 = residue_num51 + 1
             if min_num<=residue_num51<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı5Óà2' in filter_array[step-1][1]:
+    if 'é™¤5ä½™2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num52 = 0  
             for j in range(0, 6):
@@ -1131,7 +1149,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num52 = residue_num52 + 1
             if min_num<=residue_num52<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı5Óà3' in filter_array[step-1][1]:
+    if 'é™¤5ä½™3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num53 = 0  
             for j in range(0, 6):
@@ -1139,7 +1157,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num53 = residue_num53 + 1
             if min_num<=residue_num53<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı5Óà4' in filter_array[step-1][1]:
+    if 'é™¤5ä½™4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num54 = 0  
             for j in range(0, 6):
@@ -1147,7 +1165,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num54 = residue_num54 + 1
             if min_num<=residue_num54<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà0' in filter_array[step-1][1]:
+    if 'é™¤6ä½™0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num60 = 0  
             for j in range(0, 6):
@@ -1155,7 +1173,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num60 = residue_num60 + 1
             if min_num<=residue_num60<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà1' in filter_array[step-1][1]:
+    if 'é™¤6ä½™1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num61 = 0  
             for j in range(0, 6):
@@ -1163,7 +1181,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num61 = residue_num61 + 1
             if min_num<=residue_num61<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà2' in filter_array[step-1][1]:
+    if 'é™¤6ä½™2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num62 = 0  
             for j in range(0, 6):
@@ -1171,7 +1189,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num62 = residue_num62 + 1
             if min_num<=residue_num62<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà3' in filter_array[step-1][1]:
+    if 'é™¤6ä½™3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num63 = 0  
             for j in range(0, 6):
@@ -1179,7 +1197,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num63 = residue_num63 + 1
             if min_num<=residue_num63<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà4' in filter_array[step-1][1]:
+    if 'é™¤6ä½™4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num64 = 0  
             for j in range(0, 6):
@@ -1187,7 +1205,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num64 = residue_num64 + 1
             if min_num<=residue_num64<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı6Óà5' in filter_array[step-1][1]:
+    if 'é™¤6ä½™5' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num65 = 0  
             for j in range(0, 6):
@@ -1195,7 +1213,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num65 = residue_num65 + 1
             if min_num<=residue_num65<=max_num:
                 data_f_tmp.append(data_f[i])                
-    if '³ı7Óà0' in filter_array[step-1][1]:
+    if 'é™¤7ä½™0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num70 = 0  
             for j in range(0, 6):
@@ -1203,7 +1221,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num70 = residue_num70 + 1
             if min_num<=residue_num70<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı7Óà1' in filter_array[step-1][1]:
+    if 'é™¤7ä½™1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num71 = 0  
             for j in range(0, 6):
@@ -1211,7 +1229,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num71 = residue_num71 + 1
             if min_num<=residue_num71<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı7Óà2' in filter_array[step-1][1]:
+    if 'é™¤7ä½™2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num72 = 0  
             for j in range(0, 6):
@@ -1219,7 +1237,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num72 = residue_num72 + 1
             if min_num<=residue_num72<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı7Óà3' in filter_array[step-1][1]:
+    if 'é™¤7ä½™3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num73 = 0  
             for j in range(0, 6):
@@ -1227,7 +1245,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num73 = residue_num73 + 1
             if min_num<=residue_num73<=max_num:
                 data_f_tmp.append(data_f[i])     
-    if '³ı7Óà4' in filter_array[step-1][1]:
+    if 'é™¤7ä½™4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num74 = 0  
             for j in range(0, 6):
@@ -1235,7 +1253,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num74 = residue_num74 + 1
             if min_num<=residue_num74<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı7Óà5' in filter_array[step-1][1]:
+    if 'é™¤7ä½™5' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num75 = 0  
             for j in range(0, 6):
@@ -1243,7 +1261,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num75 = residue_num75 + 1
             if min_num<=residue_num75<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³ı7Óà6' in filter_array[step-1][1]:
+    if 'é™¤7ä½™6' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num76 = 0  
             for j in range(0, 6):
@@ -1251,7 +1269,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     residue_num76 = residue_num76 + 1
             if min_num<=residue_num76<=max_num:
                 data_f_tmp.append(data_f[i])                  
-    if '¸ßÖµÇø' in filter_array[step-1][1]:
+    if 'é«˜å€¼åŒº' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             high_num = 0  
             for j in range(0, 6):
@@ -1259,7 +1277,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     high_num = high_num + 1
             if min_num<=high_num<=max_num:
                 data_f_tmp.append(data_f[i])   
-    if 'µÍÖµÇø' in filter_array[step-1][1]:
+    if 'ä½å€¼åŒº' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             low_num = 0  
             for j in range(0, 6):
@@ -1267,7 +1285,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     low_num = low_num + 1
             if min_num<=low_num<=max_num:
                 data_f_tmp.append(data_f[i])     
-    if 'Çø¼ä1' in filter_array[step-1][1]:
+    if 'åŒºé—´1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area1_num = 0  
             for j in range(0, 6):
@@ -1275,7 +1293,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     area1_num = area1_num + 1
             if min_num<=area1_num<=max_num:
                 data_f_tmp.append(data_f[i])   
-    if 'Çø¼ä2' in filter_array[step-1][1]:
+    if 'åŒºé—´2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area2_num = 0  
             for j in range(0, 6):
@@ -1283,7 +1301,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     area2_num = area2_num + 1
             if min_num<=area2_num<=max_num:
                 data_f_tmp.append(data_f[i]) 
-    if 'Çø¼ä3' in filter_array[step-1][1]:
+    if 'åŒºé—´3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area3_num = 0  
             for j in range(0, 6):
@@ -1291,7 +1309,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     area3_num = area3_num + 1
             if min_num<=area3_num<=max_num:
                 data_f_tmp.append(data_f[i])     
-    if 'Á¬ºÅ' in filter_array[step-1][1]:
+    if 'è¿å·' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             continuous_num = 0  
             for j in range(0, 5):
@@ -1299,10 +1317,10 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     continuous_num = continuous_num + 1
             if min_num<=continuous_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Í¬Î²' in filter_array[step-1][1]:
+    if 'åŒå°¾' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             same_nail_num = 0
-            times = [] #´ÎÊı
+            times = [] #æ¬¡æ•°
             for j in range(0, 9+1):
                 times.append(0) 
             for j in range(0, 6):
@@ -1312,7 +1330,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     same_nail_num = same_nail_num + 1                 
             if min_num<=same_nail_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '¿ª½±ºÅÂëºÍ' in filter_array[step-1][1]:
+    if 'å¼€å¥–å·ç å’Œ' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum_12 = 0
             for j in range(0, 6):
@@ -1320,14 +1338,14 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                 sum_12 = sum_12 + int(data_f[i][j])/10
             if min_num<=sum_12<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Î²ºÅºÍ' in filter_array[step-1][1]:
+    if 'å°¾å·å’Œ' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             nail_sum = 0
             for j in range(0, 6):
                 nail_sum = nail_sum + int(data_f[i][j])%10
             if min_num<=nail_sum<=max_num:
                 data_f_tmp.append(data_f[i])                
-    if 'ACÖµ' in filter_array[step-1][1]:
+    if 'ACå€¼' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             ac_num = 0  
             details = []
@@ -1340,7 +1358,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
             ac_num = len(details) - (6-1)
             if min_num<=ac_num<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if 'ÈÈºÅÈ«' in filter_array[step-1][1]:
+    if 'çƒ­å·å…¨' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             hot_num = 0  
             for j in range(0, 6):
@@ -1348,7 +1366,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     hot_num = hot_num + 1
             if min_num<=hot_num<=max_num:
                 data_f_tmp.append(data_f[i]) 
-    if 'ÎÂºÅÈ«' in filter_array[step-1][1]:
+    if 'æ¸©å·å…¨' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             warm_num = 0  
             for j in range(0, 6):
@@ -1356,7 +1374,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     warm_num = warm_num + 1
             if min_num<=warm_num<=max_num:
                 data_f_tmp.append(data_f[i])  
-    if 'ÀäºÅÈ«' in filter_array[step-1][1]:
+    if 'å†·å·å…¨' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             cold_num = 0  
             for j in range(0, 6):
@@ -1364,7 +1382,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     cold_num = cold_num + 1
             if min_num<=cold_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'ÈÈºÅ100' in filter_array[step-1][1]:
+    if 'çƒ­å·100' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             hot100_num = 0  
             for j in range(0, 6):
@@ -1372,7 +1390,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     hot100_num = hot100_num + 1
             if min_num<=hot100_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '1ÆÚÖØºÅ' in filter_array[step-1][1]:
+    if '1æœŸé‡å·' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             repeat1_num = 0  
             for j in range(0, 6):
@@ -1380,8 +1398,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     repeat1_num = repeat1_num + 1
             if min_num<=repeat1_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '3ÆÚÖØºÅ' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°3ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '3æœŸé‡å·' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰3æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1396,8 +1414,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     repeat3_num = repeat3_num + 1
             if min_num<=repeat3_num<=max_num:
                 data_f_tmp.append(data_f[i])                
-    if '5ÆÚÖØºÅ' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°5ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '5æœŸé‡å·' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰5æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1416,11 +1434,11 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     repeat5_num = repeat5_num + 1
             if min_num<=repeat5_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '10ÆÚÖØºÅ' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°5+4ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
-        #ÔÚÌí¼Ó'10ÆÚÖØºÅ'µÄÊ±ºò¸Ğ¾õÉÏÃæÄÇ¸ö¡°4¡±ºÃÏñ²»¶Ô¡«¡«
+    if '10æœŸé‡å·' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰5+4æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
+        #åœ¨æ·»åŠ '10æœŸé‡å·'çš„æ—¶å€™æ„Ÿè§‰ä¸Šé¢é‚£ä¸ªâ€œ4â€å¥½åƒä¸å¯¹ï½ï½
         for j in range(1, 6+1):
-            #2007-07-26¸Ä
+            #2007-07-26æ”¹
             if int(data_array[0+5][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
             if int(data_array[1+5][j]) not in tmp_list:
@@ -1450,8 +1468,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     repeat10_num = repeat10_num + 1
             if min_num<=repeat10_num<=max_num:
                 data_f_tmp.append(data_f[i])                  
-    if '1ÆÚÁÙ½üÖµ' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬½«ÉÏÒ»ÆÚÖĞËùÓĞ£«1/£­1µÄÊı´æÆğÀ´
+    if '1æœŸä¸´è¿‘å€¼' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå°†ä¸Šä¸€æœŸä¸­æ‰€æœ‰ï¼‹1/ï¼1çš„æ•°å­˜èµ·æ¥
         for j in range(1, 6+1):
             tmp_list.append(int(data_array[0][j])-1)
             tmp_list.append(int(data_array[0][j])+1)        
@@ -1462,8 +1480,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     near_num = near_num + 1
             if min_num<=near_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '3ÆÚ¸öÊı' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°2ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '3æœŸä¸ªæ•°' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰2æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1476,8 +1494,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_l3 = num_l3 + 1
             if min_num<=num_l3<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '5ÆÚ¸öÊı' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°4ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '5æœŸä¸ªæ•°' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰4æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1494,8 +1512,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_l5 = num_l5 + 1
             if min_num<=num_l5<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '7ÆÚ¸öÊı' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°6ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '7æœŸä¸ªæ•°' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰6æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1516,8 +1534,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_l7 = num_l7 + 1
             if min_num<=num_l7<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '9ÆÚ¸öÊı' in filter_array[step-1][1]:
-        tmp_list = [] #ÁÙÊ±Êı×é(int)£¬Ç°8ÆÚµÄÊı¾İ£¨Ã»ÓĞÖØ¸´µÄ£©
+    if '9æœŸä¸ªæ•°' in filter_array[step-1][1]:
+        tmp_list = [] #ä¸´æ—¶æ•°ç»„(int)ï¼Œå‰8æœŸçš„æ•°æ®ï¼ˆæ²¡æœ‰é‡å¤çš„ï¼‰
         for j in range(1, 6+1):
             if int(data_array[0][j]) not in tmp_list:
                 tmp_list.append(int(data_array[0][j]))
@@ -1542,17 +1560,17 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_l9 = num_l9 + 1
             if min_num<=num_l9<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'ÒÅÂ©ÖµºÍ' in filter_array[step-1][1]:
+    if 'é—æ¼å€¼å’Œ' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             miss_sum = 0
             for j in range(0, 6):
                 for k in range(0, len(data_array)):
-                    if '%.2d'%data_f[i][j] in data_array[k][1:6+1]: #×¢Òâdata_fÊÇintĞÍµÄlist
+                    if '%.2d'%data_f[i][j] in data_array[k][1:6+1]: #æ³¨æ„data_fæ˜¯intå‹çš„list
                         miss_sum = miss_sum + (k+1)
                         break
             if min_num<=miss_sum<=max_num:
                 data_f_tmp.append(data_f[i])               
-    if '¹Ì¶¨Í¶×¢' in filter_array[step-1][1]:
+    if 'å›ºå®šæŠ•æ³¨' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             num_fix = 0
             for j in range(0, len(bet_array)):
@@ -1564,10 +1582,10 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     num_fix = num_tmp            
             if min_num<=num_fix<=max_num:
                 data_f_tmp.append(data_f[i])
-    if '³¤ÁĞ±í' in filter_array[step-1][1]:
+    if 'é•¿åˆ—è¡¨' in filter_array[step-1][1]:
         long_list = ['01','02','05','07','10','11','13','14',\
                      '17','18','19','20','21','22','23','24',\
-                     '26','27','28','29','30','32','33']#5×é¹²23¸ö        
+                     '26','27','28','29','30','32','33']#5ç»„å…±23ä¸ª        
         for i in range(0, len(data_f)):
             long_list_num = 0
             for j in range(0, 6):
@@ -1575,9 +1593,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     long_list_num = long_list_num + 1
             if min_num<=long_list_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Èı·ÖÖ®Ò»' in filter_array[step-1][1]:
+    if 'ä¸‰åˆ†ä¹‹ä¸€' in filter_array[step-1][1]:
         div31_list = ['01','03','04','05','07','08','14','17',\
-                     '18','20','22','26','27','30','32']#¹²15¸ö        
+                     '18','20','22','26','27','30','32']#å…±15ä¸ª        
         for i in range(0, len(data_f)):
             div31_num = 0
             for j in range(0, 6):
@@ -1585,9 +1603,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     div31_num = div31_num + 1
             if min_num<=div31_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Èı·ÖÖ®¶ş' in filter_array[step-1][1]: 
+    if 'ä¸‰åˆ†ä¹‹äºŒ' in filter_array[step-1][1]: 
         div32_list = ['01','02','03','04','05','07','08','14',\
-                      '17','18','20','21','27','30','32']#¹²15¸ö        
+                      '17','18','20','21','27','30','32']#å…±15ä¸ª        
         for i in range(0, len(data_f)):
             div32_num = 0
             for j in range(0, 6):
@@ -1595,9 +1613,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     div32_num = div32_num + 1
             if min_num<=div32_num<=max_num:
                 data_f_tmp.append(data_f[i])
-    if 'Èı·ÖÖ®Èı' in filter_array[step-1][1]: #Ö»ÓĞ204/614!!
+    if 'ä¸‰åˆ†ä¹‹ä¸‰' in filter_array[step-1][1]: #åªæœ‰204/614!!
         div33_list = ['02','03','04','05','08','14','17','18',\
-                      '20','21','22','26','27','30','32']#¹²15¸ö        
+                      '20','21','22','26','27','30','32']#å…±15ä¸ª        
         for i in range(0, len(data_f)):
             div33_num = 0
             for j in range(0, 6):
@@ -1605,115 +1623,198 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#Ê
                     div33_num = div33_num + 1
             if min_num<=div33_num<=max_num:                
                 data_f_tmp.append(data_f[i])                 
-    if 'ÍùÆÚÊı¾İ' in filter_array[step-1][1]:
-        for i in range(0, len(data_f)):
-            num_old = 0
-            #ÕâÀïÌ«ÂıÁË!!!!
-            for j in range(0, len(data_array)):
-                num_tmp = 0
-                #for k in range(0, 6): #ÕâÀï´íÁË
-                for k in range(1, 6+1):    
-                    #¼ÓÒ»¸öÅĞ¶Ï£¬¼Ó¿ìÒ»Ğ©ËÙ¶È
-                    if k==4 and num_tmp<num_old -2:
+    if 'å¾€æœŸæ•°æ®' in filter_array[step-1][1]:
+        t1 = time.time()
+        if min_num==4 and max_num==5:
+            #æ–°çš„è¿‡æ»¤æ–¹æ³•
+            ##  8818-->8821  | 49s-->9s(14s)
+            print u'æ³¨ï¼šä½¿ç”¨[4,5](æ–°)ï¼ŒèŠ±è´¹',
+            for i in range(0, len(data_f)):
+                #è¿™ä¸ªç‰ˆæœ¬æ²¡æœ‰è¯¯å·®ç‡äº†
+                option1 = True
+                option2 = False
+                data_ft = '%.2d %.2d %.2d %.2d %.2d %.2d'\
+                          %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
+                for j in range(0, len(data_array)):
+                    if data_ft==' '.join(data_array[j][1:7]):
+                        option1 = False
                         break
-                    if int(data_array[j][k]) in data_f[i]:
-                        num_tmp = num_tmp + 1
-                if num_tmp>num_old:
-                    num_old = num_tmp
-            if min_num<=num_old<=max_num:
-                data_f_tmp.append(data_f[i])
-    #×ª»»»ØÈ¥
-    data_f = data_f_tmp 
-    #·µ»ØÊı¾İ    
-    return data_f
-    #Ö±½Ó½«ÁÙÊ±Êı×é´«»ØÈ¥Ò²¿ÉÒÔ£¬²»ÖªµÀÄÄÑù»á¸ü¡°¾­¼Ã¡±Ò»Ğ©
+                if option1:
+                    for j in range(0, len(data_array)):
+                        num_tmp = 0                    
+                        for k in range(1, 7):
+                            if data_array[j][k] in data_ft:
+                                num_tmp = num_tmp + 1
+                        if num_tmp>3:
+                            option2 = True
+                            break
+                if option2==True:
+                    data_f_tmp.append(data_f[i])                        
+                '''#è¿™ä¸ªç‰ˆæœ¬æœ‰è¯¯å·®
+                option = False
+                data_ft = '%.2d %.2d %.2d %.2d %.2d %.2d'\
+                          %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
+                for j in range(0, len(data_array)):
+                    #'01 07 14 16 18 25'
+                    #'05 08 18 23 25 31'
+                    #'08 13 17 21 23 32'
+                    ##åˆ¤æ–­æ˜¯å¦=6ï¼ˆä¸ºå•¥ä¸Šé¢ä¸‰æ³¨åˆ¤æ–­ä¸å‡ºæ¥å‘¢ï¼Ÿè€Œä¸‹é¢ä¸¤æ³¨å°±å¯ä»¥å‘¢ï¼Ÿï¼Ÿï¼‰
+                    #'01 05 08 13 18 25'
+                    #'04 08 13 18 26 30'
+                    if data_ft==' '.join(data_array[j][1:7]):
+                        option = False
+                        break
+                    else:
+                        ##åˆ¤æ–­æ˜¯å¦>3
+                        num_tmp = 0                    
+                        for k in range(1, 7):
+                            if data_array[j][k] in data_ft:
+                                num_tmp = num_tmp + 1
+                        if num_tmp>3:
+                            option = True
+                            break
+                if option==True:
+                    data_f_tmp.append(data_f[i])
+                else:
+                    pass
+                '''
+        elif min_num==4 and max_num==4: 
+            #ä¿®æ”¹åçš„è¿‡æ»¤æ–¹æ³• #åœ¨æ—§çš„åŸºç¡€ä¸Š
+            ##50s-->25s
+            print u'æ³¨ï¼šä½¿ç”¨[4,4](ä¿®)ï¼ŒèŠ±è´¹',
+            option = False
+            for i in range(0, len(data_f)):
+                option = False
+                data_ft = '%.2d %.2d %.2d %.2d %.2d %.2d'\
+                          %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])                
+                for j in range(0, len(data_array)):
+                    num_tmp = 0
+                    for k in range(1, 7):    
+                        if data_array[j][k] in data_ft:
+                            num_tmp = num_tmp + 1
+                        if k==4 and num_tmp==1:
+                            break
+                    if num_tmp>4: 
+                        option = False
+                        break
+                    if num_tmp==4:
+                        option = True
+                if option:
+                    data_f_tmp.append(data_f[i])
+        else:
+            print u'æ³¨ï¼šä½¿ç”¨æ™®é€šè¿‡æ»¤æ–¹æ³•ï¼ŒèŠ±è´¹',
+            #è¿™é‡Œå¤ªæ…¢äº†!!!!
+            for i in range(0, len(data_f)):
+                num_old = 0
+                #è¿™é‡Œå¤ªæ…¢äº†!!!!
+                for j in range(0, len(data_array)):
+                    num_tmp = 0
+                    #for k in range(0, 6): #è¿™é‡Œé”™äº†
+                    for k in range(1, 6+1):    
+                        #åŠ ä¸€ä¸ªåˆ¤æ–­ï¼ŒåŠ å¿«ä¸€äº›é€Ÿåº¦
+                        if k==4 and num_tmp<num_old -2:
+                            break
+                        if int(data_array[j][k]) in data_f[i]:
+                            num_tmp = num_tmp + 1
+                    if num_tmp>num_old:
+                        num_old = num_tmp
+                if min_num<=num_old<=max_num:
+                    data_f_tmp.append(data_f[i])
+        t2 = time.time()
+        print t2-t1,u'ç§’'
+    #è½¬æ¢å›å»
+    #data_f = data_f_tmp 
+    #è¿”å›æ•°æ®    
+    #return data_f
+    #ç›´æ¥å°†ä¸´æ—¶æ•°ç»„ä¼ å›å»ä¹Ÿå¯ä»¥ï¼Œä¸çŸ¥é“å“ªæ ·ä¼šæ›´â€œç»æµâ€ä¸€äº›
+    return data_f_tmp
 
-def blueCoumpute(data_array): #À¶ÇòÍ³¼Æ¼°¼ÆËã
-    '''¼ÆËãÀ¶Çò¸÷ÇòµÄ³öÇò´ÎÊı¡¢²½³¤ºÍÒÅÂ©Öµ'''
-    blue_times = [] #À¶Çò¸÷ÇòµÄ³öÇò´ÎÊı
-    for i in range(0, 16): #³õÊ¼»¯
+def blueCoumpute(data_array): #è“çƒç»Ÿè®¡åŠè®¡ç®—
+    '''è®¡ç®—è“çƒå„çƒçš„å‡ºçƒæ¬¡æ•°ã€æ­¥é•¿å’Œé—æ¼å€¼'''
+    blue_times = [] #è“çƒå„çƒçš„å‡ºçƒæ¬¡æ•°
+    for i in range(0, 16): #åˆå§‹åŒ–
         blue_times.append(0)
     for i in range(0, len(data_array)):
         blue_times[int(data_array[i][7])-1] = blue_times[int(data_array[i][7])-1] + 1
 
-    blue_step = [] #À¶Çò¸÷ÇòµÄ³öÇò²½³¤
+    blue_step = [] #è“çƒå„çƒçš„å‡ºçƒæ­¥é•¿
     for i in range(0, 16): 
         blue_step.append(len(data_array)/blue_times[i])
         
-    blue_drop = [] #À¶ÇòµÄÒÅÂ©Öµ£¨¼´¶àÉÙÆÚÎ´³öÏÖ£©
-    for i in range(0, 16): #³õÊ¼»¯
+    blue_drop = [] #è“çƒçš„é—æ¼å€¼ï¼ˆå³å¤šå°‘æœŸæœªå‡ºç°ï¼‰
+    for i in range(0, 16): #åˆå§‹åŒ–
         blue_drop.append(0)
-    for i in range(0, len(data_array)): #µ¹Ğò
+    for i in range(0, len(data_array)): #å€’åº
         if blue_drop[int(data_array[i][7])-1]==0:
             blue_drop[int(data_array[i][7])-1] = i + 1 
     return blue_times, blue_step, blue_drop
 
 def blueAdvice(data_array, blue_times):
-    '''¼ÆËãÀºÇòÍÆ¼öËùĞèÒªµÄËùÓĞ²ÎÊı'''
+    '''è®¡ç®—ç¯®çƒæ¨èæ‰€éœ€è¦çš„æ‰€æœ‰å‚æ•°'''
 
-    #Ëã³öÈÈºÅºÍÀäºÅ
+    #ç®—å‡ºçƒ­å·å’Œå†·å·
     blue_hot = []
     blue_cold = []
-    sum_tmp = 0 #´ÎÊıÍ³¼Æ
+    sum_tmp = 0 #æ¬¡æ•°ç»Ÿè®¡
     while True:
         for i in range(0, len(blue_times)):
-            if blue_times[i]==max(blue_times): #ÅĞ¶ÏÊÇ²»ÊÇ×î´óµÄ
+            if blue_times[i]==max(blue_times): #åˆ¤æ–­æ˜¯ä¸æ˜¯æœ€å¤§çš„
                 blue_hot.append('%.2d'%(i+1))
                 sum_tmp = sum_tmp + blue_times[i]
-                blue_times[i] = 0 #°Ñ×î´óÕû³É0
+                blue_times[i] = 0 #æŠŠæœ€å¤§æ•´æˆ0
                 break
-        if (sum_tmp*2)>=len(data_array): #ÅĞ¶Ï´ÎÊıÖ®ºÍÊÇ·ñµ½ÁËÒ»°ë
+        if (sum_tmp*2)>=len(data_array): #åˆ¤æ–­æ¬¡æ•°ä¹‹å’Œæ˜¯å¦åˆ°äº†ä¸€åŠ
             break
-    for i in range(0, len(blue_times)): #²»µÈÓÚ0µÄ¾ÍÊÇcold
+    for i in range(0, len(blue_times)): #ä¸ç­‰äº0çš„å°±æ˜¯cold
         if blue_times[i]!=0:
             blue_cold.append('%.2d'%(i+1))
     
-    blueDatas = [] #ÀºÇòÏà¹ØÊı¾İ
+    blueDatas = [] #ç¯®çƒç›¸å…³æ•°æ®
     for i in range(0, len(data_array)):
-        t = {'ÆæÅ¼':'','ÈÈÀä':'','´óĞ¡':'','ÓëÉÏÆÚÏàÍ¬':'','ÓëºìÇòÏàÍ¬':'','5ÆÚÄÚÓĞÎŞ':'','11ÆÚÄÚÓĞÎŞ':''}
-        #ÆæÅ¼
+        t = {'å¥‡å¶':'','çƒ­å†·':'','å¤§å°':'','ä¸ä¸ŠæœŸç›¸åŒ':'','ä¸çº¢çƒç›¸åŒ':'','5æœŸå†…æœ‰æ— ':'','11æœŸå†…æœ‰æ— ':''}
+        #å¥‡å¶
         if int(data_array[i][7])%2==0:
-            t['ÆæÅ¼'] = 'Å¼'
+            t['å¥‡å¶'] = 'å¶'
         else:
-            t['ÆæÅ¼'] = 'Ææ'
-        #ÈÈÀä
+            t['å¥‡å¶'] = 'å¥‡'
+        #çƒ­å†·
         if data_array[i][7] in blue_hot:
-            t['ÈÈÀä'] = 'ÈÈ'
+            t['çƒ­å†·'] = 'çƒ­'
         else:
-            t['ÈÈÀä'] = 'Àä'
-        #´óĞ¡
+            t['çƒ­å†·'] = 'å†·'
+        #å¤§å°
         if int(data_array[i][7])>8:
-            t['´óĞ¡'] = '´ó'
+            t['å¤§å°'] = 'å¤§'
         else:
-            t['´óĞ¡'] = 'Ğ¡'
-        #ÓëÉÏÆÚÏàÍ¬£¨°üÀ¨+3ºÍ-3£©
+            t['å¤§å°'] = 'å°'
+        #ä¸ä¸ŠæœŸç›¸åŒï¼ˆåŒ…æ‹¬+3å’Œ-3ï¼‰
         if i<len(data_array)-1 and (int(data_array[i+1][7])-3)<=int(data_array[i][7])<=(int(data_array[i+1][7])+3):
-            t['ÓëÉÏÆÚÏàÍ¬'] = 'Í¬'
+            t['ä¸ä¸ŠæœŸç›¸åŒ'] = 'åŒ'
         elif i<len(data_array)-1 and (int(data_array[i+1][7])+3)>16 and int(data_array[i][7])<=(int(data_array[i+1][7])-16+3):
-            t['ÓëÉÏÆÚÏàÍ¬'] = 'Í¬'
+            t['ä¸ä¸ŠæœŸç›¸åŒ'] = 'åŒ'
         elif i<len(data_array)-1 and (int(data_array[i+1][7])-3)<0 and (int(data_array[i+1][7])+16-3)<=int(data_array[i][7]):
-            t['ÓëÉÏÆÚÏàÍ¬'] = 'Í¬'            
+            t['ä¸ä¸ŠæœŸç›¸åŒ'] = 'åŒ'            
         else:
-            t['ÓëÉÏÆÚÏàÍ¬'] = '²»'
-        #ÓëºìÇòÏàÍ¬£¨Õâ¸öÆäÊµÃ»Ê²Ã´ÓÃ£©£¨ÒòÎªÏÖÔÚÍêÈ«²»ÄÜ¿¼ÂÇºìÀ¶ÅäºÏ£©
+            t['ä¸ä¸ŠæœŸç›¸åŒ'] = 'ä¸'
+        #ä¸çº¢çƒç›¸åŒï¼ˆè¿™ä¸ªå…¶å®æ²¡ä»€ä¹ˆç”¨ï¼‰ï¼ˆå› ä¸ºç°åœ¨å®Œå…¨ä¸èƒ½è€ƒè™‘çº¢è“é…åˆï¼‰
         if data_array[i][7] in data_array[i][1:7]:
-            t['ÓëºìÇòÏàÍ¬'] = 'Í¬'
+            t['ä¸çº¢çƒç›¸åŒ'] = 'åŒ'
         else:
-            t['ÓëºìÇòÏàÍ¬'] = '²»'
-        #5ÆÚÄÚÓĞÎŞ£¨Õâ¸öÆäÊµÃ»Ê²Ã´ÓÃ£©£¨±ØĞëµÃ50£¥¶Ô50£¥²ÅĞĞ£©
+            t['ä¸çº¢çƒç›¸åŒ'] = 'ä¸'
+        #5æœŸå†…æœ‰æ— ï¼ˆè¿™ä¸ªå…¶å®æ²¡ä»€ä¹ˆç”¨ï¼‰ï¼ˆå¿…é¡»å¾—50ï¼…å¯¹50ï¼…æ‰è¡Œï¼‰
         if i>len(data_array)-6:
-            t['5ÆÚÄÚÓĞÎŞ'] = 'ÎŞ'
+            t['5æœŸå†…æœ‰æ— '] = 'æ— '
         elif data_array[i][7]==data_array[i+1][7] or \
              data_array[i][7]==data_array[i+2][7] or \
              data_array[i][7]==data_array[i+3][7] or \
              data_array[i][7]==data_array[i+4][7] or \
              data_array[i][7]==data_array[i+5][7]:
-            t['5ÆÚÄÚÓĞÎŞ'] = 'ÓĞ'
+            t['5æœŸå†…æœ‰æ— '] = 'æœ‰'
         else:
-            t['5ÆÚÄÚÓĞÎŞ'] = 'ÎŞ'
-        #11ÆÚÄÚÓĞÎŞ
+            t['5æœŸå†…æœ‰æ— '] = 'æ— '
+        #11æœŸå†…æœ‰æ— 
         if i>len(data_array)-12:
-            t['11ÆÚÄÚÓĞÎŞ'] = 'ÎŞ'
+            t['11æœŸå†…æœ‰æ— '] = 'æ— '
         elif data_array[i][7]==data_array[i+1][7] or \
              data_array[i][7]==data_array[i+2][7] or \
              data_array[i][7]==data_array[i+3][7] or \
@@ -1725,179 +1826,179 @@ def blueAdvice(data_array, blue_times):
              data_array[i][7]==data_array[i+9][7] or \
              data_array[i][7]==data_array[i+10][7] or \
              data_array[i][7]==data_array[i+11][7]:
-            t['11ÆÚÄÚÓĞÎŞ'] = 'ÓĞ'
+            t['11æœŸå†…æœ‰æ— '] = 'æœ‰'
         else:
-            t['11ÆÚÄÚÓĞÎŞ'] = 'ÎŞ'            
+            t['11æœŸå†…æœ‰æ— '] = 'æ— '            
 
         blueDatas.append(t)
             
-    #ÍÆ¼öĞèÒªÓÃµ½µÄ²Î¿¼Êı¾İ    
-    adviceDatas = {'ÆæÁ¬Ææ':0,'ÆæÁ¬Å¼':0, \
-                   'Å¼Á¬Ææ':0,'Å¼Á¬Å¼':0, \
-                   'ÆæÁ¬ÆæÁ¬Ææ':0,'ÆæÁ¬ÆæÁ¬Å¼':0, \
-                   'ÆæÁ¬Å¼Á¬Ææ':0,'ÆæÁ¬Å¼Á¬Å¼':0, \
-                   'Å¼Á¬ÆæÁ¬Ææ':0,'Å¼Á¬ÆæÁ¬Å¼':0, \
-                   'Å¼Á¬Å¼Á¬Ææ':0,'Å¼Á¬Å¼Á¬Å¼':0, \
-                   'ÈÈÁ¬Àä':0,'ÈÈÁ¬ÈÈ':0, \
-                   'ÀäÁ¬Àä':0,'ÀäÁ¬ÈÈ':0, \
-                   'ÈÈÁ¬ÈÈÁ¬Àä':0,'ÈÈÁ¬ÈÈÁ¬ÈÈ':0, \
-                   'ÀäÁ¬ÈÈÁ¬Àä':0,'ÀäÁ¬ÈÈÁ¬ÈÈ':0, \
-                   'ÈÈÁ¬ÀäÁ¬Àä':0,'ÈÈÁ¬ÀäÁ¬ÈÈ':0, \
-                   'ÀäÁ¬ÀäÁ¬Àä':0,'ÀäÁ¬ÀäÁ¬ÈÈ':0, \
-                   '´óÁ¬Ğ¡':0,'´óÁ¬´ó':0, \
-                   'Ğ¡Á¬Ğ¡':0,'Ğ¡Á¬´ó':0, \
-                   '´óÁ¬´óÁ¬Ğ¡':0,'´óÁ¬´óÁ¬´ó':0, \
-                   '´óÁ¬Ğ¡Á¬Ğ¡':0,'´óÁ¬Ğ¡Á¬´ó':0, \
-                   'Ğ¡Á¬´óÁ¬Ğ¡':0,'Ğ¡Á¬´óÁ¬´ó':0, \
-                   'Ğ¡Á¬Ğ¡Á¬Ğ¡':0,'Ğ¡Á¬Ğ¡Á¬´ó':0, \
-                   'Í¬Á¬²»':0,'Í¬Á¬Í¬':0, \
-                   '²»Á¬²»':0,'²»Á¬Í¬':0, \
-                   'Í¬Á¬Í¬Á¬²»':0,'Í¬Á¬Í¬Á¬Í¬':0, \
-                   '²»Á¬Í¬Á¬²»':0,'²»Á¬Í¬Á¬Í¬':0, \
-                   'Í¬Á¬²»Á¬²»':0,'Í¬Á¬²»Á¬Í¬':0, \
-                   '²»Á¬²»Á¬²»':0,'²»Á¬²»Á¬Í¬':0, \
-                   'ÓĞÁ¬ÎŞ':0,'ÓĞÁ¬ÓĞ':0, \
-                   'ÎŞÁ¬ÎŞ':0,'ÎŞÁ¬ÓĞ':0, \
-                   'ÓĞÁ¬ÓĞÁ¬ÎŞ':0,'ÓĞÁ¬ÓĞÁ¬ÓĞ':0, \
-                   'ÎŞÁ¬ÓĞÁ¬ÎŞ':0,'ÎŞÁ¬ÓĞÁ¬ÓĞ':0, \
-                   'ÓĞÁ¬ÎŞÁ¬ÎŞ':0,'ÓĞÁ¬ÎŞÁ¬ÓĞ':0, \
-                   'ÎŞÁ¬ÎŞÁ¬ÎŞ':0,'ÎŞÁ¬ÎŞÁ¬ÓĞ':0                 
+    #æ¨èéœ€è¦ç”¨åˆ°çš„å‚è€ƒæ•°æ®    
+    adviceDatas = {'å¥‡è¿å¥‡':0,'å¥‡è¿å¶':0, \
+                   'å¶è¿å¥‡':0,'å¶è¿å¶':0, \
+                   'å¥‡è¿å¥‡è¿å¥‡':0,'å¥‡è¿å¥‡è¿å¶':0, \
+                   'å¥‡è¿å¶è¿å¥‡':0,'å¥‡è¿å¶è¿å¶':0, \
+                   'å¶è¿å¥‡è¿å¥‡':0,'å¶è¿å¥‡è¿å¶':0, \
+                   'å¶è¿å¶è¿å¥‡':0,'å¶è¿å¶è¿å¶':0, \
+                   'çƒ­è¿å†·':0,'çƒ­è¿çƒ­':0, \
+                   'å†·è¿å†·':0,'å†·è¿çƒ­':0, \
+                   'çƒ­è¿çƒ­è¿å†·':0,'çƒ­è¿çƒ­è¿çƒ­':0, \
+                   'å†·è¿çƒ­è¿å†·':0,'å†·è¿çƒ­è¿çƒ­':0, \
+                   'çƒ­è¿å†·è¿å†·':0,'çƒ­è¿å†·è¿çƒ­':0, \
+                   'å†·è¿å†·è¿å†·':0,'å†·è¿å†·è¿çƒ­':0, \
+                   'å¤§è¿å°':0,'å¤§è¿å¤§':0, \
+                   'å°è¿å°':0,'å°è¿å¤§':0, \
+                   'å¤§è¿å¤§è¿å°':0,'å¤§è¿å¤§è¿å¤§':0, \
+                   'å¤§è¿å°è¿å°':0,'å¤§è¿å°è¿å¤§':0, \
+                   'å°è¿å¤§è¿å°':0,'å°è¿å¤§è¿å¤§':0, \
+                   'å°è¿å°è¿å°':0,'å°è¿å°è¿å¤§':0, \
+                   'åŒè¿ä¸':0,'åŒè¿åŒ':0, \
+                   'ä¸è¿ä¸':0,'ä¸è¿åŒ':0, \
+                   'åŒè¿åŒè¿ä¸':0,'åŒè¿åŒè¿åŒ':0, \
+                   'ä¸è¿åŒè¿ä¸':0,'ä¸è¿åŒè¿åŒ':0, \
+                   'åŒè¿ä¸è¿ä¸':0,'åŒè¿ä¸è¿åŒ':0, \
+                   'ä¸è¿ä¸è¿ä¸':0,'ä¸è¿ä¸è¿åŒ':0, \
+                   'æœ‰è¿æ— ':0,'æœ‰è¿æœ‰':0, \
+                   'æ— è¿æ— ':0,'æ— è¿æœ‰':0, \
+                   'æœ‰è¿æœ‰è¿æ— ':0,'æœ‰è¿æœ‰è¿æœ‰':0, \
+                   'æ— è¿æœ‰è¿æ— ':0,'æ— è¿æœ‰è¿æœ‰':0, \
+                   'æœ‰è¿æ— è¿æ— ':0,'æœ‰è¿æ— è¿æœ‰':0, \
+                   'æ— è¿æ— è¿æ— ':0,'æ— è¿æ— è¿æœ‰':0                 
                    }
-    #ÆæÅ¼ĞÔ
+    #å¥‡å¶æ€§
     for i in range(0, len(blueDatas)-1):
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬Ææ'] = adviceDatas['ÆæÁ¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬Å¼'] = adviceDatas['ÆæÁ¬Å¼'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬Ææ'] = adviceDatas['Å¼Á¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬Å¼'] = adviceDatas['Å¼Á¬Å¼'] + 1              
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¥‡'] = adviceDatas['å¥‡è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¶'] = adviceDatas['å¥‡è¿å¶'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¥‡'] = adviceDatas['å¶è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¶'] = adviceDatas['å¶è¿å¶'] + 1              
     for i in range(0, len(blueDatas)-2):
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Ææ' and blueDatas[i+2]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬ÆæÁ¬Ææ'] = adviceDatas['ÆæÁ¬ÆæÁ¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Ææ' and blueDatas[i+2]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬ÆæÁ¬Å¼'] = adviceDatas['ÆæÁ¬ÆæÁ¬Å¼'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Å¼' and blueDatas[i+2]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬Å¼Á¬Ææ'] = adviceDatas['ÆæÁ¬Å¼Á¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Å¼' and blueDatas[i+2]['ÆæÅ¼']=='Ææ':
-            adviceDatas['ÆæÁ¬Å¼Á¬Å¼'] = adviceDatas['ÆæÁ¬Å¼Á¬Å¼'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Ææ' and blueDatas[i+2]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬ÆæÁ¬Ææ'] = adviceDatas['Å¼Á¬ÆæÁ¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Ææ' and blueDatas[i+2]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬ÆæÁ¬Å¼'] = adviceDatas['Å¼Á¬ÆæÁ¬Å¼'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Ææ' and blueDatas[i+1]['ÆæÅ¼']=='Å¼' and blueDatas[i+2]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬Å¼Á¬Ææ'] = adviceDatas['Å¼Á¬Å¼Á¬Ææ'] + 1
-        if blueDatas[i]['ÆæÅ¼']=='Å¼' and blueDatas[i+1]['ÆæÅ¼']=='Å¼' and blueDatas[i+2]['ÆæÅ¼']=='Å¼':
-            adviceDatas['Å¼Á¬Å¼Á¬Å¼'] = adviceDatas['Å¼Á¬Å¼Á¬Å¼'] + 1
-    #ÈÈÀäĞÔ
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¥‡' and blueDatas[i+2]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¥‡è¿å¥‡'] = adviceDatas['å¥‡è¿å¥‡è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¥‡' and blueDatas[i+2]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¥‡è¿å¶'] = adviceDatas['å¥‡è¿å¥‡è¿å¶'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¶' and blueDatas[i+2]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¶è¿å¥‡'] = adviceDatas['å¥‡è¿å¶è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¶' and blueDatas[i+2]['å¥‡å¶']=='å¥‡':
+            adviceDatas['å¥‡è¿å¶è¿å¶'] = adviceDatas['å¥‡è¿å¶è¿å¶'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¥‡' and blueDatas[i+2]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¥‡è¿å¥‡'] = adviceDatas['å¶è¿å¥‡è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¥‡' and blueDatas[i+2]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¥‡è¿å¶'] = adviceDatas['å¶è¿å¥‡è¿å¶'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¥‡' and blueDatas[i+1]['å¥‡å¶']=='å¶' and blueDatas[i+2]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¶è¿å¥‡'] = adviceDatas['å¶è¿å¶è¿å¥‡'] + 1
+        if blueDatas[i]['å¥‡å¶']=='å¶' and blueDatas[i+1]['å¥‡å¶']=='å¶' and blueDatas[i+2]['å¥‡å¶']=='å¶':
+            adviceDatas['å¶è¿å¶è¿å¶'] = adviceDatas['å¶è¿å¶è¿å¶'] + 1
+    #çƒ­å†·æ€§
     for i in range(0, len(blueDatas)-1):
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬Àä'] = adviceDatas['ÈÈÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬ÈÈ'] = adviceDatas['ÈÈÁ¬ÈÈ'] + 1
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬Àä'] = adviceDatas['ÀäÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬ÈÈ'] = adviceDatas['ÀäÁ¬ÈÈ'] + 1
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿å†·'] = adviceDatas['çƒ­è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿çƒ­'] = adviceDatas['çƒ­è¿çƒ­'] + 1
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿å†·'] = adviceDatas['å†·è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿çƒ­'] = adviceDatas['å†·è¿çƒ­'] + 1
     for i in range(0, len(blueDatas)-2):
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ' and blueDatas[i+2]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬ÈÈÁ¬Àä'] = adviceDatas['ÈÈÁ¬ÈÈÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ' and blueDatas[i+2]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬ÈÈÁ¬ÈÈ'] = adviceDatas['ÈÈÁ¬ÈÈÁ¬ÈÈ'] + 1
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ' and blueDatas[i+2]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬ÈÈÁ¬Àä'] = adviceDatas['ÀäÁ¬ÈÈÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='ÈÈ' and blueDatas[i+2]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬ÈÈÁ¬ÈÈ'] = adviceDatas['ÀäÁ¬ÈÈÁ¬ÈÈ'] + 1
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='Àä' and blueDatas[i+2]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬ÀäÁ¬Àä'] = adviceDatas['ÈÈÁ¬ÀäÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='Àä' and blueDatas[i+2]['ÈÈÀä']=='ÈÈ':
-            adviceDatas['ÈÈÁ¬ÀäÁ¬ÈÈ'] = adviceDatas['ÈÈÁ¬ÀäÁ¬ÈÈ'] + 1
-        if blueDatas[i]['ÈÈÀä']=='Àä' and blueDatas[i+1]['ÈÈÀä']=='Àä' and blueDatas[i+2]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬ÀäÁ¬Àä'] = adviceDatas['ÀäÁ¬ÀäÁ¬Àä'] + 1
-        if blueDatas[i]['ÈÈÀä']=='ÈÈ' and blueDatas[i+1]['ÈÈÀä']=='Àä' and blueDatas[i+2]['ÈÈÀä']=='Àä':
-            adviceDatas['ÀäÁ¬ÀäÁ¬ÈÈ'] = adviceDatas['ÀäÁ¬ÀäÁ¬ÈÈ'] + 1
-    #´óĞ¡ĞÔ
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='çƒ­' and blueDatas[i+2]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿çƒ­è¿å†·'] = adviceDatas['çƒ­è¿çƒ­è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='çƒ­' and blueDatas[i+2]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿çƒ­è¿çƒ­'] = adviceDatas['çƒ­è¿çƒ­è¿çƒ­'] + 1
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='çƒ­' and blueDatas[i+2]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿çƒ­è¿å†·'] = adviceDatas['å†·è¿çƒ­è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='çƒ­' and blueDatas[i+2]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿çƒ­è¿çƒ­'] = adviceDatas['å†·è¿çƒ­è¿çƒ­'] + 1
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='å†·' and blueDatas[i+2]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿å†·è¿å†·'] = adviceDatas['çƒ­è¿å†·è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='å†·' and blueDatas[i+2]['çƒ­å†·']=='çƒ­':
+            adviceDatas['çƒ­è¿å†·è¿çƒ­'] = adviceDatas['çƒ­è¿å†·è¿çƒ­'] + 1
+        if blueDatas[i]['çƒ­å†·']=='å†·' and blueDatas[i+1]['çƒ­å†·']=='å†·' and blueDatas[i+2]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿å†·è¿å†·'] = adviceDatas['å†·è¿å†·è¿å†·'] + 1
+        if blueDatas[i]['çƒ­å†·']=='çƒ­' and blueDatas[i+1]['çƒ­å†·']=='å†·' and blueDatas[i+2]['çƒ­å†·']=='å†·':
+            adviceDatas['å†·è¿å†·è¿çƒ­'] = adviceDatas['å†·è¿å†·è¿çƒ­'] + 1
+    #å¤§å°æ€§
     for i in range(0, len(blueDatas)-1):
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬Ğ¡'] = adviceDatas['´óÁ¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬´ó'] = adviceDatas['´óÁ¬´ó'] + 1
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬Ğ¡'] = adviceDatas['Ğ¡Á¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬´ó'] = adviceDatas['Ğ¡Á¬´ó'] + 1
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å°'] = adviceDatas['å¤§è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å¤§'] = adviceDatas['å¤§è¿å¤§'] + 1
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å°'] = adviceDatas['å°è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å¤§'] = adviceDatas['å°è¿å¤§'] + 1
     for i in range(0, len(blueDatas)-2):
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='´ó' and blueDatas[i+2]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬´óÁ¬Ğ¡'] = adviceDatas['´óÁ¬´óÁ¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='´ó' and blueDatas[i+2]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬´óÁ¬´ó'] = adviceDatas['´óÁ¬´óÁ¬´ó'] + 1
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='´ó' and blueDatas[i+2]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬´óÁ¬Ğ¡'] = adviceDatas['Ğ¡Á¬´óÁ¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='´ó' and blueDatas[i+2]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬´óÁ¬´ó'] = adviceDatas['Ğ¡Á¬´óÁ¬´ó'] + 1
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='Ğ¡' and blueDatas[i+2]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬Ğ¡Á¬Ğ¡'] = adviceDatas['´óÁ¬Ğ¡Á¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='Ğ¡' and blueDatas[i+2]['´óĞ¡']=='´ó':
-            adviceDatas['´óÁ¬Ğ¡Á¬´ó'] = adviceDatas['´óÁ¬Ğ¡Á¬´ó'] + 1
-        if blueDatas[i]['´óĞ¡']=='Ğ¡' and blueDatas[i+1]['´óĞ¡']=='Ğ¡' and blueDatas[i+2]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬Ğ¡Á¬Ğ¡'] = adviceDatas['Ğ¡Á¬Ğ¡Á¬Ğ¡'] + 1
-        if blueDatas[i]['´óĞ¡']=='´ó' and blueDatas[i+1]['´óĞ¡']=='Ğ¡' and blueDatas[i+2]['´óĞ¡']=='Ğ¡':
-            adviceDatas['Ğ¡Á¬Ğ¡Á¬´ó'] = adviceDatas['Ğ¡Á¬Ğ¡Á¬´ó'] + 1
-    #ÏàÍ¬ĞÔ
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å¤§' and blueDatas[i+2]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å¤§è¿å°'] = adviceDatas['å¤§è¿å¤§è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å¤§' and blueDatas[i+2]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å¤§è¿å¤§'] = adviceDatas['å¤§è¿å¤§è¿å¤§'] + 1
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å¤§' and blueDatas[i+2]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å¤§è¿å°'] = adviceDatas['å°è¿å¤§è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å¤§' and blueDatas[i+2]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å¤§è¿å¤§'] = adviceDatas['å°è¿å¤§è¿å¤§'] + 1
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å°' and blueDatas[i+2]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å°è¿å°'] = adviceDatas['å¤§è¿å°è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å°' and blueDatas[i+2]['å¤§å°']=='å¤§':
+            adviceDatas['å¤§è¿å°è¿å¤§'] = adviceDatas['å¤§è¿å°è¿å¤§'] + 1
+        if blueDatas[i]['å¤§å°']=='å°' and blueDatas[i+1]['å¤§å°']=='å°' and blueDatas[i+2]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å°è¿å°'] = adviceDatas['å°è¿å°è¿å°'] + 1
+        if blueDatas[i]['å¤§å°']=='å¤§' and blueDatas[i+1]['å¤§å°']=='å°' and blueDatas[i+2]['å¤§å°']=='å°':
+            adviceDatas['å°è¿å°è¿å¤§'] = adviceDatas['å°è¿å°è¿å¤§'] + 1
+    #ç›¸åŒæ€§
     for i in range(0, len(blueDatas)-1):
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬²»'] = adviceDatas['Í¬Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬Í¬'] = adviceDatas['Í¬Á¬Í¬'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬²»'] = adviceDatas['²»Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬Í¬'] = adviceDatas['²»Á¬Í¬'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿ä¸'] = adviceDatas['åŒè¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿åŒ'] = adviceDatas['åŒè¿åŒ'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿ä¸'] = adviceDatas['ä¸è¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿åŒ'] = adviceDatas['ä¸è¿åŒ'] + 1
     for i in range(0, len(blueDatas)-2):
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬Í¬Á¬²»'] = adviceDatas['Í¬Á¬Í¬Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬Í¬Á¬Í¬'] = adviceDatas['Í¬Á¬Í¬Á¬Í¬'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬Í¬Á¬²»'] = adviceDatas['²»Á¬Í¬Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬Í¬Á¬Í¬'] = adviceDatas['²»Á¬Í¬Á¬Í¬'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬²»Á¬²»'] = adviceDatas['Í¬Á¬²»Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='Í¬':
-            adviceDatas['Í¬Á¬²»Á¬Í¬'] = adviceDatas['Í¬Á¬²»Á¬Í¬'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬²»Á¬²»'] = adviceDatas['²»Á¬²»Á¬²»'] + 1
-        if blueDatas[i]['ÓëÉÏÆÚÏàÍ¬']=='Í¬' and blueDatas[i+1]['ÓëÉÏÆÚÏàÍ¬']=='²»' and blueDatas[i+2]['ÓëÉÏÆÚÏàÍ¬']=='²»':
-            adviceDatas['²»Á¬²»Á¬Í¬'] = adviceDatas['²»Á¬²»Á¬Í¬'] + 1
-    #ÓĞÎŞĞÔ
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿åŒè¿ä¸'] = adviceDatas['åŒè¿åŒè¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿åŒè¿åŒ'] = adviceDatas['åŒè¿åŒè¿åŒ'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿åŒè¿ä¸'] = adviceDatas['ä¸è¿åŒè¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿åŒè¿åŒ'] = adviceDatas['ä¸è¿åŒè¿åŒ'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿ä¸è¿ä¸'] = adviceDatas['åŒè¿ä¸è¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ':
+            adviceDatas['åŒè¿ä¸è¿åŒ'] = adviceDatas['åŒè¿ä¸è¿åŒ'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿ä¸è¿ä¸'] = adviceDatas['ä¸è¿ä¸è¿ä¸'] + 1
+        if blueDatas[i]['ä¸ä¸ŠæœŸç›¸åŒ']=='åŒ' and blueDatas[i+1]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸' and blueDatas[i+2]['ä¸ä¸ŠæœŸç›¸åŒ']=='ä¸':
+            adviceDatas['ä¸è¿ä¸è¿åŒ'] = adviceDatas['ä¸è¿ä¸è¿åŒ'] + 1
+    #æœ‰æ— æ€§
     for i in range(0, len(blueDatas)-1):
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÎŞ'] = adviceDatas['ÓĞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÓĞ'] = adviceDatas['ÓĞÁ¬ÓĞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÎŞ'] = adviceDatas['ÎŞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÓĞ'] = adviceDatas['ÎŞÁ¬ÓĞ'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æ— '] = adviceDatas['æœ‰è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æœ‰'] = adviceDatas['æœ‰è¿æœ‰'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æ— '] = adviceDatas['æ— è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æœ‰'] = adviceDatas['æ— è¿æœ‰'] + 1
     for i in range(0, len(blueDatas)-2):
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÓĞÁ¬ÎŞ'] = adviceDatas['ÓĞÁ¬ÓĞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÓĞÁ¬ÓĞ'] = adviceDatas['ÓĞÁ¬ÓĞÁ¬ÓĞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÓĞÁ¬ÎŞ'] = adviceDatas['ÎŞÁ¬ÓĞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÓĞÁ¬ÓĞ'] = adviceDatas['ÎŞÁ¬ÓĞÁ¬ÓĞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÎŞÁ¬ÎŞ'] = adviceDatas['ÓĞÁ¬ÎŞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ':
-            adviceDatas['ÓĞÁ¬ÎŞÁ¬ÓĞ'] = adviceDatas['ÓĞÁ¬ÎŞÁ¬ÓĞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÎŞÁ¬ÎŞ'] = adviceDatas['ÎŞÁ¬ÎŞÁ¬ÎŞ'] + 1
-        if blueDatas[i]['11ÆÚÄÚÓĞÎŞ']=='ÓĞ' and blueDatas[i+1]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ' and blueDatas[i+2]['11ÆÚÄÚÓĞÎŞ']=='ÎŞ':
-            adviceDatas['ÎŞÁ¬ÎŞÁ¬ÓĞ'] = adviceDatas['ÎŞÁ¬ÎŞÁ¬ÓĞ'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æœ‰è¿æ— '] = adviceDatas['æœ‰è¿æœ‰è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æœ‰è¿æœ‰'] = adviceDatas['æœ‰è¿æœ‰è¿æœ‰'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æœ‰è¿æ— '] = adviceDatas['æ— è¿æœ‰è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æœ‰è¿æœ‰'] = adviceDatas['æ— è¿æœ‰è¿æœ‰'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æ— è¿æ— '] = adviceDatas['æœ‰è¿æ— è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æœ‰':
+            adviceDatas['æœ‰è¿æ— è¿æœ‰'] = adviceDatas['æœ‰è¿æ— è¿æœ‰'] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æ— è¿æ— '] = adviceDatas['æ— è¿æ— è¿æ— '] + 1
+        if blueDatas[i]['11æœŸå†…æœ‰æ— ']=='æœ‰' and blueDatas[i+1]['11æœŸå†…æœ‰æ— ']=='æ— ' and blueDatas[i+2]['11æœŸå†…æœ‰æ— ']=='æ— ':
+            adviceDatas['æ— è¿æ— è¿æœ‰'] = adviceDatas['æ— è¿æ— è¿æœ‰'] + 1
             
-    #·µ»ØÊı¾İ
+    #è¿”å›æ•°æ®
     return blueDatas, adviceDatas, blue_hot, blue_cold

@@ -1,38 +1,39 @@
-# -*- coding: cp936 -*-
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 # otherrrr@gmail.com
-# Ô¤²âÊı¾İÎÄ¼ş¶ÁĞ´
+# é¢„æµ‹æ•°æ®æ–‡ä»¶è¯»å†™
 
 import os
 
-def writePredictData(data_array, data_f, filter_array, num_pool): #Ô¤²âÊı¾İĞ´ÈëÎÄ¼ş
-    '''ĞÂ½¨¶ÔÓ¦ÈÕÆÚµÄÎÄ¼ş¼Ğ£¬´´½¨²¢Ğ´ÈëÔ¤²âÊı¾İÎÄ¼ş
-       ´´½¨²¢Ğ´Èë¶ÔÓ¦µÄ¹ıÂËÌõ¼şÎÄ¼ş¼Ó
+def writePredictData(data_array, data_f, filter_array, num_pool): #é¢„æµ‹æ•°æ®å†™å…¥æ–‡ä»¶
+    '''æ–°å»ºå¯¹åº”æ—¥æœŸçš„æ–‡ä»¶å¤¹ï¼Œåˆ›å»ºå¹¶å†™å…¥é¢„æµ‹æ•°æ®æ–‡ä»¶
+       åˆ›å»ºå¹¶å†™å…¥å¯¹åº”çš„è¿‡æ»¤æ¡ä»¶æ–‡ä»¶åŠ 
     '''
-    #ÆÚÊı
+    #æœŸæ•°
     date = '%s'%(int(data_array[0][0])+1)
-    #´´½¨ĞÂÄ¿Â¼
+    #åˆ›å»ºæ–°ç›®å½•
     try:
         os.mkdir(date)
-    except OSError: #Èç¹ûÎÄ¼ş¼ĞÒÑ´æÔÚ£¬Ôò»á³öÏÖ´Ë´íÎó
+    except OSError: #å¦‚æœæ–‡ä»¶å¤¹å·²å­˜åœ¨ï¼Œåˆ™ä¼šå‡ºç°æ­¤é”™è¯¯
         pass
-    #ÔÚĞÂÄ¿Â¼ÖĞ´´½¨²¢Ğ´ÈëÎÄ¼ş2007XXXÔ¤²âÊı¾İ.txt
-    f = open('%s/%sÔ¤²âÊı¾İ.txt'%(date,date), 'w')
-    #Ğ´Êı¾İ
+    #åœ¨æ–°ç›®å½•ä¸­åˆ›å»ºå¹¶å†™å…¥æ–‡ä»¶2007XXXé¢„æµ‹æ•°æ®.txt
+    f = open(u'%s/%sé¢„æµ‹æ•°æ®.txt'%(date,date), 'w')
+    #å†™æ•°æ®
     for i in range(0, len(data_f)):
-        #ÕâÀïÈç¹ûÊ¹ÓÃÒ»¸ö×ÓÑ­»·µÄ»°£¬»á»¨·Ñ¸ü¶àÊ±¼ä
+        #è¿™é‡Œå¦‚æœä½¿ç”¨ä¸€ä¸ªå­å¾ªç¯çš„è¯ï¼Œä¼šèŠ±è´¹æ›´å¤šæ—¶é—´
         f.write('%.2d %.2d %.2d %.2d %.2d %.2d\n'\
                 %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5]))
     f.close()   
-    #ÔÚĞÂÄ¿Â¼ÖĞ´´½¨²¢Ğ´ÈëÎÄ¼ş2007XXX¹ıÂËÌõ¼ş.txt
-    f = open('%s/%s¹ıÂËÌõ¼ş.txt'%(date,date), 'w')
-    f.write('     ()Ãû³Æ         ()ÊÇ·ñÆôÓÃ()·¶Î§\n')
+    #åœ¨æ–°ç›®å½•ä¸­åˆ›å»ºå¹¶å†™å…¥æ–‡ä»¶2007XXXè¿‡æ»¤æ¡ä»¶.txt
+    f = open(u'%s/%sè¿‡æ»¤æ¡ä»¶.txt'%(date,date), 'w')
+    f.write('     ()åç§°         ()æ˜¯å¦å¯ç”¨()èŒƒå›´\n')
     f.write('==BEGIN=============================\n')
     for i in range(0, len(filter_array)):
         f.write('%s'%(filter_array[i][0]))
         f.write('()')
         f.write('%s'%(filter_array[i][1]))
         f.write('()')
-        f.write('%s'%(filter_array[i][2]))
+        f.write('%s'%(filter_array[i][2].encode('utf-8')))
         f.write('()')
         f.write('%s'%(filter_array[i][3]))
         f.write('\n')
@@ -43,25 +44,25 @@ def writePredictData(data_array, data_f, filter_array, num_pool): #Ô¤²âÊı¾İĞ´ÈëÎ
     f.write('==\n')
     f.close()
     
-def readPredictData(date): #¶ÁÈ¡Ô¤²âÊı¾İºÍ¹ıÂËÌõ¼ş
-    '''¶ÁÈ¡Ô¤²âÊı¾İºÍÊ¹ÓÃµ½µÄ¹ıÂËÌõ¼ş'''   
-    #¶ÁÔ¤²âÊı¾İ
-    f = open('%s/%sÔ¤²âÊı¾İ.txt'%(date,date), 'r')
+def readPredictData(date): #è¯»å–é¢„æµ‹æ•°æ®å’Œè¿‡æ»¤æ¡ä»¶
+    '''è¯»å–é¢„æµ‹æ•°æ®å’Œä½¿ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶'''   
+    #è¯»é¢„æµ‹æ•°æ®
+    f = open(u'%s/%sé¢„æµ‹æ•°æ®.txt'%(date,date), 'r')
     tmp = f.readlines() 
     f.close()
-    predict_data = [] #Ô¤²âÊı¾İ
+    predict_data = [] #é¢„æµ‹æ•°æ®
     for i in range(0, len(tmp)):
         predict_data.append([tmp[i][0:2],tmp[i][3:5],tmp[i][6:8],\
                              tmp[i][9:11],tmp[i][12:14],tmp[i][15:17]])
-    #¶Á¹ıÂËÌõ¼ş
-    f = open('%s/%s¹ıÂËÌõ¼ş.txt'%(date,date), 'r')
+    #è¯»è¿‡æ»¤æ¡ä»¶
+    f = open(u'%s/%sè¿‡æ»¤æ¡ä»¶.txt'%(date,date), 'r')
     tmp = f.readlines()
     f.close()
-    predict_filter = [] #Ê¹ÓÃµÄ¹ıÂËÌõ¼ş
-    tmp_m = tmp[2:-1]#È¥µôÊ×Î²
+    predict_filter = [] #ä½¿ç”¨çš„è¿‡æ»¤æ¡ä»¶
+    tmp_m = tmp[2:-1]#å»æ‰é¦–å°¾
     for i in range(0, len(tmp_m)): 
-        if 'ÊÇ' in tmp_m[i]: #È·¶¨¡°Ê¹ÓÃ¡±
-            term = ['µÚ¼¸Ïî', 'Ãû³Æ', 'ÊÇ·ñÆôÓÃ', '·¶Î§']
+        if 'æ˜¯' in tmp_m[i]: #ç¡®å®šâ€œä½¿ç”¨â€
+            term = ['ç¬¬å‡ é¡¹', 'åç§°', 'æ˜¯å¦å¯ç”¨', 'èŒƒå›´']
             term[0] =  tmp_m[i].split('()')[0]
             term[1] =  tmp_m[i].split('()')[1]
             term[2] =  tmp_m[i].split('()')[2]
@@ -70,8 +71,8 @@ def readPredictData(date): #¶ÁÈ¡Ô¤²âÊı¾İºÍ¹ıÂËÌõ¼ş
         else:
             pass
 
-    #¶ÁÈ¡Ñ¡ÔñºÅÂë
-    select_num = [] #ºÅÂë³Ø£¬Õâ¸öºÍ¹ıÂËÀïÃæÄÇ¸öÉÔÓĞ²»Í¬£¬ÄÇ¸öÊÇintĞÍµÄlist£¬Õâ¸öÊÇstrĞÍµÄ
+    #è¯»å–é€‰æ‹©å·ç 
+    select_num = [] #å·ç æ± ï¼Œè¿™ä¸ªå’Œè¿‡æ»¤é‡Œé¢é‚£ä¸ªç¨æœ‰ä¸åŒï¼Œé‚£ä¸ªæ˜¯intå‹çš„listï¼Œè¿™ä¸ªæ˜¯strå‹çš„
     for i in range(0, (len(tmp[-1])-4)/3):
         select_num.append(tmp[-1][i*3+2:i*3+4])
     return predict_data, predict_filter, select_num

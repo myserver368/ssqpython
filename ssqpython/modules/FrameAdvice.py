@@ -1,9 +1,11 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameAdvice
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# ю╤гРмф╪ЖцФ╟Е
+# Х⌠²Г░┐Ф▌╗Х█░И²╒Ф²©
 
 import wx
+import locale
 
 from DataFileIO import readDataFileToArray
 from DataCompute import blueCoumpute, blueAdvice
@@ -32,284 +34,284 @@ class FrameAdvice(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #цЭаНпплАй╬
-        print 'FrameAdviceфТ╤╞'
+        #Е▒╫Д╩╓Х║▄Ф▐░Г╓╨
+        print (u'FrameAdviceЕ░╞Е┼╗').encode(locale.getdefaultlocale()[1])
         
-        data_array = readDataFileToArray() #╤ах║©╙╫╠йЩ╬щ
-        blue_times, blue_step, blue_drop = blueCoumpute(data_array) #╤ах║ю╨гРЁЖгР╢нйЩ
-        blueDatas, adviceDatas, blue_hot, blue_cold = blueAdvice(data_array, blue_times) #╤ах║оЮ╧ьйЩ╬щ
+        data_array = readDataFileToArray() #Х╞╩Е▐√Е╪─Е╔√Ф∙╟Ф█╝
+        blue_times, blue_step, blue_drop = blueCoumpute(data_array) #Х╞╩Е▐√Г╞╝Г░┐Е┤╨Г░┐Ф╛║Ф∙╟
+        blueDatas, adviceDatas, blue_hot, blue_cold = blueAdvice(data_array, blue_times) #Х╞╩Е▐√Г⌡╦Е┘ЁФ∙╟Ф█╝
         
-        self.textCtrl1.Clear() #гЕ©уфад╩
-        self.textCtrl1.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) #вжлЕиХжц
+        self.textCtrl1.Clear() #Ф╦┘Г╘╨Е╠▐Е╧∙
+        self.textCtrl1.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) #Е╜≈Д╫⌠Х╝╬Г╫╝
         
-        last_text = '' #г╟фз╥жнЖ
-        last_text = last_text + 'вН╫Э5фз©╙╫╠ю╨гР╣доЮ╧ьйЩ╬щё╨\n'
+        last_text = '' #Е┴█Ф°÷Е┬├Ф·░
+        last_text = last_text + 'Ф°─Х©▒5Ф°÷Е╪─Е╔√Г╞╝Г░┐Г └Г⌡╦Е┘ЁФ∙╟Ф█╝О╪ \n'
         for i in range(4, -1, -1):
             last_text = last_text + '%s %s %s %s %s '%(data_array[i][0],data_array[i][7],\
-                                                        blueDatas[i]['фФе╪'],blueDatas[i]['ххюД'],blueDatas[i]['╢Сп║'])
-            if blueDatas[i]['сКиофзоЮм╛']=='м╛':
-                last_text = last_text + 'сКиофзоЮм╛ '
+                                                        blueDatas[i]['Е╔┤Е│╤'],blueDatas[i]['Г┐╜Е├╥'],blueDatas[i]['Е╓╖Е╟▐'])
+            if blueDatas[i]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄':
+                last_text = last_text + 'Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄ '
             else:
-                last_text = last_text + 'сКиофз╡╩м╛ '
-            if blueDatas[i]['11фздзспнч']=='сп':
-                last_text = last_text + '11фздзсп\n'
+                last_text = last_text + 'Д╦▌Д╦┼Ф°÷Д╦█Е░▄ '
+            if blueDatas[i]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴':
+                last_text = last_text + '11Ф°÷Е├┘Ф°┴\n'
             else:
-                last_text = last_text + '11фздзнч\n'
+                last_text = last_text + '11Ф°÷Е├┘Ф≈═\n'
 
-        self.textCtrl1.AppendText(last_text+'\n')#отй╬иофз╥жнЖ
+        self.textCtrl1.AppendText(last_text.decode('utf-8')+'\n')#Ф≤╬Г╓╨Д╦┼Ф°÷Е┬├Ф·░
         
-        now_text = '' #╠╬фз╥жнЖ
-        #фФе╪пт╥жнЖ------------------------------------------------------------------
-        now_text = now_text + 'фФе╪пт╥жнЖё╨\n'
+        now_text = '' #Ф°╛Ф°÷Е┬├Ф·░
+        #Е╔┤Е│╤Ф─╖Е┬├Ф·░------------------------------------------------------------------
+        now_text = now_text + 'Е╔┤Е│╤Ф─╖Е┬├Ф·░О╪ \n'
         #-
-        if blueDatas[0]['фФе╪']=='фФ': #иор╩фзн╙фФ
-            ToOdd = adviceDatas['фФа╛фФ']*100.0/(adviceDatas['фФа╛фФ']+adviceDatas['фФа╛е╪']) #а╛вефФ
-            ToEven = adviceDatas['фФа╛е╪']*100.0/(adviceDatas['фФа╛фФ']+adviceDatas['фФа╛е╪']) #а╛вее╪
-            now_text = now_text + 'фФйЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToOdd) + '%\n'
-            now_text = now_text + 'фФйЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToEven) + '%\n'            
-        if blueDatas[0]['фФе╪']=='е╪': #иор╩фзн╙е╪
-            ToOdd = adviceDatas['е╪а╛фФ']*100.0/(adviceDatas['е╪а╛фФ']+adviceDatas['е╪а╛е╪'])
-            ToEven = adviceDatas['е╪а╛е╪']*100.0/(adviceDatas['е╪а╛фФ']+adviceDatas['е╪а╛е╪'])          
-            now_text = now_text + 'е╪йЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToOdd) + '%\n'
-            now_text = now_text + 'е╪йЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToEven) + '%\n'
+        if blueDatas[0]['Е╔┤Е│╤']=='Е╔┤': #Д╦┼Д╦─Ф°÷Д╦╨Е╔┤
+            ToOdd = adviceDatas['Е╔┤Х©·Е╔┤']*100.0/(adviceDatas['Е╔┤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е│╤']) #Х©·Г²─Е╔┤
+            ToEven = adviceDatas['Е╔┤Х©·Е│╤']*100.0/(adviceDatas['Е╔┤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е│╤']) #Х©·Г²─Е│╤
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToOdd) + '%\n'
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToEven) + '%\n'            
+        if blueDatas[0]['Е╔┤Е│╤']=='Е│╤': #Д╦┼Д╦─Ф°÷Д╦╨Е│╤
+            ToOdd = adviceDatas['Е│╤Х©·Е╔┤']*100.0/(adviceDatas['Е│╤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е│╤'])
+            ToEven = adviceDatas['Е│╤Х©·Е│╤']*100.0/(adviceDatas['Е│╤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е│╤'])          
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToOdd) + '%\n'
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToEven) + '%\n'
         #--   
-        if blueDatas[0]['фФе╪']=='фФ' and blueDatas[1]['фФе╪']=='фФ': #иор╩фзн╙фФё╛иоиор╩фзн╙фФ
-            ToToOdd = adviceDatas['фФа╛фФа╛фФ']*100.0/(adviceDatas['фФа╛фФа╛фФ']+adviceDatas['фФа╛фФа╛е╪']) #а╛а╛вефФ
-            ToToEven = adviceDatas['фФа╛фФа╛е╪']*100.0/(adviceDatas['фФа╛фФа╛фФ']+adviceDatas['фФа╛фФа╛е╪']) #а╛а╛вее╪
-            now_text = now_text + 'фФйЩа╛вефФйЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToToOdd) + '%\n'
-            now_text = now_text + 'фФйЩа╛вефФйЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToToEven) + '%\n'
-        if blueDatas[0]['фФе╪']=='фФ' and blueDatas[1]['фФе╪']=='е╪': #иор╩фзн╙фФё╛иоиор╩фзн╙е╪
-            ToToOdd = adviceDatas['е╪а╛фФа╛фФ']*100.0/(adviceDatas['е╪а╛фФа╛фФ']+adviceDatas['е╪а╛фФа╛е╪'])
-            ToToEven = adviceDatas['е╪а╛фФа╛е╪']*100.0/(adviceDatas['е╪а╛фФа╛фФ']+adviceDatas['е╪а╛фФа╛е╪'])
-            now_text = now_text + 'е╪йЩа╛вефФйЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToToOdd) + '%\n'
-            now_text = now_text + 'е╪йЩа╛вефФйЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToToEven) + '%\n'             
-        if blueDatas[0]['фФе╪']=='е╪' and blueDatas[1]['фФе╪']=='фФ': #иор╩фзн╙е╪ё╛иоиор╩фзн╙фФ
-            ToToOdd = adviceDatas['фФа╛е╪а╛фФ']*100.0/(adviceDatas['фФа╛е╪а╛фФ']+adviceDatas['фФа╛е╪а╛е╪'])
-            ToToEven = adviceDatas['фФа╛е╪а╛е╪']*100.0/(adviceDatas['фФа╛е╪а╛фФ']+adviceDatas['фФа╛е╪а╛е╪'])
-            now_text = now_text + 'фФйЩа╛вее╪йЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToToOdd) + '%\n'
-            now_text = now_text + 'фФйЩа╛вее╪йЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToToEven) + '%\n'            
-        if blueDatas[0]['фФе╪']=='е╪' and blueDatas[1]['фФе╪']=='е╪': #иор╩фзн╙е╪ё╛иоиор╩фзн╙е╪
-            ToToOdd = adviceDatas['е╪а╛е╪а╛фФ']*100.0/(adviceDatas['е╪а╛е╪а╛фФ']+adviceDatas['е╪а╛е╪а╛е╪'])
-            ToToEven = adviceDatas['е╪а╛е╪а╛е╪']*100.0/(adviceDatas['е╪а╛е╪а╛фФ']+adviceDatas['е╪а╛е╪а╛е╪'])           
-            now_text = now_text + 'е╪йЩа╛вее╪йЩа╛вефФйЩ╣д╦ебйн╙ё╨%.2f'%(ToToOdd) + '%\n'
-            now_text = now_text + 'е╪йЩа╛вее╪йЩа╛вее╪йЩ╣д╦ебйн╙ё╨%.2f'%(ToToEven) + '%\n'         
-        #ххюДпт╥жнЖ------------------------------------------------------------------
-        now_text = now_text + '\nххюДпт╥жнЖё╨\n'
+        if blueDatas[0]['Е╔┤Е│╤']=='Е╔┤' and blueDatas[1]['Е╔┤Е│╤']=='Е╔┤': #Д╦┼Д╦─Ф°÷Д╦╨Е╔┤О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╔┤
+            ToToOdd = adviceDatas['Е╔┤Х©·Е╔┤Х©·Е╔┤']*100.0/(adviceDatas['Е╔┤Х©·Е╔┤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е╔┤Х©·Е│╤']) #Х©·Х©·Г²─Е╔┤
+            ToToEven = adviceDatas['Е╔┤Х©·Е╔┤Х©·Е│╤']*100.0/(adviceDatas['Е╔┤Х©·Е╔┤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е╔┤Х©·Е│╤']) #Х©·Х©·Г²─Е│╤
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToOdd) + '%\n'
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToEven) + '%\n'
+        if blueDatas[0]['Е╔┤Е│╤']=='Е╔┤' and blueDatas[1]['Е╔┤Е│╤']=='Е│╤': #Д╦┼Д╦─Ф°÷Д╦╨Е╔┤О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е│╤
+            ToToOdd = adviceDatas['Е│╤Х©·Е╔┤Х©·Е╔┤']*100.0/(adviceDatas['Е│╤Х©·Е╔┤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е╔┤Х©·Е│╤'])
+            ToToEven = adviceDatas['Е│╤Х©·Е╔┤Х©·Е│╤']*100.0/(adviceDatas['Е│╤Х©·Е╔┤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е╔┤Х©·Е│╤'])
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToOdd) + '%\n'
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToEven) + '%\n'             
+        if blueDatas[0]['Е╔┤Е│╤']=='Е│╤' and blueDatas[1]['Е╔┤Е│╤']=='Е╔┤': #Д╦┼Д╦─Ф°÷Д╦╨Е│╤О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╔┤
+            ToToOdd = adviceDatas['Е╔┤Х©·Е│╤Х©·Е╔┤']*100.0/(adviceDatas['Е╔┤Х©·Е│╤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е│╤Х©·Е│╤'])
+            ToToEven = adviceDatas['Е╔┤Х©·Е│╤Х©·Е│╤']*100.0/(adviceDatas['Е╔┤Х©·Е│╤Х©·Е╔┤']+adviceDatas['Е╔┤Х©·Е│╤Х©·Е│╤'])
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е│╤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToOdd) + '%\n'
+            now_text = now_text + 'Е╔┤Ф∙╟Х©·Г²─Е│╤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToEven) + '%\n'            
+        if blueDatas[0]['Е╔┤Е│╤']=='Е│╤' and blueDatas[1]['Е╔┤Е│╤']=='Е│╤': #Д╦┼Д╦─Ф°÷Д╦╨Е│╤О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е│╤
+            ToToOdd = adviceDatas['Е│╤Х©·Е│╤Х©·Е╔┤']*100.0/(adviceDatas['Е│╤Х©·Е│╤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е│╤Х©·Е│╤'])
+            ToToEven = adviceDatas['Е│╤Х©·Е│╤Х©·Е│╤']*100.0/(adviceDatas['Е│╤Х©·Е│╤Х©·Е╔┤']+adviceDatas['Е│╤Х©·Е│╤Х©·Е│╤'])           
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е│╤Ф∙╟Х©·Г²─Е╔┤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToOdd) + '%\n'
+            now_text = now_text + 'Е│╤Ф∙╟Х©·Г²─Е│╤Ф∙╟Х©·Г²─Е│╤Ф∙╟Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToEven) + '%\n'         
+        #Г┐╜Е├╥Ф─╖Е┬├Ф·░------------------------------------------------------------------
+        now_text = now_text + '\nГ┐╜Е├╥Ф─╖Е┬├Ф·░О╪ \n'
         #-
-        if blueDatas[0]['ххюД']=='хх': #иор╩фзн╙хх
-            ToCold = adviceDatas['хха╛юД']*100.0/(adviceDatas['хха╛юД']+adviceDatas['хха╛хх'])
-            ToHot = adviceDatas['хха╛хх']*100.0/(adviceDatas['хха╛юД']+adviceDatas['хха╛хх'])
-            now_text = now_text + 'хх╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToCold) + '%\n'
-            now_text = now_text + 'хх╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToHot) + '%\n'
-        if blueDatas[0]['ххюД']=='юД': #иор╩фзн╙юД
-            ToCold = adviceDatas['юДа╛юД']*100.0/(adviceDatas['юДа╛юД']+adviceDatas['юДа╛хх'])
-            ToHot = adviceDatas['юДа╛хх']*100.0/(adviceDatas['юДа╛юД']+adviceDatas['юДа╛хх'])
-            now_text = now_text + 'юД╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToCold) + '%\n'
-            now_text = now_text + 'юД╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToHot) + '%\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Г┐╜': #Д╦┼Д╦─Ф°÷Д╦╨Г┐╜
+            ToCold = adviceDatas['Г┐╜Х©·Е├╥']*100.0/(adviceDatas['Г┐╜Х©·Е├╥']+adviceDatas['Г┐╜Х©·Г┐╜'])
+            ToHot = adviceDatas['Г┐╜Х©·Г┐╜']*100.0/(adviceDatas['Г┐╜Х©·Е├╥']+adviceDatas['Г┐╜Х©·Г┐╜'])
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToCold) + '%\n'
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToHot) + '%\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Е├╥': #Д╦┼Д╦─Ф°÷Д╦╨Е├╥
+            ToCold = adviceDatas['Е├╥Х©·Е├╥']*100.0/(adviceDatas['Е├╥Х©·Е├╥']+adviceDatas['Е├╥Х©·Г┐╜'])
+            ToHot = adviceDatas['Е├╥Х©·Г┐╜']*100.0/(adviceDatas['Е├╥Х©·Е├╥']+adviceDatas['Е├╥Х©·Г┐╜'])
+            now_text = now_text + 'Е├╥Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToCold) + '%\n'
+            now_text = now_text + 'Е├╥Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToHot) + '%\n'
         #--
-        if blueDatas[0]['ххюД']=='хх' and blueDatas[1]['ххюД']=='хх': #иор╩фзн╙ххё╛иоиор╩фзн╙хх
-            ToToCold = adviceDatas['хха╛хха╛юД']*100.0/(adviceDatas['хха╛хха╛юД']+adviceDatas['хха╛хха╛хх'])
-            ToToHot = adviceDatas['хха╛хха╛хх']*100.0/(adviceDatas['хха╛хха╛юД']+adviceDatas['хха╛хха╛хх'])
-            now_text = now_text + 'хх╨еа╛вехх╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToToCold) + '%\n'
-            now_text = now_text + 'хх╨еа╛вехх╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToToHot) + '%\n'
-        if blueDatas[0]['ххюД']=='хх' and blueDatas[1]['ххюД']=='юД': #иор╩фзн╙ххё╛иоиор╩фзн╙юД
-            ToToCold = adviceDatas['юДа╛хха╛юД']*100.0/(adviceDatas['юДа╛хха╛юД']+adviceDatas['юДа╛хха╛хх'])
-            ToToHot = adviceDatas['юДа╛хха╛хх']*100.0/(adviceDatas['юДа╛хха╛юД']+adviceDatas['юДа╛хха╛хх'])
-            now_text = now_text + 'хх╨еа╛вехх╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToToCold) + '%\n'
-            now_text = now_text + 'хх╨еа╛вехх╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToToHot) + '%\n'
-        if blueDatas[0]['ххюД']=='юД' and blueDatas[1]['ххюД']=='хх': #иор╩фзн╙юДё╛иоиор╩фзн╙хх
-            ToToCold = adviceDatas['хха╛юДа╛юД']*100.0/(adviceDatas['хха╛юДа╛юД']+adviceDatas['хха╛юДа╛хх'])
-            ToToHot = adviceDatas['хха╛юДа╛хх']*100.0/(adviceDatas['хха╛юДа╛юД']+adviceDatas['хха╛юДа╛хх'])
-            now_text = now_text + 'хх╨еа╛веюД╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToToCold) + '%\n'
-            now_text = now_text + 'хх╨еа╛веюД╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToToHot) + '%\n'
-        if blueDatas[0]['ххюД']=='юД' and blueDatas[1]['ххюД']=='юД': #иор╩фзн╙юДё╛иоиор╩фзн╙юД
-            ToToCold = adviceDatas['юДа╛юДа╛юД']*100.0/(adviceDatas['юДа╛юДа╛юД']+adviceDatas['юДа╛юДа╛хх'])
-            ToToHot = adviceDatas['юДа╛юДа╛хх']*100.0/(adviceDatas['юДа╛юДа╛юД']+adviceDatas['юДа╛юДа╛хх'])
-            now_text = now_text + 'юД╨еа╛веюД╨еа╛веюД╨е╣д╦ебйн╙ё╨%.2f'%(ToToCold) + '%\n'
-            now_text = now_text + 'юД╨еа╛веюД╨еа╛вехх╨е╣д╦ебйн╙ё╨%.2f'%(ToToHot) + '%\n'
-        #╢Сп║пт╥жнЖ------------------------------------------------------------------
-        now_text = now_text + '\n╢Сп║пт╥жнЖё╨\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Г┐╜' and blueDatas[1]['Г┐╜Е├╥']=='Г┐╜': #Д╦┼Д╦─Ф°÷Д╦╨Г┐╜О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Г┐╜
+            ToToCold = adviceDatas['Г┐╜Х©·Г┐╜Х©·Е├╥']*100.0/(adviceDatas['Г┐╜Х©·Г┐╜Х©·Е├╥']+adviceDatas['Г┐╜Х©·Г┐╜Х©·Г┐╜'])
+            ToToHot = adviceDatas['Г┐╜Х©·Г┐╜Х©·Г┐╜']*100.0/(adviceDatas['Г┐╜Х©·Г┐╜Х©·Е├╥']+adviceDatas['Г┐╜Х©·Г┐╜Х©·Г┐╜'])
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToCold) + '%\n'
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToHot) + '%\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Г┐╜' and blueDatas[1]['Г┐╜Е├╥']=='Е├╥': #Д╦┼Д╦─Ф°÷Д╦╨Г┐╜О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е├╥
+            ToToCold = adviceDatas['Е├╥Х©·Г┐╜Х©·Е├╥']*100.0/(adviceDatas['Е├╥Х©·Г┐╜Х©·Е├╥']+adviceDatas['Е├╥Х©·Г┐╜Х©·Г┐╜'])
+            ToToHot = adviceDatas['Е├╥Х©·Г┐╜Х©·Г┐╜']*100.0/(adviceDatas['Е├╥Х©·Г┐╜Х©·Е├╥']+adviceDatas['Е├╥Х©·Г┐╜Х©·Г┐╜'])
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToCold) + '%\n'
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToHot) + '%\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Е├╥' and blueDatas[1]['Г┐╜Е├╥']=='Г┐╜': #Д╦┼Д╦─Ф°÷Д╦╨Е├╥О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Г┐╜
+            ToToCold = adviceDatas['Г┐╜Х©·Е├╥Х©·Е├╥']*100.0/(adviceDatas['Г┐╜Х©·Е├╥Х©·Е├╥']+adviceDatas['Г┐╜Х©·Е├╥Х©·Г┐╜'])
+            ToToHot = adviceDatas['Г┐╜Х©·Е├╥Х©·Г┐╜']*100.0/(adviceDatas['Г┐╜Х©·Е├╥Х©·Е├╥']+adviceDatas['Г┐╜Х©·Е├╥Х©·Г┐╜'])
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Е├╥Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToCold) + '%\n'
+            now_text = now_text + 'Г┐╜Е▐╥Х©·Г²─Е├╥Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToHot) + '%\n'
+        if blueDatas[0]['Г┐╜Е├╥']=='Е├╥' and blueDatas[1]['Г┐╜Е├╥']=='Е├╥': #Д╦┼Д╦─Ф°÷Д╦╨Е├╥О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е├╥
+            ToToCold = adviceDatas['Е├╥Х©·Е├╥Х©·Е├╥']*100.0/(adviceDatas['Е├╥Х©·Е├╥Х©·Е├╥']+adviceDatas['Е├╥Х©·Е├╥Х©·Г┐╜'])
+            ToToHot = adviceDatas['Е├╥Х©·Е├╥Х©·Г┐╜']*100.0/(adviceDatas['Е├╥Х©·Е├╥Х©·Е├╥']+adviceDatas['Е├╥Х©·Е├╥Х©·Г┐╜'])
+            now_text = now_text + 'Е├╥Е▐╥Х©·Г²─Е├╥Е▐╥Х©·Г²─Е├╥Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToCold) + '%\n'
+            now_text = now_text + 'Е├╥Е▐╥Х©·Г²─Е├╥Е▐╥Х©·Г²─Г┐╜Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToHot) + '%\n'
+        #Е╓╖Е╟▐Ф─╖Е┬├Ф·░------------------------------------------------------------------
+        now_text = now_text + '\nЕ╓╖Е╟▐Ф─╖Е┬├Ф·░О╪ \n'
         #-
-        if blueDatas[0]['╢Сп║']=='╢С': #иор╩фзн╙╢С
-            ToSmall = adviceDatas['╢Са╛п║']*100.0/(adviceDatas['╢Са╛п║']+adviceDatas['╢Са╛╢С'])
-            ToBig = adviceDatas['╢Са╛╢С']*100.0/(adviceDatas['╢Са╛п║']+adviceDatas['╢Са╛╢С'])
-            now_text = now_text + '╢С╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToSmall) + '%\n'
-            now_text = now_text + '╢С╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToBig) + '%\n'
-        if blueDatas[0]['╢Сп║']=='п║': #иор╩фзн╙п║
-            ToSmall = adviceDatas['п║а╛п║']*100.0/(adviceDatas['п║а╛п║']+adviceDatas['п║а╛╢С'])
-            ToBig = adviceDatas['п║а╛╢С']*100.0/(adviceDatas['п║а╛п║']+adviceDatas['п║а╛╢С'])
-            now_text = now_text + 'п║╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToSmall) + '%\n'
-            now_text = now_text + 'п║╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToBig) + '%\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╓╖': #Д╦┼Д╦─Ф°÷Д╦╨Е╓╖
+            ToSmall = adviceDatas['Е╓╖Х©·Е╟▐']*100.0/(adviceDatas['Е╓╖Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╓╖'])
+            ToBig = adviceDatas['Е╓╖Х©·Е╓╖']*100.0/(adviceDatas['Е╓╖Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╓╖'])
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToSmall) + '%\n'
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToBig) + '%\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╟▐': #Д╦┼Д╦─Ф°÷Д╦╨Е╟▐
+            ToSmall = adviceDatas['Е╟▐Х©·Е╟▐']*100.0/(adviceDatas['Е╟▐Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╓╖'])
+            ToBig = adviceDatas['Е╟▐Х©·Е╓╖']*100.0/(adviceDatas['Е╟▐Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╓╖'])
+            now_text = now_text + 'Е╟▐Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToSmall) + '%\n'
+            now_text = now_text + 'Е╟▐Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToBig) + '%\n'
         #--
-        if blueDatas[0]['╢Сп║']=='╢С' and blueDatas[1]['╢Сп║']=='╢С': #иор╩фзн╙╢Сё╛иоиор╩фзн╙╢С
-            ToToSmall = adviceDatas['╢Са╛╢Са╛п║']*100.0/(adviceDatas['╢Са╛╢Са╛п║']+adviceDatas['╢Са╛╢Са╛╢С'])
-            ToToBig = adviceDatas['╢Са╛╢Са╛╢С']*100.0/(adviceDatas['╢Са╛╢Са╛п║']+adviceDatas['╢Са╛╢Са╛╢С'])
-            now_text = now_text + '╢С╨еа╛ве╢С╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToToSmall) + '%\n'
-            now_text = now_text + '╢С╨еа╛ве╢С╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToToBig) + '%\n'
-        if blueDatas[0]['╢Сп║']=='╢С' and blueDatas[1]['╢Сп║']=='п║': #иор╩фзн╙╢Сё╛иоиор╩фзн╙п║
-            ToToSmall = adviceDatas['п║а╛╢Са╛п║']*100.0/(adviceDatas['п║а╛╢Са╛п║']+adviceDatas['п║а╛╢Са╛╢С'])
-            ToToBig = adviceDatas['п║а╛╢Са╛╢С']*100.0/(adviceDatas['п║а╛╢Са╛п║']+adviceDatas['п║а╛╢Са╛╢С'])
-            now_text = now_text + '╢С╨еа╛ве╢С╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToToSmall) + '%\n'
-            now_text = now_text + '╢С╨еа╛ве╢С╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToToBig) + '%\n'
-        if blueDatas[0]['╢Сп║']=='п║' and blueDatas[1]['╢Сп║']=='╢С': #иор╩фзн╙п║ё╛иоиор╩фзн╙╢С
-            ToToSmall = adviceDatas['╢Са╛п║а╛п║']*100.0/(adviceDatas['╢Са╛п║а╛п║']+adviceDatas['╢Са╛п║а╛╢С'])
-            ToToBig = adviceDatas['╢Са╛п║а╛╢С']*100.0/(adviceDatas['╢Са╛п║а╛п║']+adviceDatas['╢Са╛п║а╛╢С'])
-            now_text = now_text + '╢С╨еа╛веп║╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToToSmall) + '%\n'
-            now_text = now_text + '╢С╨еа╛веп║╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToToBig) + '%\n'
-        if blueDatas[0]['╢Сп║']=='п║' and blueDatas[1]['╢Сп║']=='п║': #иор╩фзн╙п║ё╛иоиор╩фзн╙п║
-            ToToSmall = adviceDatas['п║а╛п║а╛п║']*100.0/(adviceDatas['п║а╛п║а╛п║']+adviceDatas['п║а╛п║а╛╢С'])
-            ToToBig = adviceDatas['п║а╛п║а╛╢С']*100.0/(adviceDatas['п║а╛п║а╛п║']+adviceDatas['п║а╛п║а╛╢С'])
-            now_text = now_text + 'п║╨еа╛веп║╨еа╛веп║╨е╣д╦ебйн╙ё╨%.2f'%(ToToSmall) + '%\n'
-            now_text = now_text + 'п║╨еа╛веп║╨еа╛ве╢С╨е╣д╦ебйн╙ё╨%.2f'%(ToToBig) + '%\n'
-        #оЮм╛пт╥жнЖ------------------------------------------------------------------
-        now_text = now_text + '\nоЮм╛пт╥жнЖё╨\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╓╖' and blueDatas[1]['Е╓╖Е╟▐']=='Е╓╖': #Д╦┼Д╦─Ф°÷Д╦╨Е╓╖О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╓╖
+            ToToSmall = adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╟▐']*100.0/(adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╓╖'])
+            ToToBig = adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╓╖']*100.0/(adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╓╖Х©·Е╓╖'])
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSmall) + '%\n'
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBig) + '%\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╓╖' and blueDatas[1]['Е╓╖Е╟▐']=='Е╟▐': #Д╦┼Д╦─Ф°÷Д╦╨Е╓╖О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╟▐
+            ToToSmall = adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╟▐']*100.0/(adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╓╖'])
+            ToToBig = adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╓╖']*100.0/(adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╓╖Х©·Е╓╖'])
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSmall) + '%\n'
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBig) + '%\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╟▐' and blueDatas[1]['Е╓╖Е╟▐']=='Е╓╖': #Д╦┼Д╦─Ф°÷Д╦╨Е╟▐О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╓╖
+            ToToSmall = adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╟▐']*100.0/(adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╓╖'])
+            ToToBig = adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╓╖']*100.0/(adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╟▐']+adviceDatas['Е╓╖Х©·Е╟▐Х©·Е╓╖'])
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╟▐Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSmall) + '%\n'
+            now_text = now_text + 'Е╓╖Е▐╥Х©·Г²─Е╟▐Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBig) + '%\n'
+        if blueDatas[0]['Е╓╖Е╟▐']=='Е╟▐' and blueDatas[1]['Е╓╖Е╟▐']=='Е╟▐': #Д╦┼Д╦─Ф°÷Д╦╨Е╟▐О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е╟▐
+            ToToSmall = adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╟▐']*100.0/(adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╓╖'])
+            ToToBig = adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╓╖']*100.0/(adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╟▐']+adviceDatas['Е╟▐Х©·Е╟▐Х©·Е╓╖'])
+            now_text = now_text + 'Е╟▐Е▐╥Х©·Г²─Е╟▐Е▐╥Х©·Г²─Е╟▐Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSmall) + '%\n'
+            now_text = now_text + 'Е╟▐Е▐╥Х©·Г²─Е╟▐Е▐╥Х©·Г²─Е╓╖Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBig) + '%\n'
+        #Г⌡╦Е░▄Ф─╖Е┬├Ф·░------------------------------------------------------------------
+        now_text = now_text + '\nГ⌡╦Е░▄Ф─╖Е┬├Ф·░О╪ \n'
         #-
-        if blueDatas[0]['сКиофзоЮм╛']=='м╛': #иор╩фзн╙м╛
-            ToDiff = adviceDatas['м╛а╛╡╩']*100.0/(adviceDatas['м╛а╛╡╩']+adviceDatas['м╛а╛м╛'])
-            ToSame = adviceDatas['м╛а╛м╛']*100.0/(adviceDatas['м╛а╛╡╩']+adviceDatas['м╛а╛м╛'])
-            now_text = now_text + 'оЮм╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToSame) + '%\n'
-            now_text = now_text + 'оЮм╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToDiff) + '%\n'
-        if blueDatas[0]['сКиофзоЮм╛']=='╡╩': #иор╩фзн╙╡╩
-            ToDiff = adviceDatas['╡╩а╛╡╩']*100.0/(adviceDatas['╡╩а╛╡╩']+adviceDatas['╡╩а╛м╛'])
-            ToSame = adviceDatas['╡╩а╛м╛']*100.0/(adviceDatas['╡╩а╛╡╩']+adviceDatas['╡╩а╛м╛'])
-            now_text = now_text + '╡╩м╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToSame) + '%\n'
-            now_text = now_text + '╡╩м╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToDiff) + '%\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄': #Д╦┼Д╦─Ф°÷Д╦╨Е░▄
+            ToDiff = adviceDatas['Е░▄Х©·Д╦█']*100.0/(adviceDatas['Е░▄Х©·Д╦█']+adviceDatas['Е░▄Х©·Е░▄'])
+            ToSame = adviceDatas['Е░▄Х©·Е░▄']*100.0/(adviceDatas['Е░▄Х©·Д╦█']+adviceDatas['Е░▄Х©·Е░▄'])
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToSame) + '%\n'
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToDiff) + '%\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Д╦█': #Д╦┼Д╦─Ф°÷Д╦╨Д╦█
+            ToDiff = adviceDatas['Д╦█Х©·Д╦█']*100.0/(adviceDatas['Д╦█Х©·Д╦█']+adviceDatas['Д╦█Х©·Е░▄'])
+            ToSame = adviceDatas['Д╦█Х©·Е░▄']*100.0/(adviceDatas['Д╦█Х©·Д╦█']+adviceDatas['Д╦█Х©·Е░▄'])
+            now_text = now_text + 'Д╦█Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToSame) + '%\n'
+            now_text = now_text + 'Д╦█Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToDiff) + '%\n'
         #--
-        if blueDatas[0]['сКиофзоЮм╛']=='м╛' and blueDatas[1]['сКиофзоЮм╛']=='м╛': #иор╩фзн╙м╛ё╛иоиор╩фзн╙м╛
-            ToToDiff = adviceDatas['м╛а╛м╛а╛╡╩']*100.0/(adviceDatas['м╛а╛м╛а╛╡╩']+adviceDatas['м╛а╛м╛а╛м╛'])
-            ToToSame = adviceDatas['м╛а╛м╛а╛м╛']*100.0/(adviceDatas['м╛а╛м╛а╛╡╩']+adviceDatas['м╛а╛м╛а╛м╛'])
-            now_text = now_text + 'оЮм╛а╛веоЮм╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToToSame) + '%\n'
-            now_text = now_text + 'оЮм╛а╛веоЮм╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToToDiff) + '%\n'
-        if blueDatas[0]['сКиофзоЮм╛']=='м╛' and blueDatas[1]['сКиофзоЮм╛']=='╡╩': #иор╩фзн╙м╛ё╛иоиор╩фзн╙╡╩
-            ToToDiff = adviceDatas['╡╩а╛м╛а╛╡╩']*100.0/(adviceDatas['╡╩а╛м╛а╛╡╩']+adviceDatas['╡╩а╛м╛а╛м╛'])
-            ToToSame = adviceDatas['╡╩а╛м╛а╛м╛']*100.0/(adviceDatas['╡╩а╛м╛а╛╡╩']+adviceDatas['╡╩а╛м╛а╛м╛'])
-            now_text = now_text + 'оЮм╛а╛веоЮм╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToToSame) + '%\n'
-            now_text = now_text + 'оЮм╛а╛веоЮм╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToToDiff) + '%\n'
-        if blueDatas[0]['сКиофзоЮм╛']=='╡╩' and blueDatas[1]['сКиофзоЮм╛']=='м╛': #иор╩фзн╙╡╩ё╛иоиор╩фзн╙м╛
-            ToToDiff = adviceDatas['м╛а╛╡╩а╛╡╩']*100.0/(adviceDatas['м╛а╛╡╩а╛╡╩']+adviceDatas['м╛а╛╡╩а╛м╛'])
-            ToToSame = adviceDatas['м╛а╛╡╩а╛м╛']*100.0/(adviceDatas['м╛а╛╡╩а╛╡╩']+adviceDatas['м╛а╛╡╩а╛м╛'])
-            now_text = now_text + 'оЮм╛а╛ве╡╩м╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToToSame) + '%\n'
-            now_text = now_text + 'оЮм╛а╛ве╡╩м╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToToDiff) + '%\n'
-        if blueDatas[0]['сКиофзоЮм╛']=='╡╩' and blueDatas[1]['сКиофзоЮм╛']=='╡╩': #иор╩фзн╙╡╩ё╛иоиор╩фзн╙╡╩
-            ToToDiff = adviceDatas['╡╩а╛╡╩а╛╡╩']*100.0/(adviceDatas['╡╩а╛╡╩а╛╡╩']+adviceDatas['╡╩а╛╡╩а╛м╛'])
-            ToToSame = adviceDatas['╡╩а╛╡╩а╛м╛']*100.0/(adviceDatas['╡╩а╛╡╩а╛╡╩']+adviceDatas['╡╩а╛╡╩а╛м╛'])
-            now_text = now_text + '╡╩м╛а╛ве╡╩м╛а╛ве╡╩м╛╣д╦ебйн╙ё╨%.2f'%(ToToSame) + '%\n'
-            now_text = now_text + '╡╩м╛а╛ве╡╩м╛а╛веоЮм╛╣д╦ебйн╙ё╨%.2f'%(ToToDiff) + '%\n'
-        #спнчпт╥жнЖ------------------------------------------------------------------
-        now_text = now_text + '\nспнчпт╥жнЖё╨\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄' and blueDatas[1]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄': #Д╦┼Д╦─Ф°÷Д╦╨Е░▄О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е░▄
+            ToToDiff = adviceDatas['Е░▄Х©·Е░▄Х©·Д╦█']*100.0/(adviceDatas['Е░▄Х©·Е░▄Х©·Д╦█']+adviceDatas['Е░▄Х©·Е░▄Х©·Е░▄'])
+            ToToSame = adviceDatas['Е░▄Х©·Е░▄Х©·Е░▄']*100.0/(adviceDatas['Е░▄Х©·Е░▄Х©·Д╦█']+adviceDatas['Е░▄Х©·Е░▄Х©·Е░▄'])
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSame) + '%\n'
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToDiff) + '%\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄' and blueDatas[1]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Д╦█': #Д╦┼Д╦─Ф°÷Д╦╨Е░▄О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Д╦█
+            ToToDiff = adviceDatas['Д╦█Х©·Е░▄Х©·Д╦█']*100.0/(adviceDatas['Д╦█Х©·Е░▄Х©·Д╦█']+adviceDatas['Д╦█Х©·Е░▄Х©·Е░▄'])
+            ToToSame = adviceDatas['Д╦█Х©·Е░▄Х©·Е░▄']*100.0/(adviceDatas['Д╦█Х©·Е░▄Х©·Д╦█']+adviceDatas['Д╦█Х©·Е░▄Х©·Е░▄'])
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSame) + '%\n'
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToDiff) + '%\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Д╦█' and blueDatas[1]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Е░▄': #Д╦┼Д╦─Ф°÷Д╦╨Д╦█О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Е░▄
+            ToToDiff = adviceDatas['Е░▄Х©·Д╦█Х©·Д╦█']*100.0/(adviceDatas['Е░▄Х©·Д╦█Х©·Д╦█']+adviceDatas['Е░▄Х©·Д╦█Х©·Е░▄'])
+            ToToSame = adviceDatas['Е░▄Х©·Д╦█Х©·Е░▄']*100.0/(adviceDatas['Е░▄Х©·Д╦█Х©·Д╦█']+adviceDatas['Е░▄Х©·Д╦█Х©·Е░▄'])
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Д╦█Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSame) + '%\n'
+            now_text = now_text + 'Г⌡╦Е░▄Х©·Г²─Д╦█Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToDiff) + '%\n'
+        if blueDatas[0]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Д╦█' and blueDatas[1]['Д╦▌Д╦┼Ф°÷Г⌡╦Е░▄']=='Д╦█': #Д╦┼Д╦─Ф°÷Д╦╨Д╦█О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Д╦█
+            ToToDiff = adviceDatas['Д╦█Х©·Д╦█Х©·Д╦█']*100.0/(adviceDatas['Д╦█Х©·Д╦█Х©·Д╦█']+adviceDatas['Д╦█Х©·Д╦█Х©·Е░▄'])
+            ToToSame = adviceDatas['Д╦█Х©·Д╦█Х©·Е░▄']*100.0/(adviceDatas['Д╦█Х©·Д╦█Х©·Д╦█']+adviceDatas['Д╦█Х©·Д╦█Х©·Е░▄'])
+            now_text = now_text + 'Д╦█Е░▄Х©·Г²─Д╦█Е░▄Х©·Г²─Д╦█Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToSame) + '%\n'
+            now_text = now_text + 'Д╦█Е░▄Х©·Г²─Д╦█Е░▄Х©·Г²─Г⌡╦Е░▄Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToDiff) + '%\n'
+        #Ф°┴Ф≈═Ф─╖Е┬├Ф·░------------------------------------------------------------------
+        now_text = now_text + '\nФ°┴Ф≈═Ф─╖Е┬├Ф·░О╪ \n'
         #-
-        if blueDatas[0]['11фздзспнч']=='сп': #иор╩фзн╙сп
-            ToNull = adviceDatas['спа╛нч']*100.0/(adviceDatas['спа╛нч']+adviceDatas['спа╛сп'])
-            ToBe = adviceDatas['спа╛сп']*100.0/(adviceDatas['спа╛нч']+adviceDatas['спа╛сп'])
-            now_text = now_text + 'сп╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToNull) + '%\n'
-            now_text = now_text + 'сп╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToBe) + '%\n'
-        if blueDatas[0]['11фздзспнч']=='нч': #иор╩фзн╙нч
-            ToNull = adviceDatas['нча╛нч']*100.0/(adviceDatas['нча╛нч']+adviceDatas['нча╛сп'])
-            ToBe = adviceDatas['нча╛сп']*100.0/(adviceDatas['нча╛нч']+adviceDatas['нча╛сп'])
-            now_text = now_text + 'нч╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToNull) + '%\n'
-            now_text = now_text + 'нч╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴': #Д╦┼Д╦─Ф°÷Д╦╨Ф°┴
+            ToNull = adviceDatas['Ф°┴Х©·Ф≈═']*100.0/(adviceDatas['Ф°┴Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф°┴'])
+            ToBe = adviceDatas['Ф°┴Х©·Ф°┴']*100.0/(adviceDatas['Ф°┴Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф°┴'])
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToNull) + '%\n'
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф≈═': #Д╦┼Д╦─Ф°÷Д╦╨Ф≈═
+            ToNull = adviceDatas['Ф≈═Х©·Ф≈═']*100.0/(adviceDatas['Ф≈═Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф°┴'])
+            ToBe = adviceDatas['Ф≈═Х©·Ф°┴']*100.0/(adviceDatas['Ф≈═Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф°┴'])
+            now_text = now_text + 'Ф≈═Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToNull) + '%\n'
+            now_text = now_text + 'Ф≈═Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToBe) + '%\n'
         #--
-        if blueDatas[0]['11фздзспнч']=='сп' and blueDatas[1]['11фздзспнч']=='сп': #иор╩фзн╙спё╛иоиор╩фзн╙сп
-            ToToNull = adviceDatas['спа╛спа╛нч']*100.0/(adviceDatas['спа╛спа╛нч']+adviceDatas['спа╛спа╛сп'])
-            ToToBe = adviceDatas['спа╛спа╛сп']*100.0/(adviceDatas['спа╛спа╛нч']+adviceDatas['спа╛спа╛сп'])
-            now_text = now_text + 'сп╨еа╛весп╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToToNull) + '%\n'
-            now_text = now_text + 'сп╨еа╛весп╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToToBe) + '%\n'
-        if blueDatas[0]['11фздзспнч']=='сп' and blueDatas[1]['11фздзспнч']=='нч': #иор╩фзн╙спё╛иоиор╩фзн╙нч
-            ToToNull = adviceDatas['нча╛спа╛нч']*100.0/(adviceDatas['нча╛спа╛нч']+adviceDatas['нча╛спа╛сп'])
-            ToToBe = adviceDatas['нча╛спа╛сп']*100.0/(adviceDatas['нча╛спа╛нч']+adviceDatas['нча╛спа╛сп'])
-            now_text = now_text + 'сп╨еа╛весп╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToToNull) + '%\n'
-            now_text = now_text + 'сп╨еа╛весп╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToToBe) + '%\n'
-        if blueDatas[0]['11фздзспнч']=='нч' and blueDatas[1]['11фздзспнч']=='сп': #иор╩фзн╙нчё╛иоиор╩фзн╙сп
-            ToToNull = adviceDatas['спа╛нча╛нч']*100.0/(adviceDatas['спа╛нча╛нч']+adviceDatas['спа╛нча╛сп'])
-            ToToBe = adviceDatas['спа╛нча╛сп']*100.0/(adviceDatas['спа╛нча╛нч']+adviceDatas['спа╛нча╛сп'])
-            now_text = now_text + 'сп╨еа╛венч╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToToNull) + '%\n'
-            now_text = now_text + 'сп╨еа╛венч╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToToBe) + '%\n'
-        if blueDatas[0]['11фздзспнч']=='нч' and blueDatas[1]['11фздзспнч']=='нч': #иор╩фзн╙нчё╛иоиор╩фзн╙нч
-            ToToNull = adviceDatas['нча╛нча╛нч']*100.0/(adviceDatas['нча╛нча╛нч']+adviceDatas['нча╛нча╛сп'])
-            ToToBe = adviceDatas['нча╛нча╛сп']*100.0/(adviceDatas['нча╛нча╛нч']+adviceDatas['нча╛нча╛сп'])
-            now_text = now_text + 'нч╨еа╛венч╨еа╛венч╨е╣д╦ебйн╙ё╨%.2f'%(ToToNull) + '%\n'
-            now_text = now_text + 'нч╨еа╛венч╨еа╛весп╨е╣д╦ебйн╙ё╨%.2f'%(ToToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴' and blueDatas[1]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴': #Д╦┼Д╦─Ф°÷Д╦╨Ф°┴О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Ф°┴
+            ToToNull = adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф≈═']*100.0/(adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф°┴'])
+            ToToBe = adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф°┴']*100.0/(adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф°┴Х©·Ф°┴'])
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToNull) + '%\n'
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴' and blueDatas[1]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф≈═': #Д╦┼Д╦─Ф°÷Д╦╨Ф°┴О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Ф≈═
+            ToToNull = adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф≈═']*100.0/(adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф°┴'])
+            ToToBe = adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф°┴']*100.0/(adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф°┴Х©·Ф°┴'])
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToNull) + '%\n'
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф≈═' and blueDatas[1]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф°┴': #Д╦┼Д╦─Ф°÷Д╦╨Ф≈═О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Ф°┴
+            ToToNull = adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф≈═']*100.0/(adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф°┴'])
+            ToToBe = adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф°┴']*100.0/(adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф≈═']+adviceDatas['Ф°┴Х©·Ф≈═Х©·Ф°┴'])
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф≈═Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToNull) + '%\n'
+            now_text = now_text + 'Ф°┴Е▐╥Х©·Г²─Ф≈═Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBe) + '%\n'
+        if blueDatas[0]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф≈═' and blueDatas[1]['11Ф°÷Е├┘Ф°┴Ф≈═']=='Ф≈═': #Д╦┼Д╦─Ф°÷Д╦╨Ф≈═О╪▄Д╦┼Д╦┼Д╦─Ф°÷Д╦╨Ф≈═
+            ToToNull = adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф≈═']*100.0/(adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф°┴'])
+            ToToBe = adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф°┴']*100.0/(adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф≈═']+adviceDatas['Ф≈═Х©·Ф≈═Х©·Ф°┴'])
+            now_text = now_text + 'Ф≈═Е▐╥Х©·Г²─Ф≈═Е▐╥Х©·Г²─Ф≈═Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToNull) + '%\n'
+            now_text = now_text + 'Ф≈═Е▐╥Х©·Г²─Ф≈═Е▐╥Х©·Г²─Ф°┴Е▐╥Г └Ф╕┌Г▌┤Д╦╨О╪ %.2f'%(ToToBe) + '%\n'
 
-        self.textCtrl1.AppendText(now_text+'\n')#отй╬╠╬фз╥жнЖ
+        self.textCtrl1.AppendText(now_text.decode('utf-8')+'\n')#Ф≤╬Г╓╨Ф°╛Ф°÷Е┬├Ф·░
 
       
-        #мф╪Ж╧юкЦ
-        advice_text = '%sфзмф╪Ж╨ебКё╨'%(int(data_array[0][0])+1) #вНжумф╪Ж
+        #Ф▌╗Х█░Д╪╟Г╝≈
+        advice_text = u'%sФ°÷Ф▌╗Х█░Е▐╥Г═│О╪ '%(int(data_array[0][0])+1) #Ф°─Г╩┬Ф▌╗Х█░
         
-        advice_1 = [] #мф╪Ж║╟фФе╪║╠╨ебКё╗ох╤╗рЕр╩обё╛ртцБЁЖожоЮ╣х╣дгИ©ЖтЛЁи╢МнСё╘
-        advice_2 = [] #мф╪Ж║╟ххюД║╠╨ебК
-        advice_3 = [] #мф╪Ж║╟╢Сп║║╠╨ебК
-        advice_4 = [] #мф╪Ж║╟м╛╡╩║╠╨ебК
-        advice_5 = [] #мф╪Ж║╟спнч║╠╨ебК
+        advice_1 = [] #Ф▌╗Х█░Б─°Е╔┤Е│╤Б─²Е▐╥Г═│О╪┬Е┘┬Е╝ Д╧┴Д╦─Д╦▀О╪▄Д╩╔Е┘█Е┤╨Г▌╟Г⌡╦Г╜┴Г └Ф┐┘Е├╣И─═Ф┬░И■≥Х╞╞О╪┴
+        advice_2 = [] #Ф▌╗Х█░Б─°Г┐╜Е├╥Б─²Е▐╥Г═│
+        advice_3 = [] #Ф▌╗Х█░Б─°Е╓╖Е╟▐Б─²Е▐╥Г═│
+        advice_4 = [] #Ф▌╗Х█░Б─°Е░▄Д╦█Б─²Е▐╥Г═│
+        advice_5 = [] #Ф▌╗Х█░Б─°Ф°┴Ф≈═Б─²Е▐╥Г═│
         
         blue_odd = ['01','03','05','07','09','11','13','15']
         blue_even = ['02','04','05','06','10','12','14','16']
-        #blue_hot = blue_hot #ххюД╩АтзblueAdviceюОцФж╠╫с╣ц╣╫
+        #blue_hot = blue_hot #Г┐╜Е├╥Д╪ Е°╗blueAdviceИ┤▄И²╒Г⌡╢Ф▌╔Е╬≈Е┬╟
         #blue_cold = blue_cold 
         blue_small = ['01','02','03','04','05','06','07','08']
         blue_big = ['09','10','11','12','13','14','15','16']
-        blue_same = [] #м╛
-        blue_diff = [] #╡╩
-        blue_null = [] #сп
-        blue_be = []   #нч
+        blue_same = [] #Е░▄
+        blue_diff = [] #Д╦█
+        blue_null = [] #Ф°┴
+        blue_be = []   #Ф≈═
         
-        #кЦЁЖоЮм╛╨её╗+-3ё╘    
-        if 1+3<=int(data_array[0][7])<=16-3: #уЩЁёгИ©Ж
+        #Г╝≈Е┤╨Г⌡╦Е░▄Е▐╥О╪┬+-3О╪┴    
+        if 1+3<=int(data_array[0][7])<=16-3: #Ф╜ёЕ╦╦Ф┐┘Е├╣
             for i in range(int(data_array[0][7])-3, int(data_array[0][7])+3+1):
                 blue_same.append('%.2d'%i)
-        if int(data_array[0][7])<1+3: #п║сК4╣дгИ©Ж
+        if int(data_array[0][7])<1+3: #Е╟▐Д╦▌4Г └Ф┐┘Е├╣
             for i in range(1, int(data_array[0][7])+3+1):
                 blue_same.append('%.2d'%i)
             for j in range(int(data_array[0][7])+16-3, 16+1):
                 blue_same.append('%.2d'%j)
-        if 16-3<int(data_array[0][7]): #╢Ссз13╣дгИ©Ж
+        if 16-3<int(data_array[0][7]): #Е╓╖Д╨▌13Г └Ф┐┘Е├╣
             for i in range(int(data_array[0][7])-3, 16+1):
                 blue_same.append('%.2d'%i)
             for j in range(1, int(data_array[0][7])-16+3+1):
                 blue_same.append('%.2d'%j)
-        #кЦЁЖ╡╩м╛╨е                   
+        #Г╝≈Е┤╨Д╦█Е░▄Е▐╥                   
         for i in range(0, 16):
             if '%.2d'%(i+1) not in blue_same:
                 blue_diff.append('%.2d'%(i+1))
-        #мЁ╪фЁЖсп╨е
+        #Г╩÷Х╝║Е┤╨Ф°┴Е▐╥
         for i in range(0, 11):
             if data_array[i][7] not in blue_be:
                 blue_be.append(data_array[i][7])
-        #мЁ╪фЁЖнч╨е
+        #Г╩÷Х╝║Е┤╨Ф≈═Е▐╥
         for i in range(0, 16):
             if '%.2d'%(i+1) not in blue_be:
                 blue_null.append('%.2d'%(i+1))
        
         if ToOdd+ToToOdd>ToEven+ToToEven: 
-            advice_1 = blue_odd #фФ
-            #advice_text = advice_text + 'фФ '
+            advice_1 = blue_odd #Е╔┤
+            #advice_text = advice_text + 'Е╔┤ '
         if ToOdd+ToToOdd<ToEven+ToToEven:
-            advice_1 = blue_even #е╪
-            #advice_text = advice_text + 'е╪ '
+            advice_1 = blue_even #Е│╤
+            #advice_text = advice_text + 'Е│╤ '
         if ToCold+ToToCold>ToHot+ToToHot: 
-            advice_2 = blue_cold #юД
-            #advice_text = advice_text + 'юД '
+            advice_2 = blue_cold #Е├╥
+            #advice_text = advice_text + 'Е├╥ '
         if ToCold+ToToCold<ToHot+ToToHot:
-            advice_2 = blue_hot #хх
-            #advice_text = advice_text + 'хх '            
+            advice_2 = blue_hot #Г┐╜
+            #advice_text = advice_text + 'Г┐╜ '            
         if ToSmall+ToToSmall>ToBig+ToToBig: 
-            advice_3 = blue_small #п║
-            #advice_text = advice_text + 'п║ '
+            advice_3 = blue_small #Е╟▐
+            #advice_text = advice_text + 'Е╟▐ '
         if ToSmall+ToToSmall<ToBig+ToToBig:
-            advice_3 = blue_big #╢С
-            #advice_text = advice_text + '╢С '
+            advice_3 = blue_big #Е╓╖
+            #advice_text = advice_text + 'Е╓╖ '
         if ToSame+ToToSame>ToDiff+ToToDiff:
-            advice_4 = blue_same #м╛
-            #advice_text = advice_text + 'м╛ '
+            advice_4 = blue_same #Е░▄
+            #advice_text = advice_text + 'Е░▄ '
         if ToSame+ToToSame<ToDiff+ToToDiff:
-            advice_4 = blue_diff #╡╩
-            #advice_text = advice_text + '╡╩ '
+            advice_4 = blue_diff #Д╦█
+            #advice_text = advice_text + 'Д╦█ '
         if ToBe+ToToBe>ToNull+ToToNull:
-            advice_5 = blue_be #сп
-            #advice_text = advice_text + 'сп '
+            advice_5 = blue_be #Ф°┴
+            #advice_text = advice_text + 'Ф°┴ '
         if ToBe+ToToBe<ToDiff+ToToNull:
-            advice_5 = blue_null #нч
-            #advice_text = advice_text + 'нч '
+            advice_5 = blue_null #Ф≈═
+            #advice_text = advice_text + 'Ф≈═ '
         '''
         print advice_1
         print advice_2
@@ -317,7 +319,7 @@ class FrameAdvice(wx.Frame):
         print advice_4
         print advice_5
         '''
-        in_advice = [0]*16 #тзмф╪ЖлУ╪ЧжпЁЖож╣д╢нйЩ
+        in_advice = [0]*16 #Е°╗Ф▌╗Х█░Ф²║Д╩╤Д╦╜Е┤╨Г▌╟Г └Ф╛║Ф∙╟
         for i in range(0, 16):
             if '%.2d'%(i+1) in advice_1:
                 in_advice[i] = in_advice[i] + 1
@@ -330,19 +332,19 @@ class FrameAdvice(wx.Frame):
             if '%.2d'%(i+1) in advice_5:
                 in_advice[i] = in_advice[i] + 1                 
                 
-        max_num = [] #вН╢С╨ебК
-        min_num = [] #вНп║╨ебК
+        max_num = [] #Ф°─Е╓╖Е▐╥Г═│
+        min_num = [] #Ф°─Е╟▐Е▐╥Г═│
         for i in range(0, 16):
-            if in_advice[i]==max(in_advice): #йгвН╢С
+            if in_advice[i]==max(in_advice): #Ф≤╞Ф°─Е╓╖
                 max_num.append('%.2d'%(i+1))
             #if in_advice[i]<=1:                 
-            if in_advice[i]==min(in_advice): #йгвНп║
+            if in_advice[i]==min(in_advice): #Ф≤╞Ф°─Е╟▐
                 min_num.append('%.2d'%(i+1))
-        #цЭаНппотй╬р╩об
-        print '╠╬фзмф╪ЖрРвсн╙%dё╗5н╙бЗ╥жё╘'%(max(in_advice))                
+        #Е▒╫Д╩╓Х║▄Ф≤╬Г╓╨Д╦─Д╦▀
+        #print u'Ф°╛Ф°÷Ф▌╗Х█░Е⌡═Е╜░Д╦╨%dО╪┬5Д╦╨Ф╩║Е┬├О╪┴'%(max(in_advice))                
         #print max_num
         #print min_num
-        advice_num = [] #мф╪Ж╨ебК
+        advice_num = [] #Ф▌╗Х█░Е▐╥Г═│
         '''
         for i in range(0, 16):
             if ('%.2d'%(i+1) not in max_num) and ('%.2d'%(i+1) not in min_num):
@@ -352,11 +354,11 @@ class FrameAdvice(wx.Frame):
             if '%.2d'%(i+1) in max_num:
                 advice_num.append('%.2d'%(i+1))
 
-        advice_text = advice_text + '\n%s\n'%(str(advice_num))
-        advice_text = advice_text + '╠╬фзмф╪ЖрРвсн╙%dё╗5н╙бЗ╥жё╘'%(max(in_advice))
-        self.textCtrl1.AppendText(advice_text) #отй╬вНжумф╪Ж
-        #цЭаНппотй╬р╩об
-        print 'мф╪Ж╨ебКн╙:%s'%advice_text
+        advice_text = advice_text + u'\n%s\n'%(str(advice_num))
+        advice_text = advice_text + u'Ф°╛Ф°÷Ф▌╗Х█░Е⌡═Е╜░Д╦╨%dО╪┬5Д╦╨Ф╩║Е┬├О╪┴'%(max(in_advice))
+        self.textCtrl1.AppendText(advice_text) #Ф≤╬Г╓╨Ф°─Г╩┬Ф▌╗Х█░
+        #Е▒╫Д╩╓Х║▄Ф≤╬Г╓╨Д╦─Д╦▀
+        print (u'%s'%advice_text).encode(locale.getdefaultlocale()[1])
 
 
 

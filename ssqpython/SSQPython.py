@@ -1,7 +1,7 @@
-# -*- coding: cp936 -*-
-#!/usr/bin/env python
+#! usr/bin/env python
+# -*- coding:utf-8 -*-
 # otherrrr@gmail.com
-# Ö÷³ÌĞò
+# ä¸»ç¨‹åº
 
 import wx
 import modules.FrameMain
@@ -9,7 +9,7 @@ import modules.FrameMain
 import sys
 import time
 import os
-import sqlite3
+#import sqlite3 #åœæ­¢å¼€å‘SQLç›¸å…³åŠŸèƒ½
 
 from modules.FilterFileIO import readFilterFileToArray
 from modules.DataCompute import redOrderCoumpute, dataFiltrate
@@ -17,12 +17,13 @@ from modules.DataFileIO import readDataFileToArray
 from modules.BetFileIO import readBetFileToArray
 from modules.PredictFileIO import writePredictData
 
+
 class SSQPythonApp(wx.App):
     def OnInit(self):
-        if len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-f' or sys.argv[1:][0]=='f'): #ÅĞ¶ÏÊÇ·ñÓĞ²ÎÊı(-f)£¬ÓĞÔòÖ±½Ó¹ıÂË£¨33¸öÇò£©
-            #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-            print '¿ªÊ¼Ò»²½¹ıÂË(Ñ¡ÔñÈ«²¿33¸öºìÇò£©'
-            #Éú³ÉËùÓĞºÅÂë
+        if len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-f' or sys.argv[1:][0]=='f'): #åˆ¤æ–­æ˜¯å¦æœ‰å‚æ•°(-f)ï¼Œæœ‰åˆ™ç›´æ¥è¿‡æ»¤ï¼ˆ33ä¸ªçƒï¼‰
+            #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+            print u'å¼€å§‹ä¸€æ­¥è¿‡æ»¤(é€‰æ‹©å…¨éƒ¨33ä¸ªçº¢çƒ)â€¦â€¦'
+            #ç”Ÿæˆæ‰€æœ‰å·ç 
             num_pool = [1,2,3,4,5,6,7,8,9,10,11,\
                         12,13,14,15,16,17,18,19,20,21,22,\
                         23,24,25,26,27,28,29,30,31,32,33]
@@ -45,59 +46,63 @@ class SSQPythonApp(wx.App):
                         pos3 = pos3 + 1
                     pos2 = pos2 + 1
                 pos1 = pos1 + 1
-            print 'Éú³ÉËùÓĞºÅÂë%d×é'%(len(data_f))
-            #¶ÁÈ¡¿ª½±Êı¾İ
+            print u'ç”Ÿæˆæ‰€æœ‰å·ç %dç»„'%(len(data_f))
+            #è¯»å–å¼€å¥–æ•°æ®
             data_array = readDataFileToArray()            
-            #¶ÁÈ¡¹Ì¶¨Í¶×¢
+            #è¯»å–å›ºå®šæŠ•æ³¨
             bet_array = readBetFileToArray()            
-            #¶ÁÈ¡¹ıÂËÌõ¼ş
+            #è¯»å–è¿‡æ»¤æ¡ä»¶
             filter_array = readFilterFileToArray()
-            #¼ÆËã³öÇò´ÎÊı²¢ÅÅÁĞÇòºÅ
+            #è®¡ç®—å‡ºçƒæ¬¡æ•°å¹¶æ’åˆ—çƒå·
             redOrder, redTimes = redOrderCoumpute(data_array)
-            #ÏÔÊ¾Ô¤²âµÄÆÚºÅ
-            print 'Ô¤²â%dÆÚ'%(int(data_array[0][0])+1)
-            #¿ªÊ¼Ê±¼ä
+            #æ˜¾ç¤ºé¢„æµ‹çš„æœŸå·
+            print u'é¢„æµ‹%dæœŸ'%(int(data_array[0][0])+1)
+            #å¼€å§‹æ—¶é—´
             start_time = int(time.time())            
-            #¿ªÊ¼¹ıÂË
+            #å¼€å§‹è¿‡æ»¤
             step = 0            
             for i in range(0, len(filter_array)):
                 step = step + 1
-                filter_array[step-1][2] = 'ÊÇ' + filter_array[step-1][2][2:]
+                #filter_array[step-1][2] = 'æ˜¯' + filter_array[step-1][2][2:]
+                filter_array[step-1][2] = u'æ˜¯      ' #utf-8 20071201
                 data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
                 if step==1:
-                    print '%.2d time=%d num=%d %s'%(step,int(time.time())-start_time,len(data_f),filter_array[step-1][4])
+                    #print u'%.2d time=%d num=%d %s'%(step,int(time.time())-start_time,len(data_f),filter_array[step-1][4]) #windows
+                    print u'%.2d time=%d num=%d %s'\
+                          %(step,int(time.time())-start_time,len(data_f),filter_array[step-1][4].decode('utf-8')) #linux
                     last_time = int(time.time())
                 else:
-                    print '%.2d time=%d num=%d %s'%(step,int(time.time())-last_time,len(data_f),filter_array[step-1][4])
+                    print u'%.2d time=%d num=%d %s'\
+                          %(step,int(time.time())-last_time,len(data_f),filter_array[step-1][4].decode('utf-8'))
                     last_time = int(time.time())
-            #ÖÕÖ¹Ê±¼ä
+            #ç»ˆæ­¢æ—¶é—´
             stop_time = int(time.time())
-            #Ğ´Êı¾İ
+            #å†™æ•°æ®
             writePredictData(data_array, data_f, filter_array, num_pool)              
-            #ÌáÊ¾Éú³ÉµÄ×¢ÊıºÍ»¨·ÑµÄÊ±¼ä
-            print '¹²Éú³É%d×¢£¬»¨·Ñ%dÃë'%(len(data_f),stop_time-start_time)
+            #æç¤ºç”Ÿæˆçš„æ³¨æ•°å’ŒèŠ±è´¹çš„æ—¶é—´
+            print u'å…±ç”Ÿæˆ%dæ³¨ï¼ŒèŠ±è´¹%dç§’'%(len(data_f),stop_time-start_time)
               
             return True
-        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-d' or sys.argv[1:][0]=='d'): #ÅĞ¶ÏÊÇ·ñÓĞ²ÎÊı(-d)£¬ÓĞÔò´´½¨Êı¾İ¿â
+        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-d' or sys.argv[1:][0]=='d'): #åˆ¤æ–­æ˜¯å¦æœ‰å‚æ•°(-d)ï¼Œæœ‰åˆ™åˆ›å»ºæ•°æ®åº“
             '''
-            Ô¤Ïëµ±ÖĞÊ¹ÓÃÊı¾İ¿â»á¿ìÒ»Ğ©£¬µ«ÊÇÊµ¼ÊÉÏ£¬²»ÊÇ£¡
+            é¢„æƒ³å½“ä¸­ä½¿ç”¨æ•°æ®åº“ä¼šå¿«ä¸€äº›ï¼Œä½†æ˜¯å®é™…ä¸Šï¼Œä¸æ˜¯ï¼
             '''
-            print '´Ë¹¦ÄÜÒÑÍ£Ö¹¿ª·¢!'
-            exit(0) #ÒòÒÑÍ£Ö¹¿ª·¢Òò´ËÖ±½ÓÍË³ö
+            print u'æ­¤åŠŸèƒ½å·²åœæ­¢å¼€å‘!'
+            exit(0) #åœæ­¢å¼€å‘ï¼Œç›´æ¥é€€å‡º
             
-            #²éÕÒÊÇ·ñ²»´æÔÚdata.dbÎÄ¼ş
+            #æŸ¥æ‰¾æ˜¯å¦ä¸å­˜åœ¨data.dbæ–‡ä»¶
             if 'data.db' in os.listdir("data"):
-                #´æÔÚ
-                print 'data.dbÒÑ´æÔÚ'
+                #å­˜åœ¨
+                print 'data.dbå·²å­˜åœ¨'
             else:
-                #²»´æÔÚ
-                # ´´½¨²¢Á¬½ÓÊı¾İ¿â
+                #ä¸å­˜åœ¨
+                # åˆ›å»ºå¹¶è¿æ¥æ•°æ®åº“
                 con = sqlite3.connect("data/data.db")
                 cur = con.cursor()
-                # Êı¾İ¿â´´½¨ÖĞÃûÎªdataµÄ±í
-                cur.execute("create table data (ºìÇò1, ºìÇò2, ºìÇò3, ºìÇò4, ºìÇò5, ºìÇò6)")
-                # ²åÈëÊı¾İ
-                # 1¡¢Ò»×éÒ»×éµÄ²å£¨±È½ÏÂı£©
+                # æ•°æ®åº“åˆ›å»ºä¸­åä¸ºdataçš„è¡¨
+                cur.execute("create table data (çº¢çƒ1, çº¢çƒ2, çº¢çƒ3, çº¢çƒ4, çº¢çƒ5, çº¢çƒ6)")
+                # æ’å…¥æ•°æ®
+                # 1ã€ä¸€ç»„ä¸€ç»„çš„æ’ï¼ˆæ¯”è¾ƒæ…¢ï¼‰
                 '''    
                 for t1 in range(1, 33+1-5):
                     for t2 in range(t1+1, 33+1-4):
@@ -106,57 +111,56 @@ class SSQPythonApp(wx.App):
                                 for t5 in range(t4+1, 33+1-1):
                                     for t6 in range(t5+1, 33+1):
                                         tt = (t1,t2,t3,t4,t5,t6)
-                                        #Ö±½ÓÕâÑù×ö±È½ÏÎ£ÏÕ£¬ËùÎ½µÄSQL×¢ÈëÂ©¶´
+                                        #ç›´æ¥è¿™æ ·åšæ¯”è¾ƒå±é™©ï¼Œæ‰€è°“çš„SQLæ³¨å…¥æ¼æ´
                                         #cur.execute("""insert into data
-                                        #           (ºìÇò1, ºìÇò2, ºìÇò3, ºìÇò4, ºìÇò5, ºìÇò6)
+                                        #           (çº¢çƒ1, çº¢çƒ2, çº¢çƒ3, çº¢çƒ4, çº¢çƒ5, çº¢çƒ6)
                                         #           values(?,?,?,?,?,?)""",
                                         #           (t1,t2,t3,t4,t5,t6))
                                         cur.execute("""insert into data
-                                                    (ºìÇò1, ºìÇò2, ºìÇò3, ºìÇò4, ºìÇò5, ºìÇò6)
+                                                    (çº¢çƒ1, çº¢çƒ2, çº¢çƒ3, çº¢çƒ4, çº¢çƒ5, çº¢çƒ6)
                                                     values(?,?,?,?,?,?)""",
                                                     (tt))                            
                 '''
-                # 2¡¢Ò»Æğ²å£¨Ò»ÑùÂı£©
-                data = [] # ÏÈÉú³ÉÊı¾İ
+                # 2ã€ä¸€èµ·æ’ï¼ˆä¸€æ ·æ…¢ï¼‰
+                data = [] # å…ˆç”Ÿæˆæ•°æ®
                 for t1 in range(1, 33+1-5):
                     for t2 in range(t1+1, 33+1-4):
                         for t3 in range(t2+1, 33+1-3):
                             for t4 in range(t3+1, 33+1-2):
                                 for t5 in range(t4+1, 33+1-1):
                                     for t6 in range(t5+1, 33+1):
-                                        #¼ÓÒ»Ğ©100%ÅĞ¶Ï
-                                        #1.Ò»ºÅÎ»ÔÚ1£­19Ö®¼ä
-                                        #2.¶şºÅÎ»ÔÚ2£­24Ö®¼ä
-                                        #3.ÈıºÅÎ»ÔÚ3£­28Ö®¼ä
-                                        #4.ËÄºÅÎ»ÔÚ5£­31Ö®¼ä
-                                        #5.ÎåºÅÎ»ÔÚ7£­32Ö®¼ä
-                                        #6.ÁùºÅÎ»ÔÚ11£­33Ö®¼ä
+                                        #åŠ ä¸€äº›100%åˆ¤æ–­
+                                        #1.ä¸€å·ä½åœ¨1ï¼19ä¹‹é—´
+                                        #2.äºŒå·ä½åœ¨2ï¼24ä¹‹é—´
+                                        #3.ä¸‰å·ä½åœ¨3ï¼28ä¹‹é—´
+                                        #4.å››å·ä½åœ¨5ï¼31ä¹‹é—´
+                                        #5.äº”å·ä½åœ¨7ï¼32ä¹‹é—´
+                                        #6.å…­å·ä½åœ¨11ï¼33ä¹‹é—´
                                         data.append((t1,t2,t3,t4,t5,t6))
-                print 'Éú³ÉÊı¾İ%d×é\n'%len(data)
+                print 'ç”Ÿæˆæ•°æ®%dç»„\n'%len(data)
                 cur.executemany("""insert into data
-                                (ºìÇò1, ºìÇò2, ºìÇò3, ºìÇò4, ºìÇò5, ºìÇò6)
+                                (çº¢çƒ1, çº¢çƒ2, çº¢çƒ3, çº¢çƒ4, çº¢çƒ5, çº¢çƒ6)
                                 values (?, ?, ?, ?, ?, ?)""",
                                 data)
-                # Ìá½»²Ù×÷µ½Êı¾İ¿âÖĞ
+                # æäº¤æ“ä½œåˆ°æ•°æ®åº“ä¸­
                 con.commit()                   
-                #¹Ø±ÕÊı¾İ¿â
+                #å…³é—­æ•°æ®åº“
                 cur.close() 
                 con.close()
       
             return True
-        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-o' or sys.argv[1:][0]=='o'): #ÅĞ¶ÏÊÇ·ñÓĞ²ÎÊı(-o)£¬ÓĞÔòÉú³É¹ıÂË²ÎÊı
-            print '´Ë¹¦ÄÜÎ´¿ª·¢Íê³É!'
+        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-o' or sys.argv[1:][0]=='o'): #åˆ¤æ–­æ˜¯å¦æœ‰å‚æ•°(-o)ï¼Œæœ‰åˆ™ç”Ÿæˆè¿‡æ»¤å‚æ•°
+            print u'æ­¤åŠŸèƒ½æœªå¼€å‘å®Œæˆ!'
 
             return True
-        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-h' or sys.argv[1:][0]=='h'): #ÅĞ¶ÏÊÇ·ñÓĞ²ÎÊı(-h)£¬ÓĞÔòÌáÊ¾°ïÖú
-            print '    Ë«É«òş²ÊÆ±·ÖÎöÈí¼ş  1.0.0'
-            print '       otherrrr@gmail.com'
-            print 'http://code.google.com/p/ssqpython/'
-            print ''
-            print 'ÆäËû²ÎÊı:'
-            print '     -f: Ö±½Ó¿ªÊ¼È«²¿¹ıÂË'
-            print '     -d: Éú³ÉÊı¾İ¿â£¨Ôİ£©'
-            print '     -o: Éú³É¹ıÂË²ÎÊı'
+        elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-h' or sys.argv[1:][0]=='h'): #åˆ¤æ–­æ˜¯å¦æœ‰å‚æ•°(-h)ï¼Œæœ‰åˆ™æç¤ºå¸®åŠ©
+            print u'    åŒè‰²èŸ’å½©ç¥¨åˆ†æè½¯ä»¶  1.0.3'
+            print u'       otherrrr@gmail.com'
+            print u'http://code.google.com/p/ssqpython/'
+            print u''
+            print u'å…¶ä»–å‚æ•°:'
+            print u'     -f: ç›´æ¥å¼€å§‹å…¨éƒ¨è¿‡æ»¤'
+            print u'     -d: ç”Ÿæˆæ•°æ®åº“ï¼ˆåœæ­¢å¼€å‘ï¼‰'
             
             return True
         else:

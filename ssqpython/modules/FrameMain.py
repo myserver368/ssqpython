@@ -1,7 +1,8 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameMain
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# Ö÷Ãæ°å
+# ä¸»é¢æ¿
 
 import wx
 import wx.stc
@@ -11,22 +12,31 @@ from wx.lib.wordwrap import wordwrap
 
 from DataFileIO import readDataFileToString, readDataFileToArray, writeStringToDataFile
 from BetFileIO import readBetFileToArray
+from DataCompute import dataParaCompute, redOrderCoumpute
+from FileIO import DataParaFileRead, DataParaFileWrite, XmlWrite
 
-import FrameRedFiltrate
 import FrameRedFiltratePanel
 import FrameReport
 import FrameBlue
 import FrameDownload
 import FrameRedShrink
+import FrameOptional
+import FrameReplace
 
 import os
 import random
-import sqlite3
+import time
+import locale
 
-_max_height = 0   #¹ö¶¯´°¿Ú¸ß¶È
-data_string = ''  #Êı¾İ£¨×Ö·û´®¸ñÊ½£©
-data_array = []   #Êı¾İ£¨Êı×é¸ñÊ½£©
-choice_num = ''   #Ñ¡ÔñµÄºÅÂë
+_max_height = 0   #æ»šåŠ¨çª—å£é«˜åº¦(int)
+data_string = ''  #æ•°æ®(str)
+data_array = []   #æ•°æ®(list)
+choice_num = ''   #é€‰æ‹©çš„å·ç (str)
+
+bet_array = [] #å›ºå®šæŠ•æ³¨å·ç (list)
+data_para_array = [] #æ•°æ®çš„ç›¸å…³å‚æ•°(list(dic))
+redOrder = [] #çº¢çƒå·ç æŒ‰ç€å‡ºçƒæ¬¡æ•°ç”±å¤§åˆ°å°æ’åˆ—(list)
+redTimes = [] #çº¢çƒå¯¹åº”å‡ºå·æ¬¡æ•°(list)
 
 def create(parent):
     return FrameMain(parent)
@@ -41,11 +51,13 @@ def create(parent):
 ] = [wx.NewId() for _init_coll_menuData_Items in range(4)]
 
 [wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, wxID_FRAMEMAINMENUFILTRATEITEMSFRED, 
- wxID_FRAMEMAINMENUFILTRATEITEMSSRED, 
-] = [wx.NewId() for _init_coll_menuFiltrate_Items in range(3)]
+ wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL, 
+ wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE, wxID_FRAMEMAINMENUFILTRATEITEMSSRED, 
+] = [wx.NewId() for _init_coll_menuFiltrate_Items in range(5)]
 
-[wxID_FRAMEMAINMENUCHECKITEMSCFIXED, wxID_FRAMEMAINMENUCHECKITEMSCPREDICT, 
-] = [wx.NewId() for _init_coll_menuCheck_Items in range(2)]
+[wxID_FRAMEMAINMENUCHECKITEMSCCOMPLEX, wxID_FRAMEMAINMENUCHECKITEMSCFIXED, 
+ wxID_FRAMEMAINMENUCHECKITEMSCPREDICT, wxID_FRAMEMAINMENUCHECKITEMSCSELF, 
+] = [wx.NewId() for _init_coll_menuCheck_Items in range(4)]
 
 [wxID_FRAMEMAINMENUHELPITEMSABOUT, wxID_FRAMEMAINMENUHELPITEMSFAQ, 
 ] = [wx.NewId() for _init_coll_menuHelp_Items in range(2)]
@@ -54,9 +66,9 @@ def create(parent):
  wxID_FRAMEMAINMENUFILTRATEREDITEMSREDMEDIA, 
 ] = [wx.NewId() for _init_coll_menuFiltrateRed_Items in range(2)]
 
-[wxID_FRAMEMAINMENURANDOMITEMSDR, wxID_FRAMEMAINMENURANDOMITEMSFR, 
- wxID_FRAMEMAINMENURANDOMITEMSSR, 
-] = [wx.NewId() for _init_coll_menuRandom_Items in range(3)]
+[wxID_FRAMEMAINMENURANDOMITEMSDR, wxID_FRAMEMAINMENURANDOMITEMSER, 
+ wxID_FRAMEMAINMENURANDOMITEMSFR, wxID_FRAMEMAINMENURANDOMITEMSSR, 
+] = [wx.NewId() for _init_coll_menuRandom_Items in range(4)]
 
 class FrameMain(wx.Frame):
     def _init_coll_menuCheck_Items(self, parent):
@@ -68,10 +80,20 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u9884\u6d4b\u6570\u636e\u5bf9\u5956',
               id=wxID_FRAMEMAINMENUCHECKITEMSCPREDICT, kind=wx.ITEM_NORMAL,
               text=u'\u9884\u6d4b\u6570\u636e\u5bf9\u5956(&P)\tF11')
+        parent.Append(help=u'\u590d\u5f0f\u6295\u6ce8\u5151\u5956',
+              id=wxID_FRAMEMAINMENUCHECKITEMSCCOMPLEX, kind=wx.ITEM_NORMAL,
+              text=u'\u590d\u5f0f\u6295\u6ce8\u5151\u5956(&J)\tCtrl+J')
+        parent.Append(help=u'\u81ea\u9009\u6570\u636e\u5151\u5956',
+              id=wxID_FRAMEMAINMENUCHECKITEMSCSELF, kind=wx.ITEM_NORMAL,
+              text=u'\u81ea\u9009\u6570\u636e\u5151\u5956(&K)\tCtrl+K')
         self.Bind(wx.EVT_MENU, self.OnMenuCheckItemscfixedMenu,
               id=wxID_FRAMEMAINMENUCHECKITEMSCFIXED)
         self.Bind(wx.EVT_MENU, self.OnMenuCheckItemscpredictMenu,
               id=wxID_FRAMEMAINMENUCHECKITEMSCPREDICT)
+        self.Bind(wx.EVT_MENU, self.OnMenuCheckItemscselfMenu,
+              id=wxID_FRAMEMAINMENUCHECKITEMSCSELF)
+        self.Bind(wx.EVT_MENU, self.OnMenuCheckItemsccomplexMenu,
+              id=wxID_FRAMEMAINMENUCHECKITEMSCCOMPLEX)
 
     def _init_coll_menuBar1_Menus(self, parent):
         # generated method, don't edit
@@ -94,8 +116,9 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u5220\u9664\u6570\u636e',
               id=wxID_FRAMEMAINMENUDATAITEMSDEL, kind=wx.ITEM_NORMAL,
               text=u'\u5220\u9664\u6570\u636e(&E)\tCtrl+D')
-        parent.Append(help=u'\u9000\u51fa', id=wxID_FRAMEMAINMENUDATAITEMSEXIT,
-              kind=wx.ITEM_NORMAL, text=u'\u9000\u51fa(&X)\tCtrl+Q')
+        parent.Append(help=u'\u9000\u51fa\u7a0b\u5e8f',
+              id=wxID_FRAMEMAINMENUDATAITEMSEXIT, kind=wx.ITEM_NORMAL,
+              text=u'\u9000\u51fa\u7a0b\u5e8f(&X)\tCtrl+Q')
         self.Bind(wx.EVT_MENU, self.OnMenuDataItemsdownloadMenu,
               id=wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD)
         self.Bind(wx.EVT_MENU, self.OnMenuDataItemsaddMenu,
@@ -117,12 +140,22 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u84dd\u7403\u63a8\u8350',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, kind=wx.ITEM_NORMAL,
               text=u'\u84dd\u7403\u63a8\u8350(&B)\tF7')
+        parent.Append(help=u'\u81ea\u9009\u8fc7\u6ee4',
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL, kind=wx.ITEM_NORMAL,
+              text=u'\u81ea\u9009\u8fc7\u6ee4(&O)\tCtrl+O')
+        parent.Append(help=u'\u6761\u4ef6\u66ff\u6362',
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE, kind=wx.ITEM_NORMAL,
+              text=u'\u6761\u4ef6\u66ff\u6362(&C)\tCtrl+T')
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsfredMenu,
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFRED)
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsfblueMenu,
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE)
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemssredMenu,
               id=wxID_FRAMEMAINMENUFILTRATEITEMSSRED)
+        self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsoptionalMenu,
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL)
+        self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsreplaceMenu,
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE)
 
     def _init_coll_menuRandom_Items(self, parent):
         # generated method, don't edit
@@ -136,12 +169,17 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u7f29\u6c34\u540e\u6570\u636e\u673a\u9009',
               id=wxID_FRAMEMAINMENURANDOMITEMSSR, kind=wx.ITEM_NORMAL,
               text=u'\u7f29\u6c34\u673a\u9009(&S)\tCtrl+B')
+        parent.Append(help=u'\u81ea\u9009\u673a\u9009',
+              id=wxID_FRAMEMAINMENURANDOMITEMSER, kind=wx.ITEM_NORMAL,
+              text=u'\u81ea\u9009\u673a\u9009(&E)\tCtrl+C')
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemsdrMenu,
               id=wxID_FRAMEMAINMENURANDOMITEMSDR)
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemsfrMenu,
               id=wxID_FRAMEMAINMENURANDOMITEMSFR)
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemssrMenu,
               id=wxID_FRAMEMAINMENURANDOMITEMSSR)
+        self.Bind(wx.EVT_MENU, self.OnMenuRandomItemserMenu,
+              id=wxID_FRAMEMAINMENURANDOMITEMSER)
 
     def _init_coll_menuHelp_Items(self, parent):
         # generated method, don't edit
@@ -162,8 +200,7 @@ class FrameMain(wx.Frame):
               text=u'\u6570\u636e\u6587\u672c')
         parent.AddPage(imageId=-1, page=self.scrolledWindow1, select=False,
               text=u'\u5206\u5e03\u56fe')
-        parent.AddPage(imageId=-1, page=self.panel1, select=True,
-              text=u'Flash')
+        parent.AddPage(imageId=-1, page=self.panel1, select=True, text=u'Flash')
 
     def _init_sizers(self):
         # generated method, don't edit
@@ -196,7 +233,7 @@ class FrameMain(wx.Frame):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAMEMAIN, name='', parent=prnt,
               pos=wx.Point(280, 120), size=wx.Size(620, 415),
-              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2')
+              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2 1.0.4')
         self._init_utils()
         self.SetClientSize(wx.Size(612, 388))
         self.SetMenuBar(self.menuBar1)
@@ -233,96 +270,106 @@ class FrameMain(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameMainÆô¶¯'
-                
-        #Æô¶¯Ê±ÏÔÊ¾»­Ãæ
+        t1 = time.time()
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameMainå¯åŠ¨').encode(locale.getdefaultlocale()[1])
+        #å¯åŠ¨æ—¶æ˜¾ç¤ºç”»é¢
         image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
         bmp = image.ConvertToBitmap()
-        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1500, None, -1)
+        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 800, None, -1)
         wx.Yield()         
-        
-        global _max_height, data_array, data_string
-
-        #ÎÄ±¾ÏÔÊ¾
+        global data_string
+        #æ–‡æœ¬æ˜¾ç¤º
         data_string = readDataFileToString()
         self.textCtrl1.SetFont(wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) 
         self.textCtrl1.Clear()
         self.textCtrl1.AppendText(data_string)
-        
-        #Í¼±íÏÔÊ¾  
+        self.textCtrl1.SetInsertionPoint(0)
+        #å›¾è¡¨æ˜¾ç¤º
+        global _max_height, data_array 
         data_array = readDataFileToArray()
-        #_max_height = 15.4*len(data_array) - 190 #ÏÔÊ¾ËùÓĞµÄ£¨ÎÊÌâÊÇÍÏ¶¯Ê±ÓĞÒ»Ğ©³Ù¶Û£©
-        _max_height = 15.4*100 - 190 #Ö»ÏÔÊ¾×î½ü100ÆÚµÄ
-        self.scrolledWindow1.SetScrollbars(1, 1, 890, _max_height, 0, _max_height) #¶¨Î»ÓÚÊı¾İ×îÏÂ·½
-
-        #´´½¨FlashÏÔÊ¾»áµ÷ÓÃµ½µÄxml
-        f = open('data/½üÆÚÊı¾İ.xml', 'w')
-        f.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        ##×î½ü9ÆÚÊı¾İ
-        f.write('<datas>\n') 
-        for i in range(0, 9):
-            f.write('    <data0%d>\n'%i)
-            f.write('        <data date=\'%s\''%data_array[i][0])
-            for j in range(1, 6+1):
-                f.write(' red0%d=\'%d\''%(j,int(data_array[i][j])))
-            f.write('/>\n')
-            f.write('    </data0%d>\n'%i)
-        f.write('</datas>\n')
-        ##Ã¿¸öºÅÂë³ÖĞøÎ´³öÏÖµÄÆÚÊı
-        periods = [0]*33
-        for i in range(1, 33+1):
-            for j in range(0, len(data_array)):
-                if '%.2d'%i in data_array[j][1:6+1]:
-                    periods[i-1] = j
-                    break
-            
-        f.write('<periods>\n')
-        for i in range(1, 33+1):
-            f.write('    <period%.2d>\n'%i)
-            f.write('        <period period=\'%d\'/>\n'%periods[i-1])
-            f.write('    </period%.2d>\n'%i)
-        f.write('</periods>\n')
-        f.close()
-        
-        #FlashÏÔÊ¾
-        if wx.Platform == '__WXMSW__': #±ØĞëÊÇWindowsÆ½Ì¨
-            from wx.lib.flashwin import FlashWindow
-            
-            self.panel1.flash = FlashWindow(self.panel1, style=wx.SUNKEN_BORDER)
-            #self.panel1.flash.LoadMovie(0, 'file://' + os.path.abspath('flash/flash.swf'))
-            #ÏñÉÏÃæÕâÑù¼Ófile¾Í²»ĞĞ
-            self.panel1.flash.LoadMovie(0, os.path.abspath('flash/flash.swf'))
-
-            self.boxSizer1.Add(self.panel1.flash, proportion=1, flag=wx.EXPAND)
-
-            self.boxSizer1.SetDimension(0, 0, 604, 322) #Ç¿ÆÈsizerÖØĞÂ¶¨Î»¼°Ë¢ĞÂ´óĞ¡
-            
-            from wx.lib.flashwin import EVT_FSCommand #µ÷ÓÃFlashµÄFSCommand
-            self.Bind(EVT_FSCommand, self.getFlashVars) #½«Flash ocxµÄÏûÏ¢ÊÂ¼ş°ó¶¨µ½getFlashVarsº¯ÊıÉÏ
-                        
+        #_max_height = 15.4*len(data_array) - 190 #æ˜¾ç¤ºæ‰€æœ‰çš„ï¼ˆé—®é¢˜æ˜¯æ‹–åŠ¨æ—¶æœ‰ä¸€äº›è¿Ÿé’ï¼‰
+        _max_height = 15.4*100 - 190 #åªæ˜¾ç¤ºæœ€è¿‘100æœŸçš„
+        self.scrolledWindow1.SetScrollbars(1, 1, 890, _max_height, 0, _max_height) #å®šä½äºæ•°æ®æœ€ä¸‹æ–¹
+        #è¯»å–å›ºå®šæŠ•æ³¨
+        global bet_array
+        bet_array = readBetFileToArray()
+        #è®¡ç®—å‡ºçƒæ¬¡æ•°å¹¶æ’åˆ—çƒå·
+        global redOrder, redTimes
+        redOrder, redTimes = redOrderCoumpute(data_array)
+        #ç”Ÿæˆå‚æ•°å¹¶è¯»å–å‚æ•°
+        global data_para_array
+        ##1ã€é¦–å…ˆåˆ¤æ–­â€œå…¨éƒ¨å‚æ•°â€æ˜¯å¦å­˜åœ¨
+        if os.path.exists(u"data/å…¨éƒ¨å‚æ•°.txt"):
+            print (u'â€œå…¨éƒ¨å‚æ•°.txtâ€å·²å­˜åœ¨').encode(locale.getdefaultlocale()[1])
+            ##2ã€å†åˆ¤æ–­æ˜¯å¦ä¸ºæœ€æ–°ä¸€æœŸ
+            f = open(u'data/å…¨éƒ¨å‚æ•°.txt', 'r')
+            ts = f.read(7)
+            f.close()
+            if ts==data_array[0][0]:
+                #ç›´æ¥è¯»å–æ–‡ä»¶
+                print (u'â€œå…¨éƒ¨å‚æ•°.txtâ€ä¸ºæœ€æ–°').encode(locale.getdefaultlocale()[1])
+                data_para_array = DataParaFileRead(u"data/å…¨éƒ¨å‚æ•°.txt")
+            else:
+                #æ·»åŠ å‚æ•°
+                print (u'â€œå…¨éƒ¨å‚æ•°.txtâ€ä¸æ˜¯æœ€æ–°(%s->%s)'%(data_array[0][0],ts)).encode(locale.getdefaultlocale()[1])
+                #è®¡ç®—å¼€å¥–æ•°æ®å¯¹åº”çš„å‚æ•°
+                data_para_array = dataParaCompute(data_array, redOrder, bet_array)
+                #å†™å…¥æ–‡ä»¶
+                DataParaFileWrite(data_para_array, data_array)
         else:
-            #Èç¹ûÊÇÆäËûÆ½Ì¨£¬Ó¦¸Ã¸ø³öÌáÊ¾Å¶¡«
-            #¸ù¾İgoogle analyticsµÄ·ÖÎö(20071010)
-            #98%µÄ·ÃÎÊÕßÊÇwindowsÓÃ»§
-            #97%µÄ·ÃÎÊÕßÊ¹ÓÃFlash
-            #92%µÄ·ÃÎÊÕßÀ´×ÔÖĞ¹ú
-            pass
-        
-        #ÉèÖÃ½¹µã£¨Ö÷ÒªÊÇÎªÁË²¶×½¼üÅÌÊäÈë£©
+            print (u'æœªæ‰¾åˆ°â€œå…¨éƒ¨å‚æ•°.txtâ€ï¼Œæ­£åœ¨ç”Ÿæˆâ€¦â€¦').encode(locale.getdefaultlocale()[1])
+            #è®¡ç®—å¼€å¥–æ•°æ®å¯¹åº”çš„å‚æ•°ï¼ˆä¸è¿‡æ»¤æ¡ä»¶é¡¹æ•°ç›¸åŒï¼‰
+            data_para_array = dataParaCompute(data_array, redOrder, bet_array)
+            #å†™å…¥æ–‡ä»¶
+            DataParaFileWrite(data_para_array, data_array)
+
+        #Flashæ˜¾ç¤º
+        if wx.Platform == '__WXMSW__': #å¿…é¡»æ˜¯Windowså¹³å°
+            #åˆ›å»ºFlashæ˜¾ç¤ºä¼šè°ƒç”¨åˆ°çš„xml[è€—æ—¶0.015s]
+            XmlWrite(u"data/è¿‘æœŸæ•°æ®.xml",data_array,data_para_array,redOrder,redTimes)            
+            from wx.lib.flashwin import FlashWindow
+            #åˆ›å»ºä¸€ä¸ªFlashçª—å£
+            self.panel1.flash = FlashWindow(self.panel1, style=wx.SUNKEN_BORDER)
+            #å±è”½Flashçš„å³é”®
+            self.panel1.flash.menu = False
+            #self.panel1.flash.LoadMovie(0, 'file://' + os.path.abspath('pic/flash.swf'))
+            #åƒä¸Šé¢è¿™æ ·åŠ fileå°±ä¸è¡Œ
+            self.panel1.flash.LoadMovie(0, os.path.abspath(u'pic/flash.swf'))
+            #æ·»åŠ sizer
+            self.boxSizer1.Add(self.panel1.flash, proportion=1, flag=wx.EXPAND)
+            #å¼ºè¿«sizeré‡æ–°å®šä½åŠåˆ·æ–°å¤§å°
+            self.boxSizer1.SetDimension(0, 0, 604, 322) 
+            #è°ƒç”¨Flashçš„FSCommand
+            from wx.lib.flashwin import EVT_FSCommand
+            #å°†Flash ocxçš„æ¶ˆæ¯äº‹ä»¶ç»‘å®šåˆ°getFlashVarså‡½æ•°ä¸Š
+            self.Bind(EVT_FSCommand, self.getFlashVars)
+        else: #__WXGTK__(linux ubuntu 7.10)
+            #æ ¹æ®google analyticsçš„åˆ†æ(20071010)
+            #98%çš„è®¿é—®è€…æ˜¯windowsç”¨æˆ·
+            #97%çš„è®¿é—®è€…ä½¿ç”¨Flash
+            #92%çš„è®¿é—®è€…æ¥è‡ªä¸­å›½
+	    self.notebook1.ChangeSelection(0) #å°†é¦–é€‰é¡¹æ”¹ä¸ºæ–‡æœ¬æ•°æ®æ˜¾ç¤º
+            wx.StaticText(self.panel1, -1, u"å¯¹ä¸èµ·ï¼Œæ‚¨çš„ç³»ç»Ÿä¸æ”¯æŒFlashï¼", pos=(20, 34))
+        #è®¾ç½®ç„¦ç‚¹ï¼ˆä¸»è¦æ˜¯ä¸ºäº†æ•æ‰é”®ç›˜è¾“å…¥ï¼‰
         self.SetFocus()
+        #æ˜¾ç¤ºå¯åŠ¨æ‰€éœ€æ—¶é—´
+        t2 = time.time()
+        print (u'æœ¬æ¬¡å¯åŠ¨è€—æ—¶%.2fç§’'%(t2-t1)).encode(locale.getdefaultlocale()[1])
+        #æ­£å¸¸0.765sæ›´æ–°æ•°æ®2.765s
+        #æµ‹è¯•
         
 #-------------------------------------------------------------------------------
-#----»æÍ¼----
+#----ç»˜å›¾----
 
     def OnScrolledWindow1Paint(self, event):
-        '''»æÖÆ·Ö²¼Í¼'''           
+        '''ç»˜åˆ¶åˆ†å¸ƒå›¾'''           
         dc = wx.PaintDC(self.scrolledWindow1)
         self.scrolledWindow1.DoPrepareDC(dc)       
         dc.Clear()
 
-        #·Ö¸ôÏß·ÅÔÚ×îÇ°Ãæ»­£¬ÒÔÃâµ²×¡ÆäËûµÄÏß
-        dc.SetPen(wx.Pen("#B3B3B3", 1)) #·Ö¸ôÏß
+        #åˆ†éš”çº¿æ”¾åœ¨æœ€å‰é¢ç”»ï¼Œä»¥å…æŒ¡ä½å…¶ä»–çš„çº¿
+        dc.SetPen(wx.Pen("#B3B3B3", 1)) #åˆ†éš”çº¿
         for i in range(1, 34-1):
             dc.DrawLine(i*16+47, 5, i*16+47, _max_height-20)
         for i in range(0, 100-1):
@@ -330,17 +377,17 @@ class FrameMain(wx.Frame):
         for i in range(1, 16+1):
             dc.DrawLine(i*16+563, 5, i*16+563, _max_height-20)
             
-        dc.SetTextForeground('RED') #ºìÉ«ÇòºÅ
+        dc.SetTextForeground('RED') #çº¢è‰²çƒå·
         dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))    
         for i in range(1, 33+1):
             dc.DrawText('%.2d'%i, i*16+34, _max_height-25)
             
-        dc.SetTextForeground('#009900') #ÆÚºÅ£¨ÂÌÉ«£©
+        dc.SetTextForeground('#009900') #æœŸå·ï¼ˆç»¿è‰²ï¼‰
         for i in range(0, 100):
-            dc.DrawText(str(data_array[i][0]), 0, _max_height-(i*15+39)) #×ó²à
-            dc.DrawText(str(data_array[i][0]), 840, _max_height-(i*15+39)) #ÓÒ²à
+            dc.DrawText(str(data_array[i][0]), 0, _max_height-(i*15+39)) #å·¦ä¾§
+            dc.DrawText(str(data_array[i][0]), 840, _max_height-(i*15+39)) #å³ä¾§
         
-        dc.SetPen(wx.Pen("RED", 1)) #ºìÉ«Çò·Ö²¼Í¼  
+        dc.SetPen(wx.Pen("RED", 1)) #çº¢è‰²çƒåˆ†å¸ƒå›¾  
         dc.SetBrush(wx.Brush(wx.RED, wx.SOLID))
         for i in range(0, 100):
             for j in range(1, 6+1):
@@ -348,42 +395,42 @@ class FrameMain(wx.Frame):
                     if int(data_array[i][j])==k:
                         dc.DrawRectangle(k*16+35, _max_height-(i*15+35), 10, 10) 
         
-        dc.SetPen(wx.Pen("#777777", 1)) #»­×ßÊÆÏß »ÒÉ« 1ºÅÇò
+        dc.SetPen(wx.Pen("#777777", 1)) #ç”»èµ°åŠ¿çº¿ ç°è‰² 1å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][1]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][1]))*16+40, _max_height-((i+1)*15+30))
         
-        dc.SetPen(wx.Pen("#990099", 1)) #»­×ßÊÆÏß ×ÏÉ« 2ºÅÇò
+        dc.SetPen(wx.Pen("#990099", 1)) #ç”»èµ°åŠ¿çº¿ ç´«è‰² 2å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][2]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][2]))*16+40, _max_height-((i+1)*15+30))
         
-        dc.SetPen(wx.Pen("#CC9900", 1)) #»­×ßÊÆÏß ×ØÉ« 3ºÅÇò
+        dc.SetPen(wx.Pen("#CC9900", 1)) #ç”»èµ°åŠ¿çº¿ æ£•è‰² 3å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][3]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][3]))*16+40, _max_height-((i+1)*15+30))
 
-        dc.SetPen(wx.Pen("STEEL BLUE", 1)) #»­×ßÊÆÏß À¶É« 4ºÅÇò
+        dc.SetPen(wx.Pen("STEEL BLUE", 1)) #ç”»èµ°åŠ¿çº¿ è“è‰² 4å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][4]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][4]))*16+40, _max_height-((i+1)*15+30))
                 
-        dc.SetPen(wx.Pen("#6699FF", 1)) #»­×ßÊÆÏß ÇàÉ« 5ºÅÇò
+        dc.SetPen(wx.Pen("#6699FF", 1)) #ç”»èµ°åŠ¿çº¿ é’è‰² 5å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][5]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][5]))*16+40, _max_height-((i+1)*15+30))
                 
-        dc.SetPen(wx.Pen("LIME GREEN", 1)) #»­×ßÊÆÏß ÂÌÉ« 6ºÅÇò
+        dc.SetPen(wx.Pen("LIME GREEN", 1)) #ç”»èµ°åŠ¿çº¿ ç»¿è‰² 6å·çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][6]))*16+40, _max_height-(i*15+30), (int(data_array[i+1][6]))*16+40, _max_height-((i+1)*15+30))  
                       
-        dc.SetPen(wx.Pen("BLUE", 1)) #À¶É«Çò·Ö²¼Í¼  
+        dc.SetPen(wx.Pen("BLUE", 1)) #è“è‰²çƒåˆ†å¸ƒå›¾  
         dc.SetBrush(wx.Brush(wx.BLUE, wx.SOLID))
         for i in range(0, 100):
             for j in range(1, 16+1):
                 if int(data_array[i][7])==j:
                     dc.DrawRectangle(j*16+567, _max_height-(i*15+35), 10, 10)    
                          
-        dc.SetPen(wx.Pen("CADET BLUE", 1)) #»­×ßÊÆÏß À¶É« À¶Çò
+        dc.SetPen(wx.Pen("CADET BLUE", 1)) #ç”»èµ°åŠ¿çº¿ è“è‰² è“çƒ
         for i in range(0, 100-1):
             dc.DrawLine((int(data_array[i][7]))*16+572, _max_height-(i*15+30), (int(data_array[i+1][7]))*16+572, _max_height-((i+1)*15+30)) 
             
-        dc.SetTextForeground('BLUE') #À¶É«ÇòºÅ
+        dc.SetTextForeground('BLUE') #è“è‰²çƒå·
         dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))    
         for i in range(1, 16+1):
             dc.DrawText('%.2d'%i, i*16+565, _max_height-25)            
@@ -391,108 +438,132 @@ class FrameMain(wx.Frame):
         event.Skip()
         
 #-------------------------------------------------------------------------------
-#----Êı¾İ----
+#----æ•°æ®----
     def OnMenuDataItemsdownloadMenu(self, event):
-        '''ÏÂÔØÊı¾İ'''
+        '''ä¸‹è½½æ•°æ®'''
         global data_string, data_array
-        
+
+        #æ‰“å¼€ä¸‹è½½é¢æ¿
         _FrameDownload = FrameDownload.create(None)
         _FrameDownload.Show()
-
-        data_string = readDataFileToString() #ÖØĞÂ¶ÁÈ¡Êı¾İ
+        #é‡æ–°è¯»å–æ•°æ®
+        data_string = readDataFileToString() 
         data_array = readDataFileToArray()
-            
-        self.textCtrl1.Clear() #Ë¢ĞÂÊı¾İ
+        #åˆ·æ–°â€œæ•°æ®æ–‡æœ¬â€ä¸­çš„æ˜¾ç¤º  
+        self.textCtrl1.Clear() 
         self.textCtrl1.AppendText(data_string)
-        self.textCtrl1.ShowPosition(0) 
-
-        #ÉèÖÃ½¹µã
+        self.textCtrl1.ShowPosition(0)
+        if wx.Platform == '__WXMSW__':
+            #é‡æ–°åˆ›å»ºFlashæ˜¾ç¤ºä¼šè°ƒç”¨åˆ°çš„xml
+            XmlWrite(u"data/è¿‘æœŸæ•°æ®.xml",data_array,data_para_array,redOrder,redTimes)
+            #åˆ·æ–°Flash
+            self.panel1.flash.GotoFrame(1) #è·³åˆ°ç¬¬1å¸§
+            self.panel1.flash.Play() #æ’­æ”¾
+        #è®¾ç½®ç„¦ç‚¹
         #self.SetFocus()
+        #æ‰“å¼€è¿™ä¸ªçª—å£å°±è·‘åˆ°ä¸»ç•Œé¢åé¢å»äº†ï¼Œä¼°è®¡åŸå› æ˜¯å› ä¸ºä¸Šé¢æ›´æ–°äº†textCtrl1
         
         event.Skip()
         
     def OnMenuDataItemsaddMenu(self, event):
-        '''Ìí¼ÓÊı¾İ'''
+        '''æ·»åŠ æ•°æ®'''
         global data_string, data_array
         
         dlg = wx.TextEntryDialog(
-                self, '  ÇëÊäÈëĞÂµÄÊı¾İ£¬×¢Òâ±£³Ö¸ñÊ½£¡',
-                'Ìí¼ÓÊı¾İ')
+                self, u'  è¯·è¾“å…¥æ–°çš„æ•°æ®ï¼Œæ³¨æ„ä¿æŒæ ¼å¼ï¼',
+                u'æ·»åŠ æ•°æ®')
 
-        dlg.SetValue("2007001 01,02,03,04,05,06+07")
+        #dlg.SetValue("2007001 01,02,03,04,05,06+07")
+        dlg.SetValue("%s 01,02,03,04,05,06+07"%str(int(data_array[0][0])+1))
 
         if dlg.ShowModal() == wx.ID_OK:
             writeStringToDataFile(dlg.GetValue()+'\n'+data_string)
-            
-            data_string = readDataFileToString() #ÖØĞÂ¶ÁÈ¡Êı¾İ
+            #æ˜¾ç¤ºä¸€ä¸‹
+            print (u'æ·»åŠ äº†ä¸€ç»„æ•°æ®').encode(locale.getdefaultlocale()[1])
+            #é‡æ–°è¯»å–æ•°æ®
+            data_string = readDataFileToString() 
             data_array = readDataFileToArray() 
-        
-            self.textCtrl1.Clear() #Ë¢ĞÂÊı¾İ
-            self.textCtrl1.AppendText(data_string)
+            #åˆ·æ–°æ•°æ®
+            self.textCtrl1.Clear() 
+            self.textCtrl1.AppendText(data_string.decode('utf-8'))            
             self.textCtrl1.ShowPosition(0)
-            
+            if wx.Platform == '__WXMSW__':            
+                #é‡æ–°åˆ›å»ºFlashæ˜¾ç¤ºä¼šè°ƒç”¨åˆ°çš„xml
+                XmlWrite(u"data/è¿‘æœŸæ•°æ®.xml",data_array,data_para_array,redOrder,redTimes)
+                #åˆ·æ–°Flash
+                self.panel1.flash.GotoFrame(1) #è·³åˆ°ç¬¬1å¸§
+                self.panel1.flash.Play() #æ’­æ”¾            
         dlg.Destroy()
 
-        #ÉèÖÃ½¹µã
+        #è®¾ç½®ç„¦ç‚¹
         self.SetFocus()
         
         event.Skip()
         
     def OnMenuDataItemsdelMenu(self, event):
-        '''É¾³ıÊı¾İ'''
+        '''åˆ é™¤æ•°æ®'''
         global data_string, data_array
         
-        dlg = wx.MessageDialog(self, '  ×î½üÒ»ÆÚÊı¾İ»á±»É¾³ı£¡\n%s\n'%str(data_string.split('\n')[0]), 
-                               'É¾³ıÊı¾İ',
+        dlg = wx.MessageDialog(self, u'  æœ€è¿‘ä¸€æœŸæ•°æ®ä¼šè¢«åˆ é™¤ï¼\n%s\n'%str(data_string.split('\n')[0]), 
+                               u'åˆ é™¤æ•°æ®',
                                wx.OK | wx.CANCEL | wx.ICON_INFORMATION
                                )
         
         if dlg.ShowModal() == wx.ID_OK:
-            writeStringToDataFile(data_string[29:]) #Ã¿Ò»ÆÚµÄÊı¾İÎª28×Ö½Ú
-
-            data_string = readDataFileToString() #ÖØĞÂ¶ÁÈ¡Êı¾İ
+            #æ˜¾ç¤ºä¸€ä¸‹
+            print (u'åˆ é™¤äº†ä¸€ç»„æ•°æ®').encode(locale.getdefaultlocale()[1])
+            #win 28 #linux æœ‰æ—¶ä¼šæ˜¯ 29
+            writeStringToDataFile(data_string[len(data_string.split('\n')[0])+1:])
+            #é‡æ–°è¯»å–æ•°æ®
+            data_string = readDataFileToString() 
             data_array = readDataFileToArray() 
-        
-            self.textCtrl1.Clear() #Ë¢ĞÂÊı¾İ
+            #åˆ·æ–°æ•°æ®
+            self.textCtrl1.Clear() 
             self.textCtrl1.AppendText(data_string)
-            self.textCtrl1.ShowPosition(0)            
-        
+            #self.textCtrl1.ShowPosition(0) #win
+            self.textCtrl1.SetInsertionPoint(0) #linux
+            if wx.Platform == '__WXMSW__':            
+                #é‡æ–°åˆ›å»ºFlashæ˜¾ç¤ºä¼šè°ƒç”¨åˆ°çš„xml
+                XmlWrite(u"data/è¿‘æœŸæ•°æ®.xml",data_array,data_para_array,redOrder,redTimes)
+                #åˆ·æ–°Flash
+                self.panel1.flash.GotoFrame(1) #è·³åˆ°ç¬¬1å¸§
+                self.panel1.flash.Play() #æ’­æ”¾
         dlg.Destroy()             
 
-        #ÉèÖÃ½¹µã
+        #è®¾ç½®ç„¦ç‚¹
         self.SetFocus()
         
         event.Skip()
         
     def OnMenuDataItemsexitMenu(self, event):
-        '''ÍË³ö'''
+        '''é€€å‡º'''
         self.Close()
         
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----¹ıÂË----
+#----è¿‡æ»¤----
    
-    def OnMenuFiltrateItemsfredMenu(self, event): #ºìÇò¹ıÂËÑ¡ºÃÃæ°å
-        '''ºìÇò¹ıÂË¹¦ÄÜÑ¡ºÅÃæ°å'''
-        _FrameRedFiltratePanel = FrameRedFiltratePanel.create(None, choice_num)
+    def OnMenuFiltrateItemsfredMenu(self, event): #çº¢çƒè¿‡æ»¤é€‰å¥½é¢æ¿
+        '''çº¢çƒè¿‡æ»¤åŠŸèƒ½é€‰å·é¢æ¿'''
+        _FrameRedFiltratePanel = FrameRedFiltratePanel.create(None, choice_num, data_array, bet_array, data_para_array, redOrder, redTimes)
         _FrameRedFiltratePanel.Show() 
                 
         event.Skip()  
 
     def OnMenuFiltrateItemssredMenu(self, event):
-        '''ºìÇòËõË®¹¦ÄÜ'''
-        #Êı¾İ×îĞÂÒ»ÆÚµÄÆÚºÅ
+        '''çº¢çƒç¼©æ°´åŠŸèƒ½'''
+        #æ•°æ®æœ€æ–°ä¸€æœŸçš„æœŸå·
         date = int(data_array[0][0])
-        #ÅĞ¶ÏÊÇ·ñ´æÔÚÔ¤²âÊı¾İ£¬¼´ÅĞ¶ÏÎÄ¼ş¼ĞÊÇ·ñ´æÔÚ
+        #åˆ¤æ–­æ˜¯å¦å­˜åœ¨é¢„æµ‹æ•°æ®ï¼Œå³åˆ¤æ–­æ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨
         if '%s'%(date+1) in os.listdir(os.curdir):
-            #ÈôÓĞÔò¿ÉÒÔ´ò¿ªºìÇòËõË®Ãæ°å
+            #è‹¥æœ‰åˆ™å¯ä»¥æ‰“å¼€çº¢çƒç¼©æ°´é¢æ¿
             _FrameRedShrink = FrameRedShrink.create(None)
             _FrameRedShrink.Show() 
         else :
-            #ÈôÃ»ÓĞ£¬ÔòÌáÊ¾ĞèÒªÏÈ¹ıÂËÊı¾İ
-            dlg = wx.MessageDialog(self, 'Î´ÕÒµ½¶ÔÓ¦ÎÄ¼ş¼Ğ£¬ÇëÏÈÉú³É¹ıÂËÊı¾İ£¡',
-                                   'ÌáÊ¾',
+            #è‹¥æ²¡æœ‰ï¼Œåˆ™æç¤ºéœ€è¦å…ˆè¿‡æ»¤æ•°æ®
+            dlg = wx.MessageDialog(self, u'æœªæ‰¾åˆ°å¯¹åº”æ–‡ä»¶å¤¹ï¼Œè¯·å…ˆç”Ÿæˆè¿‡æ»¤æ•°æ®ï¼',
+                                   u'æç¤º',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
@@ -500,169 +571,230 @@ class FrameMain(wx.Frame):
             
         event.Skip()
         
-    def OnMenuFiltrateItemsfblueMenu(self, event): #À¶ÇòÍÆ¼ö
-        '''À¶ÇòÍÆ¼ö¹¦ÄÜ'''
+    def OnMenuFiltrateItemsfblueMenu(self, event): #è“çƒæ¨è
+        '''è“çƒæ¨èåŠŸèƒ½'''
         _FrameBlue = FrameBlue.create(None)
         _FrameBlue.Show() 
         
         event.Skip()
 
+
+    def OnMenuFiltrateItemsoptionalMenu(self, event): #è‡ªé€‰è¿‡æ»¤
+        '''è‡ªé€‰è¿‡æ»¤åŠŸèƒ½'''
+        _FrameOptional = FrameOptional.create(None)
+        _FrameOptional.Show()
+        
+        event.Skip()
+        
+    def OnMenuFiltrateItemsreplaceMenu(self, event): #æ¡ä»¶æ›¿æ¢
+        '''è¿‡æ»¤æ¡ä»¶æ›¿æ¢åŠŸèƒ½'''
+        _FrameReplace = FrameReplace.create(None)
+        _FrameReplace.Show()
+
+        event.Skip()
+               
 #-------------------------------------------------------------------------------
-#----»úÑ¡----
+#----æœºé€‰----
     def OnMenuRandomItemsdrMenu(self, event):
-        '''Ö±½Ó»úÑ¡'''
+        '''ç›´æ¥æœºé€‰'''
         while True: 
             num = []
-            for i in range(0, 6): #µÃµ½Ëæ»úÊı
+            for i in range(0, 6): #å¾—åˆ°éšæœºæ•°
                 num.append('%.2d'%(random.randint(1,33)))
             big = True
-            for i in range(0, 5): #ÅĞ¶ÏÊÇ²»ÊÇÒ»¸ö±ÈÒ»¸ö´ó
+            for i in range(0, 5): #åˆ¤æ–­æ˜¯ä¸æ˜¯ä¸€ä¸ªæ¯”ä¸€ä¸ªå¤§
                 if num[i]>=num[i+1]:
                     big = False
                     break
-            #¼òµ¥µÄÅĞ¶Ï£¬·ñÔò»á³öÒ»Ğ©ºÜ²»ºÏÀíµÄÖµ£¬±ÈÈç01 02 03 04 05 06+BB
+            #ç®€å•çš„åˆ¤æ–­ï¼Œå¦åˆ™ä¼šå‡ºä¸€äº›å¾ˆä¸åˆç†çš„å€¼ï¼Œæ¯”å¦‚01 02 03 04 05 06+BB
             option = True
-            if int(num[0])>19: #1.Ò»ºÅÎ»ÔÚ1£­19Ö®¼ä
+            if int(num[0])>19: #1.ä¸€å·ä½åœ¨1ï¼19ä¹‹é—´
                 option = False
-            if int(num[1])>24: #2.¶şºÅÎ»ÔÚ2£­24Ö®¼ä
+            if int(num[1])>24: #2.äºŒå·ä½åœ¨2ï¼24ä¹‹é—´
                 option = False
-            if int(num[2])>28: #3.ÈıºÅÎ»ÔÚ3£­28Ö®¼ä
+            if int(num[2])>28: #3.ä¸‰å·ä½åœ¨3ï¼28ä¹‹é—´
                 option = False
-            if int(num[3])<5 or int(num[3])>31: #4.ËÄºÅÎ»ÔÚ5£­31Ö®¼ä
+            if int(num[3])<5 or int(num[3])>31: #4.å››å·ä½åœ¨5ï¼31ä¹‹é—´
                 option = False
-            if int(num[4])<7: #5.ÎåºÅÎ»ÔÚ7£­32Ö®¼ä
+            if int(num[4])<7: #5.äº”å·ä½åœ¨7ï¼32ä¹‹é—´
                 option = False
-            if int(num[5])<11: #6.ÁùºÅÎ»ÔÚ11£­33Ö®¼ä
+            if int(num[5])<11: #6.å…­å·ä½åœ¨11ï¼33ä¹‹é—´
                 option = False
-            #»úÑ¡ÀºÇò
+            #æœºé€‰ç¯®çƒ
             if big==True and option==True:
                 num.append('%.2d'%(random.randint(1,16))) 
                 break
 
         str_num = '%s %s %s %s %s %s+%s'%(num[0],num[1],num[2],num[3],num[4],num[5],num[6])
-        print str_num #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
+        print str_num #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
         dlg = wx.MessageDialog(self, '%s'%(str_num), 
-                               'Ö±½Ó»úÑ¡ºÅÂëÈçÏÂ£º',
+                               u'ç›´æ¥æœºé€‰å·ç å¦‚ä¸‹ï¼š',
                                wx.OK | wx.ICON_INFORMATION
                                )
         dlg.ShowModal()
         dlg.Destroy()
+
+        #è®¾ç½®ç„¦ç‚¹
+        self.SetFocus()        
         
         event.Skip()
 
     def OnMenuRandomItemsfrMenu(self, event):
-        '''¹ıÂË»úÑ¡'''
-        #Êı¾İ×îĞÂÒ»ÆÚµÄÆÚºÅ
+        '''è¿‡æ»¤æœºé€‰'''
+        #æ•°æ®æœ€æ–°ä¸€æœŸçš„æœŸå·
         date = int(data_array[0][0])
-
-        #´ò¿ª¹ıÂËÊı¾İ
+        #æ‰“å¼€è¿‡æ»¤æ•°æ®
         try:
-            #ÎÄ¼ş¶ÁÈ¡
-            f = open('%s/%sÔ¤²âÊı¾İ.txt'%(date+1,date+1), 'r')
+            #æ–‡ä»¶è¯»å–
+            f = open(u'%d/%dé¢„æµ‹æ•°æ®.txt'%(date+1,date+1), 'r')
             s = f.readlines()                     
             f.close()
-            #ºÅÂëÏÔÊ¾
-            num_t = random.randint(0,len(s)-1) #Ëæ»úÊı
-            print s[num_t].split('\n')[0], num_t #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ            
+            #å·ç æ˜¾ç¤º
+            num_t = random.randint(0,len(s)-1) #éšæœºæ•°
+            print s[num_t].split('\n')[0], num_t #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
             dlg = wx.MessageDialog(self, '%s'%s[num_t], 
-                                   '¹ıÂË»úÑ¡ºÅÂëÈçÏÂ£º£¨ºì£©',
+                                   u'è¿‡æ»¤æœºé€‰å·ç å¦‚ä¸‹ï¼šï¼ˆçº¢ï¼‰',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
             dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()              
         except:
-            #´íÎóÌáÊ¾
-            dlg = wx.MessageDialog(self, 'Î´ÕÒµ½¶ÔÓ¦ÎÄ¼ş', 
-                                   '´íÎó£¡',
+            #é”™è¯¯æç¤º
+            dlg = wx.MessageDialog(self, u'æœªæ‰¾åˆ°å¯¹åº”æ–‡ä»¶æˆ–å¯¹åº”æ–‡ä»¶ä¸ºç©º\n(%sç›®å½•ä¸‹%sé¢„æµ‹æ•°æ®.txt)'%(date+1,date+1),  
+                                   u'é”™è¯¯ï¼',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
             dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()
             
         event.Skip()
 
     def OnMenuRandomItemssrMenu(self, event):
-        '''ËõË®»úÑ¡'''
-        #Êı¾İ×îĞÂÒ»ÆÚµÄÆÚºÅ
+        '''ç¼©æ°´æœºé€‰'''
+        #æ•°æ®æœ€æ–°ä¸€æœŸçš„æœŸå·
         date = int(data_array[0][0])
 
-        #´ò¿ªËõË®Êı¾İ
+        #æ‰“å¼€ç¼©æ°´æ•°æ®
         try:
-            f = open('%s/%sËõË®Êı¾İ.txt'%(date+1,date+1), 'r')
+            f = open(u'%s/%sç¼©æ°´æ•°æ®.txt'%(date+1,date+1), 'r')
             s = f.readlines()                     
             f.close()
-            #ºÅÂëÏÔÊ¾
-            num_t = random.randint(0,len(s)-1) #Ëæ»úÊı
-            print s[num_t].split('\n')[0], num_t #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ                 
+            #å·ç æ˜¾ç¤º
+            num_t = random.randint(0,len(s)-1) #éšæœºæ•°
+            print s[num_t].split('\n')[0], num_t #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹                 
             dlg = wx.MessageDialog(self, '%s'%s[num_t], 
-                                   'ËõË®»úÑ¡ºÅÂëÈçÏÂ£º£¨ºì£©',
-                                   wx.OK | wx.ICON_INFORMATION
-                                   )
-            dlg.ShowModal()
-            dlg.Destroy()   
-        except:
-            #´íÎóÌáÊ¾
-            dlg = wx.MessageDialog(self, 'Î´ÕÒµ½¶ÔÓ¦ÎÄ¼ş', 
-                                   '´íÎó£¡',
+                                   u'ç¼©æ°´æœºé€‰å·ç å¦‚ä¸‹ï¼šï¼ˆçº¢ï¼‰',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
             dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()             
+        except:
+            #é”™è¯¯æç¤º
+            dlg = wx.MessageDialog(self, u'æœªæ‰¾åˆ°å¯¹åº”æ–‡ä»¶æˆ–å¯¹åº”æ–‡ä»¶ä¸ºç©º\n(%sç›®å½•ä¸‹%sç¼©æ°´æ•°æ®.txt)'%(date+1,date+1),  
+                                   u'é”™è¯¯ï¼',
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()              
         
         event.Skip()
         
+    def OnMenuRandomItemserMenu(self, event):
+        '''è‡ªé€‰æœºé€‰'''
+        #æ•°æ®æœ€æ–°ä¸€æœŸçš„æœŸå·
+        date = int(data_array[0][0])
+
+        #æ‰“å¼€ç¼©æ°´æ•°æ®
+        try:
+            f = open(u'%s/%sè‡ªé€‰æ•°æ®.txt'%(date+1,date+1), 'r')
+            s = f.readlines()                     
+            f.close()
+            #å·ç æ˜¾ç¤º
+            num_t = random.randint(0,len(s)-1) #éšæœºæ•°
+            print s[num_t].split('\n')[0], num_t #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹                 
+            dlg = wx.MessageDialog(self, '%s'%s[num_t], 
+                                   u'è‡ªé€‰æœºé€‰å·ç å¦‚ä¸‹ï¼šï¼ˆçº¢ï¼‰',
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()             
+        except:
+            #é”™è¯¯æç¤º
+            dlg = wx.MessageDialog(self, u'æœªæ‰¾åˆ°å¯¹åº”æ–‡ä»¶æˆ–å¯¹åº”æ–‡ä»¶ä¸ºç©º\n(%sç›®å½•ä¸‹%sè‡ªé€‰æ•°æ®.txt)'%(date+1,date+1), 
+                                   u'é”™è¯¯ï¼',
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()
+            #è®¾ç½®ç„¦ç‚¹
+            self.SetFocus()             
+        
+        event.Skip()
+
+        
 #-------------------------------------------------------------------------------
-#----¶Ô½±----
+#----å¯¹å¥–----
         
-    def OnMenuCheckItemscfixedMenu(self, event): #¹Ì¶¨Í¶×¢¶Ô½±
-        '''¶ÁÈ¡¹Ì¶¨Í¶×¢ÎÄ¼ş²¢¶Ô½±'''       
-        bet_array = readBetFileToArray()
+    def OnMenuCheckItemscfixedMenu(self, event): #å›ºå®šæŠ•æ³¨å¯¹å¥–
+        '''è¯»å–å›ºå®šæŠ•æ³¨æ–‡ä»¶å¹¶å¯¹å¥–'''
+        #å› å·²åœ¨ä¸»ç¨‹åºå¯åŠ¨æ—¶è¯»å–ï¼Œæ•…ä¸éœ€è¦å†æ¬¡è¯»å–
+        #bet_array = readBetFileToArray()
         
-        msg = '' #ÖĞ½±ĞÅÏ¢
-        msg = msg + '¹Ì¶¨Í¶×¢ÖĞ¹²ÓĞ%d×¢£¡\n'%(len(bet_array))
+        msg = u'' #ä¸­å¥–ä¿¡æ¯
+        msg = msg + u'å›ºå®šæŠ•æ³¨ä¸­å…±æœ‰%dæ³¨ï¼\n'%(len(bet_array))
         for i in range(0, len(bet_array)):
-            r_nums = 0 #ºìÇò
+            r_nums = 0 #çº¢çƒ
             for j in range(0, 6):
-                if bet_array[i][j] in data_array[0][1:7]: #Ç°6¸ö
+                if bet_array[i][j] in data_array[0][1:7]: #å‰6ä¸ª
                     r_nums = r_nums + 1
             
-            b_nums = 0 #À¶Çò
+            b_nums = 0 #è“çƒ
             if bet_array[i][6]==data_array[0][7]:
                 b_nums = 1
                 
-            money = '' #½ğ¶î
-            if (r_nums<=3 and b_nums==0): #ÎŞ
-                money = 'Î´ÖĞ½±'
-            elif (r_nums<=2 and b_nums==1): #6µÈ
-                money = '5Ôª'
-            elif (r_nums==4 and b_nums==0) or (r_nums==3 and b_nums==1): #5µÈ
-                money = '10Ôª'
-            elif (r_nums==5 and b_nums==0) or (r_nums==4 and b_nums==1): #4µÈ
-                money = '200Ôª'
-            elif (r_nums==5 and b_nums==1): #3µÈ
-                money = '3000Ôª'
-            elif (r_nums==6 and b_nums==0): #2µÈ
-                money = '¶şµÈ½±'
-            elif (r_nums==6 and b_nums==1): #1µÈ
-                money = 'Ò»µÈ½±'
+            money = '' #é‡‘é¢
+            if (r_nums<=3 and b_nums==0): #æ— 
+                money = u'æœªä¸­å¥–'
+            elif (r_nums<=2 and b_nums==1): #6ç­‰
+                money = u'5å…ƒ'
+            elif (r_nums==4 and b_nums==0) or (r_nums==3 and b_nums==1): #5ç­‰
+                money = u'10å…ƒ'
+            elif (r_nums==5 and b_nums==0) or (r_nums==4 and b_nums==1): #4ç­‰
+                money = u'200å…ƒ'
+            elif (r_nums==5 and b_nums==1): #3ç­‰
+                money = u'3000å…ƒ'
+            elif (r_nums==6 and b_nums==0): #2ç­‰
+                money = u'äºŒç­‰å¥–'
+            elif (r_nums==6 and b_nums==1): #1ç­‰
+                money = u'ä¸€ç­‰å¥–'
 
-            msg = msg+ 'µÚ%d×¢£º%d+%d=%s\n'%(i+1,r_nums,b_nums,money)
+            msg = msg+ u'ç¬¬%dæ³¨ï¼š%d+%d=%s\n'%(i+1,r_nums,b_nums,money)
         
         dlg = wx.MessageDialog(self, msg, 
-                               '%sÆÚ¹Ì¶¨Í¶×¢¶Ô½±'%(data_array[0][0]),
+                               u'%sæœŸå›ºå®šæŠ•æ³¨å¯¹å¥–'%(data_array[0][0]),
                                wx.OK | wx.ICON_INFORMATION
                                )
         dlg.ShowModal()
         dlg.Destroy()   
              
-        #ÉèÖÃ½¹µã
+        #è®¾ç½®ç„¦ç‚¹
         self.SetFocus()
                         
         event.Skip()
 
-    def OnMenuCheckItemscpredictMenu(self, event): #Ô¤²âÊı¾İ¶Ô½±
-        '''¶ÁÈ¡Ô¤²âÊı¾İÎÄ¼ş²¢¶Ô½±'''
-        #¶ÁÈ¡Êı¾İÊ±ÓĞĞ©ÑÓ³Ù£¬ÏÔÊ¾Ò»¸ö»­Ãæ
+    def OnMenuCheckItemscpredictMenu(self, event): #é¢„æµ‹æ•°æ®å¯¹å¥–
+        '''è¯»å–é¢„æµ‹æ•°æ®æ–‡ä»¶å¹¶å¯¹å¥–'''
+        #è¯»å–æ•°æ®æ—¶æœ‰äº›å»¶è¿Ÿï¼Œæ˜¾ç¤ºä¸€ä¸ªç”»é¢
         image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
         bmp = image.ConvertToBitmap()
         wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1200, None, -1)
@@ -673,31 +805,196 @@ class FrameMain(wx.Frame):
 
         event.Skip()
         
-#-------------------------------------------------------------------------------
-#----°ïÖú----
+    def OnMenuCheckItemsccomplexMenu(self, event): #å¤å¼æŠ•æ³¨å…‘å¥–
+        '''å¤å¼æŠ•æ³¨å…‘å¥–åŠŸèƒ½'''
+        #æŠ•æ³¨å·ç 
+        bet_nums = ''
+        #çº¢çƒå·ç 
+        red_nums = []
+        #ç¯®çƒå·ç 
+        blue_nums = []
+        #æ‰€æœ‰å¯èƒ½çš„æ³¨æ•°
+        bets_array = []
+        #å·ç è¾“å…¥
+        dlg = wx.TextEntryDialog(
+                self, u'  è¯·æ³¨æ„åŒè‰²å·ç ä¹‹é—´ä¸ºé€—å·ï¼Œçº¢è“å·ç ä¹‹é—´ä¸ºåŠ å·ï¼',
+                u'è¾“å…¥å¤å¼æŠ•æ³¨å·ç ')
 
-    def OnMenuHelpItemsfaqMenu(self, event): #Ê¹ÓÃËµÃ÷
-        '''¶ÁÈ¡²¢ÏÔÊ¾ËµÃ÷ÎÄµµÎÄ¼ş'''
-        f = open("data/ËµÃ÷ÎÄµµ.txt", "r")
-        msg = f.read()
+        dlg.SetValue("01,02,03,04,05,06,07,08,09,10+01,02")
+        #å¾—åˆ°å·ç 
+        if dlg.ShowModal() == wx.ID_OK:
+            bet_nums = dlg.GetValue()
+            #print type(dlg.GetValue()) #unicode
+        dlg.Destroy()
+        #ä¿è¯ä¸å°äº01,02,03,04,05,06+07
+        if len(bet_nums)>=20:
+            #å¾—åˆ°æ•°ç»„
+            red_nums = bet_nums.split("+")[0].split(",")
+            blue_nums = bet_nums.split("+")[1].split(",")
+            #æŠŠæ•°ç»„é‡Œçš„ç©ºæ•°æ®ä¸¢æ‰ï¼ˆè¿™ä¸ªæœ‰å¯èƒ½æ˜¯ç”¨æˆ·å¤šè¾“å…¥é€—å·æ‰€é€ æˆçš„ï¼‰
+            #ï¼ˆæœªå®Œæˆï¼‰
+            #ç”Ÿæˆæ‰€æœ‰å¯èƒ½çš„æ³¨æ•°
+            for bt in blue_nums:
+                pos1 = 0
+                for t1 in red_nums[pos1:-5]:
+                    pos2 = pos1 + 1
+                    for t2 in red_nums[pos2:-4]:
+                        pos3 = pos2 + 1
+                        for t3 in red_nums[pos3:-3]:
+                            pos4 = pos3 + 1
+                            for t4 in red_nums[pos4:-2]:
+                                pos5 = pos4 + 1
+                                for t5 in red_nums[pos5:-1]:
+                                    pos6 = pos5 + 1
+                                    for t6 in red_nums[pos6:]:
+                                        bets_array.append([t1,t2,t3,t4,t5,t6,bt])
+                                    pos5 = pos5 + 1
+                                pos4 = pos4 + 1
+                            pos3 = pos3 + 1
+                        pos2 = pos2 + 1
+                    pos1 = pos1 + 1
+            #å…‘å¥–
+            ##ä¸­å¥–ä¿¡æ¯
+            msg = '' 
+            ##ä¸­å¥–é‡‘é¢
+            money = 0
+            ##æ˜¯å¦æç¤ºï¼ˆä¸€äºŒä¸‰ç­‰å¥–ï¼‰
+            tip = False
+            ##åˆ¤æ–­
+            for i in range(0, len(bets_array)):
+                ##åˆ¤æ–­çº¢çƒ
+                r_nums = 0 
+                for j in range(0, 6):
+                    if bets_array[i][j] in data_array[0][1:7]: #å‰6ä¸ª
+                        r_nums = r_nums + 1
+                ##åˆ¤æ–­è“çƒ
+                b_nums = 0 
+                if bets_array[i][6]==data_array[0][7]:
+                    b_nums = 1
+                ##åˆ¤æ–­ä¸­å¥–é‡‘é¢
+                if (r_nums<=3 and b_nums==0): #æ— 
+                    pass
+                elif (r_nums<=2 and b_nums==1): #6ç­‰
+                    money = money + 5
+                elif (r_nums==4 and b_nums==0) or (r_nums==3 and b_nums==1): #5ç­‰
+                    money = money + 10
+                elif (r_nums==5 and b_nums==0) or (r_nums==4 and b_nums==1): #4ç­‰
+                    money = money + 200
+                elif (r_nums==5 and b_nums==1): #3ç­‰
+                    money = money + 3000
+                    tip = True
+                elif (r_nums==6 and b_nums==0): #2ç­‰
+                    money = money + 100000
+                    tip = True
+                elif (r_nums==6 and b_nums==1): #1ç­‰
+                    money = money + 500000
+                    tip = True
+            #æ–‡å­—
+            if tip==False:
+                msg = u'ä¸­å¥–é‡‘é¢ä¸º%då…ƒï¼'%money
+            if tip==True:
+                msg = u'ä¸­å¥–é‡‘é¢ä¸º%då…ƒï¼\nï¼ˆä¸å‡†ç¡®ï¼ï¼ï¼‰'%money
+            #å¼¹å‡ºå…‘å¥–ç»“æœçª—å£
+            dlg = wx.MessageDialog(self, msg, 
+                                   u'%sæœŸå¤å¼æŠ•æ³¨å¯¹å¥–'%(data_array[0][0]),
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()       
+            #æ³¨æ„12ç­‰å¥–
+        
+        event.Skip()
+                
+    def OnMenuCheckItemscselfMenu(self, event): #è‡ªé€‰æ•°æ®å…‘å¥–
+        '''é€‰æ‹©ä»»æ„æ•°æ®è¿›è¡Œå…‘å¥–'''
+        #æ•°æ®æœ€æ–°ä¸€æœŸçš„æœŸå·
+        date = int(data_array[0][0])
+        #æ˜¾ç¤ºæ–‡ä»¶é€‰æ‹©æ¡†
+        dlg = wx.FileDialog(
+            self, message=u"é€‰æ‹©éœ€è¦å…‘å¥–çš„æ–‡ä»¶",
+            defaultDir=os.getcwd(), 
+            defaultFile="",
+            style=wx.OPEN
+            )   
+        #ç‚¹å‡»â€œæ‰“å¼€â€æŒ‰é’®
+        if dlg.ShowModal()==wx.ID_OK:         
+            #è¯»å–é€‰æ‹©æ–‡ä»¶ä¸­çš„æ•°æ®
+            f = open(dlg.GetPaths()[0], 'r') 
+            s = f.readlines()
+            f.close()
+            #æ•°æ®è½¬æ¢
+            bets_array = []
+            for i in range(0, len(s)):
+                if len(s)>2:
+                    bets_array.append([s[i][0:2],s[i][3:5],s[i][6:8],s[i][9:11],
+                                      s[i][12:14],s[i][15:17],s[i][18:20]])
+            #å…‘å¥–
+            msg = u'' #ä¸­å¥–ä¿¡æ¯
+            msg = msg + u'æ–‡ä»¶å…±æœ‰%dæ³¨ï¼\n'%(len(s))
+            for i in range(0, len(bets_array)):
+                r_nums = 0 #çº¢çƒ
+                for j in range(0, 6):
+                    if bets_array[i][j] in data_array[0][1:7]: #å‰6ä¸ª
+                        r_nums = r_nums + 1
+                b_nums = 0 #è“çƒ
+                if bets_array[i][6]==data_array[0][7]:
+                    b_nums = 1
+                money = u'' #é‡‘é¢
+                if (r_nums<=3 and b_nums==0): #æ— 
+                    money = u'æœªä¸­å¥–'
+                elif (r_nums<=2 and b_nums==1): #6ç­‰
+                    money = u'5å…ƒ'
+                elif (r_nums==4 and b_nums==0) or (r_nums==3 and b_nums==1): #5ç­‰
+                    money = u'10å…ƒ'
+                elif (r_nums==5 and b_nums==0) or (r_nums==4 and b_nums==1): #4ç­‰
+                    money = u'200å…ƒ'
+                elif (r_nums==5 and b_nums==1): #3ç­‰
+                    money = u'3000å…ƒ'
+                elif (r_nums==6 and b_nums==0): #2ç­‰
+                    money = u'äºŒç­‰å¥–'
+                elif (r_nums==6 and b_nums==1): #1ç­‰
+                    money = u'ä¸€ç­‰å¥–'
+
+                msg = msg+ u'ç¬¬%dæ³¨ï¼š%d+%d=%s\n'%(i+1,r_nums,b_nums,money)
+            
+            dlg = wx.MessageDialog(self, msg, 
+                                   u'%sæœŸå¯¹å¥–ç»“æ„'%(data_array[0][0]),
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()             
+        #å…³é—­    
+        dlg.Destroy()
+  
+        
+        #æ‰“å¼€æ–‡ä»¶
+        event.Skip()
+        
+#-------------------------------------------------------------------------------
+#----å¸®åŠ©----
+
+    def OnMenuHelpItemsfaqMenu(self, event): #ä½¿ç”¨è¯´æ˜
+        '''è¯»å–å¹¶æ˜¾ç¤ºè¯´æ˜æ–‡æ¡£æ–‡ä»¶'''
+        f = open(u"data/è¯´æ˜æ–‡æ¡£.txt", "r")
+        msg = f.read().decode('utf-8')
         f.close()
 
-        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, "Ê¹ÓÃËµÃ÷")
+        dlg = wx.lib.dialogs.ScrolledMessageDialog(self, msg, u"ä½¿ç”¨è¯´æ˜")
         dlg.ShowModal()
                 
         event.Skip()
 
-    def OnMenuHelpItemsaboutMenu(self, event): #¹ØÓÚ
-        '''ÌáÊ¾Èí¼ş»ù±¾ĞÅÏ¢'''
+    def OnMenuHelpItemsaboutMenu(self, event): #å…³äº
+        '''æç¤ºè½¯ä»¶åŸºæœ¬ä¿¡æ¯'''
         info = wx.AboutDialogInfo()
-        info.Name = "Ë«É«òş"
-        info.Version = "1.0.0b"
+        info.Name = u"åŒè‰²èŸ’"
+        info.Version = u"1.0.4"
         info.Description = wordwrap(
-            u"Ë«É«òş²ÊÆ±·ÖÎöÈí¼ş£¬ÓÃÓÚË«É«Çò²ÊÆ±Êı¾İ·ÖÎö¡¢¶Ô½±¼°Í¶×¢¹ıÂË¡£ "
-            u"\n\n×£ÄúÖĞ½± :)",
+            u"åŒè‰²èŸ’å½©ç¥¨åˆ†æè½¯ä»¶ï¼Œç”¨äºåŒè‰²çƒå½©ç¥¨æ•°æ®åˆ†æã€å¯¹å¥–åŠæŠ•æ³¨è¿‡æ»¤ã€‚ "
+            u"\n\nç¥æ‚¨ä¸­å¥– :)",
             350, wx.ClientDC(self))
-        info.WebSite = ("http://code.google.com/p/ssqpython/",      
-                        "Ë«É«òşÖ÷Ò³")
+        info.WebSite = (u"http://code.google.com/p/ssqpython/",      
+                        u"åŒè‰²èŸ’ä¸»é¡µ")
         info.Developers = [ "otherrrr@gmail.com" ]
         
         wx.AboutBox(info)
@@ -705,73 +1002,362 @@ class FrameMain(wx.Frame):
         event.Skip()        
 
 #-------------------------------------------------------------------------------
-#----¿ì½İ¼ü----
+#----å¿«æ·é”®----
 
     def OnFrameMainChar(self, event):
-        '''¿ì½İ¼ü'''
-        #µÃµ½¼üÖµ
+        '''å¿«æ·é”®'''
+        #å¾—åˆ°é”®å€¼
         keycode = event.GetKeyCode()
         #print keycode
-        
-        #F1¾ÍÏÔÊ¾°ïÖú
-        if keycode==wx.WXK_F1:
-            self.OnMenuHelpItemsfaqMenu(event)
-            
-        #F2¾ÍÏÂÔØÊı¾İ
-        if keycode==wx.WXK_F2:
-            self.OnMenuDataItemsdownloadMenu(event)
-        #F3¾ÍÌí¼ÓÊı¾İ
-        if keycode==wx.WXK_F3:
-            self.OnMenuDataItemsaddMenu(event)
-        #F4¾ÍÉ¾³ıÊı¾İ£¨20070911È¡Ïû£¬ºÍAlt+F4³åÍ»£©
-        #Ctrl+D¾ÍÉ¾³ıÊı¾İ
-        if keycode==4: #¼üÖµ4
-            self.OnMenuDataItemsdelMenu(event)
-        
-        #F5¾ÍºìÇò¹ıÂË
-        if keycode==wx.WXK_F5:
-            self.OnMenuFiltrateItemsfredMenu(event)
-        #F6¾ÍºìÇòËõË®
-        if keycode==wx.WXK_F6:
-            self.OnMenuFiltrateItemssredMenu(event)
-        #F7¾ÍÀºÇòÍÆ¼ö
-        if keycode==wx.WXK_F7:
-            self.OnMenuFiltrateItemsfblueMenu(event)
 
-        #F8¾ÍÖ±½Ó»úÑ¡
-        if keycode==wx.WXK_F8:
-            self.OnMenuRandomItemsdrMenu(event)            
-        #Ctrl+A¾Í¹ıÂË»úÑ¡ 
-        if keycode==1: #¼üÖµ1
-            self.OnMenuRandomItemsfrMenu(event)            
-        #Ctrl+B¾ÍËõË®»úÑ¡ 
-        if keycode==2: #¼üÖµ2
-            self.OnMenuRandomItemssrMenu(event)
-            
-        #F9¾Í¹Ì¶¨Í¶×¢¶Ò½±
-        if keycode==wx.WXK_F9:
-            self.OnMenuCheckItemscfixedMenu(event)
-        #F11¾ÍÔ¤²âÊı¾İ¶Ò½±
-        if keycode==wx.WXK_F11:
-            self.OnMenuCheckItemscpredictMenu(event)
-            
-        #F12¾ÍÏÔÊ¾¹ØÓÚ
-        if keycode==wx.WXK_F12:
-            self.OnMenuHelpItemsaboutMenu(event)
-            
-        #Ctrl+Q¾ÍÍË³ö£¨Ctrl+WÒ²ÍË³ö£©
-        if keycode==17 or keycode==23: #¼üÖµ17 ºÍ 23
-            self.OnMenuDataItemsexitMenu(event)
-            
+        #å› ä¸ºåœ¨èœå•åé¢æ ‡æ³¨æœ‰å¿«æ·é”®ï¼Œæ‰€ä»¥ä¼šè‡ªåŠ¨æ•æ‰ï¼Œè€Œä¸”ä¼šè‡ªåŠ¨è¿è¡Œå¯¹åº”çš„å‡½æ•°
+        
+##        #F1å°±æ˜¾ç¤ºå¸®åŠ©
+##        if keycode==wx.WXK_F1:
+##            self.OnMenuHelpItemsfaqMenu(event)
+##            
+##        #F2å°±ä¸‹è½½æ•°æ®
+##        if keycode==wx.WXK_F2:
+##            self.OnMenuDataItemsdownloadMenu(event)
+##        #F3å°±æ·»åŠ æ•°æ®
+##        if keycode==wx.WXK_F3:
+##            self.OnMenuDataItemsaddMenu(event)
+##        #F4å°±åˆ é™¤æ•°æ®ï¼ˆ20070911å–æ¶ˆï¼Œå’ŒAlt+F4å†²çªï¼‰
+##        #Ctrl+Då°±åˆ é™¤æ•°æ®
+##        if keycode==4: #é”®å€¼4
+##            self.OnMenuDataItemsdelMenu(event)
+##        
+##        #F5å°±çº¢çƒè¿‡æ»¤
+##        if keycode==wx.WXK_F5:
+##            self.OnMenuFiltrateItemsfredMenu(event)
+##        #F6å°±çº¢çƒç¼©æ°´
+##        if keycode==wx.WXK_F6:
+##            self.OnMenuFiltrateItemssredMenu(event)
+##        #F7å°±ç¯®çƒæ¨è
+##        if keycode==wx.WXK_F7:
+##            self.OnMenuFiltrateItemsfblueMenu(event)
+##        #Ctrl+Oå°±è‡ªé€‰è¿‡æ»¤
+##        if keycode==15:
+##            self.OnMenuFiltrateItemsoptionalMenu(event)
+##        #Ctrl+Tå°±æ¡ä»¶æ›¿æ¢
+##        if keycode==20:
+##            self.OnMenuFiltrateItemsreplaceMenu(event)
+##            
+##        #F8å°±ç›´æ¥æœºé€‰
+##        if keycode==wx.WXK_F8:
+##            self.OnMenuRandomItemsdrMenu(event)            
+##        #Ctrl+Aå°±è¿‡æ»¤æœºé€‰
+##        if keycode==1: #é”®å€¼1
+##            self.OnMenuRandomItemsfrMenu(event)            
+##        #Ctrl+Bå°±ç¼©æ°´æœºé€‰ 
+##        if keycode==2: #é”®å€¼2
+##            self.OnMenuRandomItemssrMenu(event)
+##        #Ctrl+Cå°±è‡ªé€‰æœºé€‰ 
+##        if keycode==3: #é”®å€¼3
+##            self.OnMenuRandomItemserMenu(event)
+##            
+##        #F9å°±å›ºå®šæŠ•æ³¨å…‘å¥–
+##        if keycode==wx.WXK_F9:
+##            self.OnMenuCheckItemscfixedMenu(event)
+##        #F11å°±é¢„æµ‹æ•°æ®å…‘å¥–
+##        if keycode==wx.WXK_F11:
+##            self.OnMenuCheckItemscpredictMenu(event)
+##        #Ctrl+Kå°±è‡ªé€‰æ•°æ®å…‘å¥–
+##        if keycode==11: #é”®å€¼11
+##            self.OnMenuCheckItemscselfMenu(event)
+##            
+##        #F12å°±æ˜¾ç¤ºå…³äº
+##        if keycode==wx.WXK_F12:
+##            self.OnMenuHelpItemsaboutMenu(event)
+##            
+##        #Ctrl+Qå°±é€€å‡º
+##        if keycode==17: #é”®å€¼17
+##            self.OnMenuDataItemsexitMenu(event)
+
+        #Ctrl+Så°±æç¤ºå¿ƒæ°´å·ç ï¼ˆå¤æ´»èŠ‚å½©è›‹ï¼Œå‘µå‘µï¼‰
+        if keycode==19:
+            self.EasterEggs(event)
+        
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----Flash FSCommand´«µİÖµ¹ıÀ´----
+#----Flash FSCommandä¼ é€’å€¼è¿‡æ¥----
     def getFlashVars(self, evt):
-        #print 'Ñ¡ÔñµÄºÅÂëÎª',evt.args #¼´FSCommandÖĞµÄµÚ¶ş¸öÖµ£¨µÚÒ»¸öÖµÎÒÏÖÔÚ»¹²»»áÓÃ£©
-        if len(evt.args)!=0:
-            global choice_num #È«¾Ö±äÁ¿
-            choice_num = str(evt.args)
-            self.OnMenuFiltrateItemsfredMenu(evt) #´ò¿ªÑ¡ºÅÃæ°å
-            
-            
+        #print 'é€‰æ‹©çš„å·ç ä¸º',evt.args #å³FSCommandä¸­çš„ç¬¬äºŒä¸ªå€¼
+        #if len(evt.args)!=0: #åˆ¤æ–­æ˜¯å¦ä¸ºç©º
+        global choice_num #å…¨å±€å˜é‡
+        choice_num = str(evt.args)
+        self.OnMenuFiltrateItemsfredMenu(evt) #æ‰“å¼€é€‰å·é¢æ¿
+        #æˆ‘ç°åœ¨ä¸ä¼šä»Pythonä¼ å€¼åˆ°Flashé‡Œé¢
+
+#-------------------------------------------------------------------------------
+#----å¿ƒæ°´å·ç ----
+    def EasterEggs(self, event):
+        '''å¿ƒæ°´å·ç '''
+        '''æ­¤åŠŸèƒ½å¼€å‘å®Œæˆåå¯æ•´ä½“ç§»æ¤åˆ°Flashä¸­'''
+        '''æ¨ªå‘è·³å·X/çºµå‘è·³å·Y'''
+        '''Xå‘æœ€å¤š11ï¼ŒYå‘æœ€å¤š9'''        
+        #1.0 èå·
+        ##1.1.ç±»å‹1:1&5-2&4==3--XY--è¿˜éœ€è¦åœ¨çœ‹çœ‹...
+        ##1.2.ç±»å‹2:2-1&3==2----N---
+        #2.0 æ€å·
+        ##2.1.ç±»å‹1:2-2-2!=2----Y---
+        ##2.2.ç±»å‹2:1-2-3!=4----XY--
+        ##2.3.ç±»å‹3:3-2-1!=0----XY--
+        ##2.4.ç±»å‹4:1-2-2!=2----N---
+        ##2.5.ç±»å‹5:3-2-2!=2----N---
+        ##2.6.ç±»å‹6:3-3-2!=2----N---
+        ##2.7.ç±»å‹7:1-1-2!=2----N---
+        ##2.8.ç±»å‹8:2-3-2!=2----N---
+        ##2.9.ç±»å‹9:2-1-2!=2----N---
+        ##2.10ç±»å‹10:1-2&3!=3---N---
+        ##2.11ç±»å‹11:3-2&1!=1---N---
+
+        #ç»Ÿè®¡èå·----
+        good_nums = []
+        ##1.1ï¼ˆ1&5-2&4==3ï¼‰
+        for y in range(0, 4): #çºµå‘ä¸Šè·³å·
+            for x in range(0, 3): #æ¨ªå‘ä¸Šè·³å·            
+                for i in range(1, 33+1): #åå‘è€ƒè™‘ï¼šä»æ¯ä¸€ä¸ªå¯èƒ½å‡ºä½æ¥è€ƒè™‘ï¼ˆæ­£å‘åˆ™æ˜¯ä»æ¯ä¸€ä¸ªå·²å‡ºå·ç æ¥è€ƒè™‘ï¼‰
+                    num1 = i-2*(2**x)
+                    if num1<1:
+                        num1 = num1+33
+                    num2 = i-1*(2**x)
+                    if num2<1:
+                        num2 = num2+33
+                    num3 = i+1*(2**x)
+                    if num3>33:
+                        num3 = num3-33
+                    num4 = i+2*(2**x)
+                    if num4>33:
+                        num4 = num4-33
+                    if '%.2d'%num2 in data_array[0+1*y][1:7] and \
+                       '%.2d'%num3 in data_array[0+1*y][1:7] and \
+                       '%.2d'%num1 in data_array[1+2*y][1:7] and \
+                       '%.2d'%num4 in data_array[1+2*y][1:7]:
+                        good_nums.append('%.2d'%i)
+                        print '1.1 num=%d x=%d y=%d'%(i,x,y)
+        ##1.2ï¼ˆ2-1&3==2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i
+            num2 = i-1
+            if num2<1:
+                num2 = num2+33
+            num3 = i+1
+            if num3>33:
+                num3 = num3-33
+            if '%.2d'%num1 in data_array[1][1:7] and \
+               '%.2d'%num2 in data_array[0][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                good_nums.append('%.2d'%i)
+                print '1.2 num=%d x=%d y=%d'%(i,x,y)
+        #ç»Ÿè®¡æ€å·----
+        bad_nums = []
+        ##2.1ï¼ˆ2-2-2!=2ï¼‰
+        for y in range(0, 3): #çºµå‘ä¸Šè·³å·
+            for i in range(1, 33+1):
+                num1 = i
+                num2 = i         
+                num3 = i         
+                if '%.2d'%num1 in data_array[2+3*y][1:7] and \
+                   '%.2d'%num2 in data_array[1+2*y][1:7] and \
+                   '%.2d'%num3 in data_array[0+1*y][1:7]:
+                    bad_nums.append('%.2d'%i)
+                    print '2.1 num=%d x=%d y=%d'%(i,x,y)
+        ##2.2ï¼ˆ1-2-3!=4ï¼‰
+        for y in range(0, 3): #çºµå‘ä¸Šè·³å·
+            for x in range(0, 3): #æ¨ªå‘ä¸Šè·³å·
+                for i in range(1, 33+1):
+                    num1 = i-3*(2**x)
+                    if num1<1:
+                        num1 = num1+33
+                    num2 = i-2*(2**x)
+                    if num2<1:
+                        num2 = num2+33            
+                    num3 = i-1*(2**x)
+                    if num3<1:
+                        num3 = num3+33            
+                    if '%.2d'%num1 in data_array[2+3*y][1:7] and \
+                       '%.2d'%num2 in data_array[1+2*y][1:7] and \
+                       '%.2d'%num3 in data_array[0+1*y][1:7]:
+                        bad_nums.append('%.2d'%i)
+                        print '2.2 num=%d x=%d y=%d'%(i,x,y)
+        ##2.3ï¼ˆ3-2-1!=0ï¼‰
+        for y in range(0, 3): #çºµå‘ä¸Šè·³å·
+            for x in range(0, 3): #æ¨ªå‘ä¸Šè·³å·
+                for i in range(1, 33+1):
+                    num1 = i+3*(2**x)
+                    if num1>33:
+                        num1 = num1-33
+                    num2 = i+2*(2**x)
+                    if num2>33:
+                        num2 = num2-33            
+                    num3 = i+1*(2**x)
+                    if num3>33:
+                        num3 = num3-33            
+                    if '%.2d'%num1 in data_array[2+3*y][1:7] and \
+                       '%.2d'%num2 in data_array[1+2*y][1:7] and \
+                       '%.2d'%num3 in data_array[0+1*y][1:7]:
+                        bad_nums.append('%.2d'%i)
+                        print '2.3 num=%d x=%d y=%d'%(i,x,y)
+        ##2.4ï¼ˆ1-2-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i-1
+            if num1<1:
+                num1 = num1+33
+            num2 = i
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.4 num=%d x=%d y=%d'%(i,x,y)
+        ##2.5ï¼ˆ3-2-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i+1
+            if num1>33:
+                num1 = num1-33
+            num2 = i
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.5 num=%d x=%d y=%d'%(i,x,y)
+        ##2.6ï¼ˆ3-3-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i+1
+            if num1>33:
+                num1 = num1-33
+            num2 = i+1
+            if num2>33:
+                num2 = num2-33
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.6 num=%d x=%d y=%d'%(i,x,y)
+        ##2.7ï¼ˆ1-1-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i-1
+            if num1<1:
+                num1 = num1+33
+            num2 = i-1
+            if num2<1:
+                num2 = num2+33
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.7 num=%d x=%d y=%d'%(i,x,y)
+        ##2.8ï¼ˆ2-3-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i
+            num2 = i+1
+            if num2>33:
+                num2 = num2-33
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.8 num=%d x=%d y=%d'%(i,x,y)
+        ##2.9ï¼ˆ2-1-2!=2ï¼‰
+        for i in range(1, 33+1):
+            num1 = i
+            num2 = i-1
+            if num2<1:
+                num2 = num2+33
+            num3 = i
+            if '%.2d'%num1 in data_array[2][1:7] and \
+               '%.2d'%num2 in data_array[1][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.9 num=%d x=%d y=%d'%(i,x,y)
+        ##2.10ï¼ˆ1-2&3!=3ï¼‰
+        for i in range(1, 33+1):
+            num1 = i-2
+            if num1<1:
+                num1 = num1+33
+            num2 = i-1
+            if num2<1:
+                num2 = num2+33
+            num3 = i
+            if '%.2d'%num1 in data_array[1][1:7] and \
+               '%.2d'%num2 in data_array[0][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)
+                print '2.10 num=%d x=%d y=%d'%(i,x,y)
+        ##2.11ï¼ˆ3-2&1!=1ï¼‰
+        for i in range(1, 33+1):
+            num1 = i+2
+            if num1>33:
+                num1 = num1-33
+            num2 = i+1
+            if num2>33:
+                num2 = num2-33
+            num3 = i
+            if '%.2d'%num1 in data_array[1][1:7] and \
+               '%.2d'%num2 in data_array[0][1:7] and \
+               '%.2d'%num3 in data_array[0][1:7]:
+                bad_nums.append('%.2d'%i)    
+                print '2.11 num=%d x=%d y=%d'%(i,x,y)
+        #å»é™¤é‡å¤æƒ…å†µ
+        good_news = []
+        if len(good_nums)>1:
+            for i in range(0, len(good_nums)):
+                if good_nums[i] not in good_nums[i+1:]:
+                    good_news.append(good_nums[i])
+        else:
+            good_news = good_nums
+        bad_news = []
+        if len(bad_nums)>1:
+            for i in range(0, len(bad_nums)):
+                if bad_nums[i] not in bad_nums[i+1:]:
+                    bad_news.append(bad_nums[i])
+        else:
+            bad_news = bad_nums
+        #æŒ‰å¤§å°å·æ’åº
+        if len(bad_news)>1:
+            for j in range(0, len(bad_news)-1): #è¿™ä¸ªæ¬¡æ•°å¯¹ä¸å¯¹ï¼Ÿï¼Ÿ
+                for i in range(0, len(bad_news)-1):
+                    if bad_news[i]>bad_news[i+1]:
+                        (bad_news[i],bad_news[i+1]) = (bad_news[i+1],bad_news[i])
+                        #ä¸Šé¢è¿™ç§æ›¿æ¢æ–¹æ³•å¥½å—ï¼Ÿ
+                        #æ¯” a=b, b=c, c=a å¿«å—ï¼Ÿ
+        if len(good_news)>1:
+            for j in range(0, len(good_news)-1): 
+                for i in range(0, len(good_news)-1):
+                    if good_news[i]>good_news[i+1]:
+                        (good_news[i],good_news[i+1]) = (good_news[i+1],good_news[i])
+        #è‹¥å‡ºç°æŸä¸ªå·ç åŒæ—¶åœ¨goodå’Œbadä¸­å‡ºç°
+        s3 = u''
+        if len(good_news)!=0:
+            for t in good_news:
+                if t in bad_news:
+                    s3 = s3 + u'ï½%sé‡å¤äº†ï½\n'%t
+        #åˆ¤æ–­æœ‰æ— å·ç å­˜åœ¨ï¼Œè‹¥å­˜åœ¨åˆ™åˆå¹¶æˆå­—ç¬¦ä¸²
+        if len(good_news)==0:
+            s1 = u'æ— '
+        else:
+            s1 = u' '.join(good_news)
+        if len(bad_news)==0:
+            s2 = u'æ— '
+        else:
+            s2 = u' '.join(bad_news)         
+        #å¼¹å‡ºå¯¹è¯æ¡†
+        dlg = wx.MessageDialog(self,
+                               u'æœ¬æœŸå»ºè®®é€‰æ‹©å·ç ï¼š%s\næœ¬æœŸå»ºè®®åˆ é™¤å·ç ï¼š%s\n%s'%(s1,s2,s3), 
+                               u'å¿ƒæ°´å·ç ï¼ˆæœªé€šè¿‡ISO9001æµ‹è¯•ï¼ï¼‰',
+                               wx.OK 
+                               )
+        dlg.ShowModal()
+        dlg.Destroy()
+
+        #è®¾ç½®ç„¦ç‚¹ï¼ˆä¸ç„¶çš„è¯ï¼Œç„¦ç‚¹å°±è·‘åˆ°â€œæ•°æ®æ–‡æœ¬â€ä¸Šé¢äº†ï¼‰
+        self.SetFocus()
+        
+        event.Skip()
+

@@ -1,19 +1,21 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameBlue
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# À¶ÇòÍÆ¼öÃæ°å
+# è“çƒæ¨èé¢æ¿
 
 import wx
+import locale
 
 from DataFileIO import readDataFileToArray
 from DataCompute import blueCoumpute
 import FrameAdvice
 
-data_array = [] #¿ª½±Êı¾İ
-blue_times = [] #À¶ÇòµÄ³öÇòÆµÂÊ
-blue_step = [] #À¶ÇòµÄ³öÇò²½³¤
-blue_drop = [] #À¶ÇòµÄÒÅÂ©Öµ£¨¼´¶àÉÙÆÚÎ´³öÏÖ£©
-now_date = 0 #µ±Ç°ÆÚºÅ
+data_array = [] #å¼€å¥–æ•°æ®
+blue_times = [] #è“çƒçš„å‡ºçƒé¢‘ç‡
+blue_step = [] #è“çƒçš„å‡ºçƒæ­¥é•¿
+blue_drop = [] #è“çƒçš„é—æ¼å€¼ï¼ˆå³å¤šå°‘æœŸæœªå‡ºç°ï¼‰
+now_date = 0 #å½“å‰æœŸå·
 
 def create(parent):
     return FrameBlue(parent)
@@ -60,87 +62,87 @@ class FrameBlue(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameBlueÆô¶¯'
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameBlueå¯åŠ¨').encode(locale.getdefaultlocale()[1])
         
-        #µ÷ÕûÎ»ÖÃ
+        #è°ƒæ•´ä½ç½®
         self.Center()
         
         global data_array, blue_times, blue_step, blue_drop
-        #¶ÁÈ¡¿ª½±Êı¾İ
+        #è¯»å–å¼€å¥–æ•°æ®
         data_array = readDataFileToArray()
-        #À¶ÇòÊı¾İÍ³¼Æ¼°¼ÆËã
+        #è“çƒæ•°æ®ç»Ÿè®¡åŠè®¡ç®—
         blue_times, blue_step, blue_drop = blueCoumpute(data_array)   
 
-        #ÉèÖÃ½¹µã£¨Ö÷ÒªÊÇÎªÁË²¶×½¼üÅÌÊäÈë£©
+        #è®¾ç½®ç„¦ç‚¹ï¼ˆä¸»è¦æ˜¯ä¸ºäº†æ•æ‰é”®ç›˜è¾“å…¥ï¼‰
         self.SetFocus()
         
     def OnPanel1Paint(self, event):
-        #»æÖÆÍ¼±í
+        #ç»˜åˆ¶å›¾è¡¨
         pdc = wx.PaintDC(self.panel1)
         try:
             dc = wx.GCDC(pdc)
         except:
             dc = pdc
 
-        #»æÖÆËµÃ÷
-        dc.DrawText('%s'%(data_array[now_date][0]), 45, 20)
+        #ç»˜åˆ¶è¯´æ˜
+        dc.DrawText(u'%s'%(data_array[now_date][0]), 45, 20)
         dc.SetTextForeground('#0033FF')
-        dc.DrawText('ÇòºÅ', 95, 20)
+        dc.DrawText(u'çƒå·', 95, 20)
         dc.SetTextForeground('#FF0000')
-        dc.DrawText('²½³¤', 125, 20)
+        dc.DrawText(u'æ­¥é•¿', 125, 20)
         dc.SetTextForeground('#FF00FF') 
-        dc.DrawText('³öÇò´ÎÊı', 155, 20)
+        dc.DrawText(u'å‡ºçƒæ¬¡æ•°', 155, 20)
         dc.SetTextForeground('#00CC00')  
-        dc.DrawText('ÒÅÂ©Öµ', 210, 20)
+        dc.DrawText(u'é—æ¼å€¼', 210, 20)
         dc.SetTextForeground('#0099FF')
-        dc.DrawText('ÒÅÂ©Öµ¼õ²½³¤µÄ²îÖµ', 255, 20)
+        dc.DrawText(u'é—æ¼å€¼å‡æ­¥é•¿çš„å·®å€¼', 255, 20)
         
-        #»æÖÆ×ø±êÖá
+        #ç»˜åˆ¶åæ ‡è½´
         dc.SetPen(wx.Pen('#0066FF', 2))
-        dc.DrawLine(5,290,595,290) #ºáÏßx        
+        dc.DrawLine(5,290,595,290) #æ¨ªçº¿x        
         #-----------------------------------------------------------------------
-        #»­³öÃ¿¸öÇòµÄ²½³¤
-        value_average = 0 #Æ½¾ùÖµ
-        value_max = 0 #×î´óÖµ£¨¼´ÉÏÏŞ£¬Òª±È×î´óÖµ´óÒ»Ğ©£©
+        #ç”»å‡ºæ¯ä¸ªçƒçš„æ­¥é•¿
+        value_average = 0 #å¹³å‡å€¼
+        value_max = 0 #æœ€å¤§å€¼ï¼ˆå³ä¸Šé™ï¼Œè¦æ¯”æœ€å¤§å€¼å¤§ä¸€äº›ï¼‰
         for i in range(0, len(blue_step)):
             value_average = value_average + blue_step[i]
         value_average = float(value_average)/16
         value_max = int(value_average*4)
         dc.SetPen(wx.Pen(wx.Colour(178, 34, 34, wx.ALPHA_OPAQUE))) 
-        dc.SetBrush(wx.Brush(wx.Colour(178, 34, 34, 100))) #100¾ÍÊÇÄÇ¸ö¡°Í¸Ã÷¶È¡±µÄÖµ        
+        dc.SetBrush(wx.Brush(wx.Colour(178, 34, 34, 100))) #100å°±æ˜¯é‚£ä¸ªâ€œé€æ˜åº¦â€çš„å€¼        
         for i in range(0, len(blue_step)):    
-            rect = wx.Rect(14+i*36, 290-300*blue_step[i]/value_max, 14, 300*blue_step[i]/value_max) #×óÉÏx,×óÉÏy,¿í,¸ß
-            dc.DrawRoundedRectangleRect(rect, 1) #1ÊÇÄÇ¸ö¡°½Ç¶È¡±
+            rect = wx.Rect(14+i*36, 290-300*blue_step[i]/value_max, 14, 300*blue_step[i]/value_max) #å·¦ä¸Šx,å·¦ä¸Šy,å®½,é«˜
+            dc.DrawRoundedRectangleRect(rect, 1) #1æ˜¯é‚£ä¸ªâ€œè§’åº¦â€
    
-        #±ê×¢¾ßÌåµÄ³öÇò²½³¤
+        #æ ‡æ³¨å…·ä½“çš„å‡ºçƒæ­¥é•¿
         dc.SetTextForeground('#FF0000') 
         for i in range(0, len(blue_step)):
             dc.DrawText('%2d'%blue_step[i], 14+i*36-12, 290-(300*blue_step[i]/value_max)-5) 
 
         #-----------------------------------------------------------------------
-        #»­³öÃ¿¸öÇòµÄ´ÎÊı
-        value_average = 0 #Æ½¾ùÖµ
-        value_max = 0 #×î´óÖµ£¨¼´ÉÏÏŞ£¬Òª±È×î´óÖµ´óÄÇÃ´Ò»µãµã£©
+        #ç”»å‡ºæ¯ä¸ªçƒçš„æ¬¡æ•°
+        value_average = 0 #å¹³å‡å€¼
+        value_max = 0 #æœ€å¤§å€¼ï¼ˆå³ä¸Šé™ï¼Œè¦æ¯”æœ€å¤§å€¼å¤§é‚£ä¹ˆä¸€ç‚¹ç‚¹ï¼‰
         for i in range(0, len(blue_times)):
             value_average = value_average + blue_times[i]
         value_average = float(value_average)/16
         value_max = int(value_average*4)
         dc.SetPen(wx.Pen(wx.Colour(0, 0, 139, wx.ALPHA_OPAQUE))) 
-        dc.SetBrush(wx.Brush(wx.Colour(0, 0, 139, 100))) #100¾ÍÊÇÄÇ¸ö¡°Í¸Ã÷¶È¡±µÄÖµ        
+        dc.SetBrush(wx.Brush(wx.Colour(0, 0, 139, 100))) #100å°±æ˜¯é‚£ä¸ªâ€œé€æ˜åº¦â€çš„å€¼        
         for i in range(0, len(blue_times)):    
-            rect = wx.Rect(14+i*36+6, 290-300*blue_times[i]/value_max, 14, 300*blue_times[i]/value_max) #×óÉÏx,×óÉÏy,¿í,¸ß
-            dc.DrawRoundedRectangleRect(rect, 1) #1ÊÇÄÇ¸ö¡°½Ç¶È¡±
+            rect = wx.Rect(14+i*36+6, 290-300*blue_times[i]/value_max, 14, 300*blue_times[i]/value_max) #å·¦ä¸Šx,å·¦ä¸Šy,å®½,é«˜
+            dc.DrawRoundedRectangleRect(rect, 1) #1æ˜¯é‚£ä¸ªâ€œè§’åº¦â€
    
-        #±ê×¢¾ßÌåµÄ³öÇò´ÎÊı
+        #æ ‡æ³¨å…·ä½“çš„å‡ºçƒæ¬¡æ•°
         dc.SetTextForeground('#FF00FF') 
         for i in range(0, len(blue_times)):
             dc.DrawText('%2d'%blue_times[i], 14+i*36+6-12, 290-(300*blue_times[i]/value_max)-5) 
         
         #-----------------------------------------------------------------------
-        #»­³öÃ¿¸öÇòµÄÒÅÂ©Öµ
-        value_average = 0 #Æ½¾ùÖµ
-        value_max = 0 #×î´óÖµ
+        #ç”»å‡ºæ¯ä¸ªçƒçš„é—æ¼å€¼
+        value_average = 0 #å¹³å‡å€¼
+        value_max = 0 #æœ€å¤§å€¼
         for i in range(0, len(blue_drop)):
             value_average = value_average + blue_drop[i]
         value_average = float(value_average)/16
@@ -148,66 +150,66 @@ class FrameBlue(wx.Frame):
         dc.SetPen(wx.Pen(wx.Colour(35, 142, 35, wx.ALPHA_OPAQUE))) 
         dc.SetBrush(wx.Brush(wx.Colour(35, 142, 35, 100)))            
         for i in range(0, len(blue_drop)):    
-            rect = wx.Rect(14+i*36+12, 290-300*blue_drop[i]/value_max, 14, 300*blue_drop[i]/value_max) #×óÉÏx,×óÉÏy,¿í,¸ß
+            rect = wx.Rect(14+i*36+12, 290-300*blue_drop[i]/value_max, 14, 300*blue_drop[i]/value_max) #å·¦ä¸Šx,å·¦ä¸Šy,å®½,é«˜
             dc.DrawRoundedRectangleRect(rect, 1)
             
-        #±ê×¢¾ßÌåµÄÒÅÂ©Öµ
+        #æ ‡æ³¨å…·ä½“çš„é—æ¼å€¼
         dc.SetTextForeground('#00CC00')        
         for i in range(0, len(blue_drop)):
             dc.DrawText('%2d'%blue_drop[i], 14+i*36+12-12, 290-(300*blue_drop[i]/value_max)-5) 
         #-----------------------------------------------------------------------
-        #ÔÚ×ø±êÖáÏÂ·½±ê×¢¾ßÌåµÄºÅÂë
+        #åœ¨åæ ‡è½´ä¸‹æ–¹æ ‡æ³¨å…·ä½“çš„å·ç 
         dc.SetTextForeground('#0033FF')
         dc.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL)) 
         for i in range(0, 16):
             dc.DrawText('%.2d'%(i+1), 14+i*36, 295) 
         #-----------------------------------------------------------------------
-        #ÔÚºÅÂëÏÂ·½±ê×¢£¨ÒÅÂ©Öµ£­²½³¤£©µÄ²îÖµ
+        #åœ¨å·ç ä¸‹æ–¹æ ‡æ³¨ï¼ˆé—æ¼å€¼ï¼æ­¥é•¿ï¼‰çš„å·®å€¼
         dc.SetTextForeground('#0099FF')
         dc.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.NORMAL)) 
         for i in range(0, 16):
             dc.DrawText('%d'%(blue_drop[i]-blue_step[i]), 14+i*36, 305)             
 
     def OnButton1Button(self, event):
-        '''²é¿´Ç°Ò»ÆÚµÄÍ¼ĞÎ'''
+        '''æŸ¥çœ‹å‰ä¸€æœŸçš„å›¾å½¢'''
         global now_date, blue_times, blue_step, blue_drop
         #+1
         now_date = now_date + 1
-        #À¶ÇòÊı¾İÖØĞÂÍ³¼Æ
+        #è“çƒæ•°æ®é‡æ–°ç»Ÿè®¡
         blue_times, blue_step, blue_drop = blueCoumpute(data_array[now_date:])  
-        #Ë¢ĞÂ
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
 
     def OnButton2Button(self, event):
-        '''²é¿´ºóÒ»ÆÚµÄÍ¼ĞÎ'''
+        '''æŸ¥çœ‹åä¸€æœŸçš„å›¾å½¢'''
         global now_date, blue_times, blue_step, blue_drop
         if now_date==0:
             pass
         else:
             #-1
             now_date = now_date - 1            
-            #À¶ÇòÊı¾İÖØĞÂÍ³¼Æ
+            #è“çƒæ•°æ®é‡æ–°ç»Ÿè®¡
             blue_times, blue_step, blue_drop = blueCoumpute(data_array[now_date:])
-            #Ë¢ĞÂ
+            #åˆ·æ–°
             self.Refresh()
         
         event.Skip()
 
     def OnBitmapButtonadviceButton(self, event):
-        '''²é¿´ÀºÇòÍÆ¼öÇé¿ö'''
+        '''æŸ¥çœ‹ç¯®çƒæ¨èæƒ…å†µ'''
         _FrameAdvice = FrameAdvice.create(None)
         _FrameAdvice.Show()
         event.Skip()
 
     def OnFrameBlueChar(self, event):
-        '''¿ì½İ¼ü'''
-        #µÃµ½¼üÖµ
+        '''å¿«æ·é”®'''
+        #å¾—åˆ°é”®å€¼
         keycode = event.GetKeyCode()
-        print keycode
+        #print keycode
 
-        #ÊäÈët¾ÍÖ±½Óµ¯³öÍÆ¼öÇé¿ö
+        #è¾“å…¥tå°±ç›´æ¥å¼¹å‡ºæ¨èæƒ…å†µ
         if keycode==116: #t=116
             self.OnBitmapButtonadviceButton(event)
             
