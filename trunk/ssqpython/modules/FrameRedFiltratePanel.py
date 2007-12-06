@@ -1,37 +1,37 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameRedFiltratePanel
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# ºìÇò¹ıÂËÑ¡ºÅÃæ°å
+# çº¢çƒè¿‡æ»¤é€‰å·é¢æ¿
 
 import wx
 import os
 import time
+import locale
 
-from DataFileIO import readDataFileToArray
 from FilterFileIO import readFilterFileToArray
 from PredictFileIO import writePredictData
-from BetFileIO import readBetFileToArray
-from DataCompute import redOrderCoumpute, dataParaCompute, percentCompute, dataFiltrate
+
+from DataCompute import percentCompute, dataFiltrate
 
 import FrameRedFiltrate
 
-data_array = []  #Êı¾İ£¨Êı×é¸ñÊ½£©
-data_para_array = [] #Êı¾İµÄÏà¹Ø²ÎÊı
+data_array = []  #æ•°æ®ï¼ˆæ•°ç»„æ ¼å¼ï¼‰
+data_para_array = [] #æ•°æ®çš„ç›¸å…³å‚æ•°
+bet_array = [] #å›ºå®šæŠ•æ³¨å·ç 
+redOrder = [] #çº¢çƒå·ç æŒ‰ç€å‡ºçƒæ¬¡æ•°ç”±å¤§åˆ°å°æ’åˆ—
+redTimes = [] #çº¢çƒå¯¹åº”å‡ºå·æ¬¡æ•°
+num_pool = [] #å·ç æ± 
 
-redOrder = [] #ºìÇòºÅÂë°´×Å³öÇò´ÎÊıÓÉ´óµ½Ğ¡ÅÅÁĞ
-redTimes = [] #ºìÇò¶ÔÓ¦³öºÅ´ÎÊı
+filter_array = [] #è¿‡æ»¤å‚æ•°
+percent_array = [] #è¿‡æ»¤æ¡ä»¶çš„ç™¾åˆ†æ¯”
+data_f = [] #è¿‡æ»¤åç”Ÿæˆçš„æ•°æ®
+msg = [] #æ˜¾ç¤ºä¿¡æ¯ #è¿™ä¸ªå…¶å®å¯ä»¥æ”¹æˆdict
 
-num_pool = [] #ºÅÂë³Ø
+checkBox_list = [] #å·ç é€‰æ‹©æŒ‰é’®ç»„
 
-filter_array = [] #¹ıÂË²ÎÊı
-percent_array = [] #¹ıÂËÌõ¼şµÄ°Ù·Ö±È
-data_f = [] #¹ıÂËºóÉú³ÉµÄÊı¾İ
-msg = [] #ÏÔÊ¾ĞÅÏ¢ #Õâ¸öÆäÊµ¿ÉÒÔ¸Ä³Édict
-
-checkBox_list = [] #ºÅÂëÑ¡Ôñ°´Å¥×é
-
-def create(parent, choice_num):
-    return FrameRedFiltratePanel(parent, choice_num)
+def create(parent, choice_num, data_array, bet_array, data_para_array, redOrder, redTimes):
+    return FrameRedFiltratePanel(parent, choice_num, data_array, bet_array, data_para_array, redOrder, redTimes)
 
 [wxID_FRAMEREDFILTRATEPANEL, wxID_FRAMEREDFILTRATEPANELBUTTONDATABUILD, 
  wxID_FRAMEREDFILTRATEPANELBUTTONEXIT, wxID_FRAMEREDFILTRATEPANELBUTTONINPUT, 
@@ -365,41 +365,29 @@ class FrameRedFiltratePanel(wx.Frame):
         self.checkBox33.Bind(wx.EVT_CHECKBOX, self.OnCheckBox33Checkbox,
               id=wxID_FRAMEREDFILTRATEPANELCHECKBOX33)
 
-    def __init__(self, parent, choice_num):
+    def __init__(self, parent, choice_num, data_arrays, bet_arrays, data_para_arrays, redOrders, redTimess):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameRedFiltratePanelÆô¶¯'
-        print 'ÒÑÑ¡ÔñµÄºÅÂë',choice_num #ÒÑÑ¡ºÅÂë
-        
-        #µ÷ÕûÎ»ÖÃ
-        self.Center()
-             
-        #¶ÁÈ¡¿ª½±Êı¾İ
-        global data_array, redOrder, redTimes, bet_array, \
-               data_para_array, filter_array, percent_array
-        
-        #if len(data_array)==0: #ÕâÑù¾Í¿ÉÒÔÖØĞÂ¶ÁÈ¡¹ıÂËÌõ¼şÁË
-        #¶ÁÈ¡Êı¾İÊ±ÓĞĞ©ÑÓ³Ù£¬ÏÔÊ¾Ò»¸ö»­Ãæ
-        image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
-        bmp = image.ConvertToBitmap()
-        wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
-        wx.Yield() 
-        
-        #¶ÁÈ¡¿ª½±Êı¾İ
-        data_array = readDataFileToArray()
-        #¶ÁÈ¡¹Ì¶¨Í¶×¢
-        bet_array = readBetFileToArray()
-        #¶ÁÈ¡¹ıÂËÌõ¼ş
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameRedFiltratePanelå¯åŠ¨').encode(locale.getdefaultlocale()[1])
+        if len(choice_num)!=0:
+            print (u'å·²é€‰æ‹©çš„å·ç ').encode(locale.getdefaultlocale()[1]),choice_num #å·²é€‰å·ç 
+        else:
+            print (u'æœªé¢„é€‰ä»»ä½•å·ç ').encode(locale.getdefaultlocale()[1])
+        global filter_array, percent_array, data_f, num_pool
+        global data_array, bet_array, data_para_array, redOrder, redTimes
+        #æ¥æ”¶ä¼ é€’è¿‡æ¥çš„å€¼
+        data_array = data_arrays
+        bet_array = bet_arrays
+        data_para_array = data_para_arrays
+        redOrder = redOrders
+        redTimes = redTimess
+        #è°ƒæ•´ä½ç½®
+        self.Center()  
+        #è¯»å–è¿‡æ»¤æ¡ä»¶
         filter_array = readFilterFileToArray()
-        #¼ÆËã³öÇò´ÎÊı²¢ÅÅÁĞÇòºÅ
-        redOrder, redTimes = redOrderCoumpute(data_array)
-        #ÏÂÃæÕâÁ½Ïî¼ÆËã»áµ¼ÖÂ½çÃæ´ò¿ªÓĞĞ©³Ù¶Û£¬×îºÃ¿ÉÒÔ¶à½ø³Ì´¦Àí
-        #¼ÆËã¿ª½±Êı¾İ¶ÔÓ¦µÄ²ÎÊı£¨24Ïî£­¶ÔÓ¦¹ıÂËÌõ¼ş£©
-        data_para_array = dataParaCompute(data_array, redOrder, bet_array)
-        #¼ÆËã°Ù·Ö±È
+        #è®¡ç®—ç™¾åˆ†æ¯”
         percent_array = percentCompute(filter_array, data_para_array)
-            
-        #½«ÉÏÒ»ÆÚ³öÏÖµÄºÅÂë¸ÄÎª×ÏÉ«
+        #å°†ä¸Šä¸€æœŸå‡ºç°çš„å·ç æ”¹ä¸ºè“è‰²
         global checkBox_list
         checkBox_list = [self.checkBox01,self.checkBox02,self.checkBox03,\
                          self.checkBox04,self.checkBox05,self.checkBox06,\
@@ -411,56 +399,53 @@ class FrameRedFiltratePanel(wx.Frame):
                          self.checkBox22,self.checkBox23,self.checkBox24,\
                          self.checkBox25,self.checkBox26,self.checkBox27,\
                          self.checkBox28,self.checkBox29,self.checkBox30,\
-                         self.checkBox32,self.checkBox32,self.checkBox33
+                         self.checkBox31,self.checkBox32,self.checkBox33
                          ]
         for i in range(1, 6+1):
             checkBox_list[int(data_array[0][i])-1].SetForegroundColour('BLUE')
-
-        #½«ÒÑÑ¡ÔñµÄºÅÂëÏÔÊ¾ÎªÒÑÑ¡×´Ì¬
+        #å°†å·²é€‰æ‹©çš„å·ç æ˜¾ç¤ºä¸ºå·²é€‰çŠ¶æ€
         for i in range(0, len(choice_num)/3):
             checkBox_list[int(choice_num[i*3:i*3+2])-1].SetValue(True)
-        
-        #½«ºÅÂë³ØÇå¿Õ
-        global num_pool
+        #å°†å·ç æ± æ¸…ç©º
         num_pool = []
-        #½«ÒÑÑ¡ÔñµÄºÅÂë¼ÓÈëºÅÂë³Ø
+        #å°†å·²é€‰æ‹©çš„å·ç åŠ å…¥å·ç æ± 
         for i in range(0, len(choice_num)/3):
-            num_pool.append(int(choice_num[i*3:i*3+2]))
-                         
-        #Èç¹ûÒªÔÚunicode°æ±¾µÄwxPythonÖĞ²é¿´ºº×Ö£¬¾ÍÒª½øĞĞunicode²Ù×÷£¬ÈçÏÂ£º
+            num_pool.append(int(choice_num[i*3:i*3+2]))   
+        #æµ‹è¯•
+        
+        #å¦‚æœè¦åœ¨unicodeç‰ˆæœ¬çš„wxPythonä¸­æŸ¥çœ‹æ±‰å­—ï¼Œå°±è¦è¿›è¡Œunicodeæ“ä½œï¼Œå¦‚ä¸‹ï¼š
         #print unicode(filter_array[0][1], 'mbcs')
 
 #-------------------------------------------------------------------------------
-#----Êı¾İÉú³É°´Å¥----
+#----æ•°æ®ç”ŸæˆæŒ‰é’®----
 
-    def OnButtondatabuildButton(self, event): #³õÊ¼Êı¾İÉú³É°´Å¥
-        '''Éú³É³õÊ¼Êı¾İ£¨ÈôÑ¡ÔñÈ«²¿ºìÇò¼´Îª1107568×é£©'''
-        #ÕâĞ©Êı¾İÔÚ³õÊ¼»¯µÄÊ±ºòÓĞ¿ÉÄÜ±»¸Ä¹ı
-        global num_pool, data_para_array, percent_array
-        #¹ıÂËÊı¾İÔ­Ê¼¶¨Òå
+    def OnButtondatabuildButton(self, event): #åˆå§‹æ•°æ®ç”ŸæˆæŒ‰é’®
+        '''ç”Ÿæˆåˆå§‹æ•°æ®ï¼ˆè‹¥é€‰æ‹©å…¨éƒ¨çº¢çƒå³ä¸º1107568ç»„ï¼‰'''
+        #è¿‡æ»¤æ•°æ®åŸå§‹å®šä¹‰
+        global data_f
         data_f = []
-        #ÅĞ¶ÏºÅÂë³ØÊÇ·ñ´óÓÚµÈÓÚ6¸öºÅÂë
+        #åˆ¤æ–­å·ç æ± æ˜¯å¦å¤§äºç­‰äº6ä¸ªå·ç 
         if len(num_pool)>=6:           
-            #½«ºÅÂë³ØÖĞµÄÊı×Ö°´ÕÕ´ÓĞ¡µ½´óµÄË³ĞòÅÅÁĞ
+            #å°†å·ç æ± ä¸­çš„æ•°å­—æŒ‰ç…§ä»å°åˆ°å¤§çš„é¡ºåºæ’åˆ—
             for i in range(len(num_pool)-1, 0, -1):
                 for j in range(0, i):
                     if num_pool[j]>num_pool[j+1]:
                         tmp = num_pool[j]
                         num_pool[j] = num_pool[j+1]
                         num_pool[j+1] = tmp
-            #½ø¶ÈÌõ
-            dlg = wx.ProgressDialog("³õÊ¼Êı¾İÉú³ÉÖĞ¡­¡­",
-                            "ÇëÉÔºò£¡",
+            #è¿›åº¦æ¡
+            dlg = wx.ProgressDialog(u"åˆå§‹æ•°æ®ç”Ÿæˆä¸­â€¦â€¦",
+                            u"è¯·ç¨å€™ï¼",
                             maximum = 1107568,
                             parent = self,
                             style = wx.PD_APP_MODAL
                             | wx.PD_ELAPSED_TIME
                             | wx.PD_REMAINING_TIME
                             )
-            #1107568×éÊı¾İÉú³É
-            #Éú³ÉÊı¾İÓĞÁ½ÖÖ·½·¨£¬ËùÓÃÊ±¼ä¶¼²î²»¶à£¬Ö»ÊÇËã·¨²»Í¬¶øÒÑ
-            #Ö®ËùÒÔÓÃµÚ1ÖÖ£¬ÊÇÒòÎªÕâÑù¿ÉÒÔºÜÈİÒ×È¥µôÄ³¸öºÅ
-            #µÚ1ÖÖ:£¨Ò²¿ÉÒÔ¿´×÷ÊÇÒ»ÖÖ±éÀú£©
+            #1107568ç»„æ•°æ®ç”Ÿæˆ
+            #ç”Ÿæˆæ•°æ®æœ‰ä¸¤ç§æ–¹æ³•ï¼Œæ‰€ç”¨æ—¶é—´éƒ½å·®ä¸å¤šï¼Œåªæ˜¯ç®—æ³•ä¸åŒè€Œå·²
+            #ä¹‹æ‰€ä»¥ç”¨ç¬¬1ç§ï¼Œæ˜¯å› ä¸ºè¿™æ ·å¯ä»¥å¾ˆå®¹æ˜“å»æ‰æŸä¸ªå·
+            #ç¬¬1ç§:ï¼ˆä¹Ÿå¯ä»¥çœ‹ä½œæ˜¯ä¸€ç§éå†ï¼‰
             pos1 = 0
             for t1 in num_pool[pos1:-5]:
                 pos2 = pos1 + 1
@@ -481,7 +466,7 @@ class FrameRedFiltratePanel(wx.Frame):
                         pos3 = pos3 + 1
                     pos2 = pos2 + 1
                 pos1 = pos1 + 1        
-            #µÚ2ÖÖ:
+            #ç¬¬2ç§:
             '''
             for t1 in range(1, 29):
                 for t2 in range(t1+1, 30):
@@ -494,24 +479,21 @@ class FrameRedFiltratePanel(wx.Frame):
                                         dlg.Update(len(data_f))
                                 
             '''
-            #½ø¶ÈÌõ¹Ø±Õ
-            dlg.Destroy()                    
-
-            #´ò¿ª¹ıÂËÃæ°å²¢½«Êı¾İ´«Êä¹ıÈ¥!!
+            #è¿›åº¦æ¡å…³é—­
+            dlg.Destroy()
+            #æ‰“å¼€è¿‡æ»¤é¢æ¿å¹¶å°†æ•°æ®ä¼ è¾“è¿‡å»!!
             ALL_datas = [data_array, redOrder, redTimes, bet_array,
                          data_para_array, filter_array, percent_array,
                          data_f, num_pool]
             _FrameRedFiltrate = FrameRedFiltrate.create(None, ALL_datas)
             _FrameRedFiltrate.Show() 
-        
-            #¹Ø±Õ×ÔÉí
+            #å…³é—­è‡ªèº«
             self.Close()  
-            
-        #ºÅÂë³ØÖĞµÄºÅÂëĞ¡ÓÚ6¸ö
+        #å·ç æ± ä¸­çš„å·ç å°äº6ä¸ª
         else:
-            #µ¯³öÌáÊ¾¿ò
-            dlg = wx.MessageDialog(self, 'Ñ¡ÖĞµÄºÅÂëÉÙÓÚ6¸ö£¡', 
-                                   'ÇëÖØĞÂÑ¡ÔñºÅÂë',
+            #å¼¹å‡ºæç¤ºæ¡†
+            dlg = wx.MessageDialog(self, u'é€‰ä¸­çš„å·ç å°‘äº6ä¸ªï¼', 
+                                   u'è¯·é‡æ–°é€‰æ‹©å·ç ',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
@@ -520,50 +502,52 @@ class FrameRedFiltratePanel(wx.Frame):
         event.Skip()
         
 #-------------------------------------------------------------------------------
-#----¼ÓÔØ°´Å¥----  
-    def OnButtonloadButton(self, event): #¼ÓÔØ°´Å¥
-        '''¼ÓÔØÒÑÉú³ÉµÄÊı¾İ'''
+#----åŠ è½½æŒ‰é’®----  
+    def OnButtonloadButton(self, event): #åŠ è½½æŒ‰é’®
+        '''åŠ è½½å·²ç”Ÿæˆçš„æ•°æ®'''
         
-        #Ê¹ÓÃÎÄ¼ş´ò¿ª¿ò
-        print 'ÎÄ¼şÑ¡Ôñ¿òÆô¶¯'
+        #ä½¿ç”¨æ–‡ä»¶æ‰“å¼€æ¡†
+        print (u'æ–‡ä»¶é€‰æ‹©æ¡†å¯åŠ¨').encode(locale.getdefaultlocale()[1])
 
-        #¹ıÂËÊı¾İÔ­Ê¼¶¨Òå
+        #è¿‡æ»¤æ•°æ®åŸå§‹å®šä¹‰
+        global data_f
         data_f = []
             
-        #ÏÔÊ¾ÎÄ¼şÑ¡Ôñ¿ò
+        #æ˜¾ç¤ºæ–‡ä»¶é€‰æ‹©æ¡†
         dlg = wx.FileDialog(
-            self, message="Ñ¡ÔñĞèÒª¼ÓÔØµÄÎÄ¼ş",
-            defaultDir=os.getcwd(), 
+            self, message=u"é€‰æ‹©éœ€è¦åŠ è½½çš„æ–‡ä»¶",
+            #defaultDir=os.getcwd(), #linux
             defaultFile="",
-            #wildcard="", #Í¨Åä·û£¨¿ÉÒÔÏŞÖÆÎÄ¼şÀàĞÍ£©
-            style=wx.OPEN  | wx.CHANGE_DIR
-            #style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR #²»Òª¶àÑ¡
+            #wildcard="", #é€šé…ç¬¦ï¼ˆå¯ä»¥é™åˆ¶æ–‡ä»¶ç±»å‹ï¼‰
+            style=wx.OPEN
+            #style=wx.OPEN  | wx.CHANGE_DIR #å¦‚æœæ”¹æ¢ç›®å½•çš„è¯ï¼Œé¢æ¿å›¾æ ‡æ‰¾ä¸åˆ°
+            #style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR #ä¸è¦å¤šé€‰
             )
         
         if dlg.ShowModal()==wx.ID_OK:         
-            #¶ÁÈ¡Ñ¡ÔñÎÄ¼şÖĞµÄÊı¾İ
+            #è¯»å–é€‰æ‹©æ–‡ä»¶ä¸­çš„æ•°æ®
             f = open(dlg.GetPaths()[0], 'r') 
             s = f.readlines()
             f.close()
-            #Êı¾İ¸ñÊ½×ª»»
-            ##ÆäÊµ×ª»»µÄÊ±ºòÓ¦¸ÃÅĞ¶ÏÒ»ÏÂÊı¾İÊÇ·ñºÏ·¨£¬µ«ÊÇ...
+            #æ•°æ®æ ¼å¼è½¬æ¢
+            ##å…¶å®è½¬æ¢çš„æ—¶å€™åº”è¯¥åˆ¤æ–­ä¸€ä¸‹æ•°æ®æ˜¯å¦åˆæ³•ï¼Œä½†æ˜¯...
             a = []
             for st in s:
                 a.append([int(st[0:2]),int(st[3:5]),int(st[6:8]),\
                           int(st[9:11]),int(st[12:14]),int(st[15:17])])
-            #Êı¾İ¼ÓÔØ
+            #æ•°æ®åŠ è½½
             for at in a:
                 data_f.append(at)
-            #ÏÔÊ¾Ò»ÏÂ
-            print '¼ÓÔØÁË%d×éÒÑÉú³ÉÊı¾İ'%len(a)
+            #æ˜¾ç¤ºä¸€ä¸‹
+            print (u'åŠ è½½äº†%dç»„å·²ç”Ÿæˆæ•°æ®'%len(a)).encode(locale.getdefaultlocale()[1])
 
-        #¹Ø±Õ    
+        #å…³é—­    
         dlg.Destroy()
 
         if len(data_f)!=0:
-            #¹Ø±Õ×ÔÉí
+            #å…³é—­è‡ªèº«
             self.Close()
-            #´ò¿ª¹ıÂËÃæ°å²¢½«Êı¾İ´«Êä¹ıÈ¥!!
+            #æ‰“å¼€è¿‡æ»¤é¢æ¿å¹¶å°†æ•°æ®ä¼ è¾“è¿‡å»!!
             ALL_datas = [data_array, redOrder, redTimes, bet_array,
                          data_para_array, filter_array, percent_array,
                          data_f, num_pool]
@@ -573,28 +557,30 @@ class FrameRedFiltratePanel(wx.Frame):
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----¶à¸öºÅÂëÊäÈë°´Å¥----        
-    def OnButtoninputButton(self, event): #¶à¸öºÅÂëÊäÈë°´Å¥
-        '''Ò»×éºÅÂëÊäÈë'''
+#----å¤šä¸ªå·ç è¾“å…¥æŒ‰é’®----        
+    def OnButtoninputButton(self, event): #å¤šä¸ªå·ç è¾“å…¥æŒ‰é’®
+        '''ä¸€ç»„å·ç è¾“å…¥'''
         dlg = wx.TextEntryDialog(
-                self, 'ºÅÂëÖ®¼äÇëÓÃ¿Õ¸ñ·Ö¸ô£¬²¢±£Ö¤ºÅÂë¾ùÎª2Î»',
-                'ÇëÊäÈëÒ»×éºÅÂë', 'Python')
-        #Ä¬ÈÏÖµ
+                self, u'å·ç ä¹‹é—´è¯·ç”¨ç©ºæ ¼åˆ†éš”ï¼Œå¹¶ä¿è¯å·ç å‡ä¸º2ä½',
+                u'è¯·è¾“å…¥ä¸€ç»„å·ç ', 'Python')
+        #é»˜è®¤å€¼
         dlg.SetValue("01 02 03 04 05 06")
 
         if dlg.ShowModal() == wx.ID_OK:
             #print dlg.GetValue()
-            #½«ºÅÂë³ØÇå¿Õ
+            #å°†å·ç æ± æ¸…ç©º
             global num_pool
             num_pool = []
-            #½«ÒÑÑ¡ÔñµÄºÅÂë¼ÓÈëºÅÂë³Ø
+            #å°†å·²é€‰æ‹©çš„å·ç åŠ å…¥å·ç æ± 
             for i in range(0, (len(dlg.GetValue())+1)/3):
                 num_pool.append(int(dlg.GetValue()[i*3:i*3+2]))
-            #ÏÔÊ¾Ñ¡ÔñÁË¶àÉÙ¸öÇò
+            #æ˜¾ç¤ºé€‰æ‹©äº†å¤šå°‘ä¸ªçƒ
             msg[1] = '%.2d'%(len(num_pool))
             self.Refresh()
-            ##Ó¦¸ÃÏÈ½«ËùÓĞºÅÂë×´Ì¬¸ÄÎªÎ´Ñ¡£¨Ò²Ğí»áÊäÈëÁ½´Î£©
-            #½«ÒÑÑ¡ÔñµÄºÅÂëÏÔÊ¾ÎªÒÑÑ¡×´Ì¬
+            ##åº”è¯¥å…ˆå°†æ‰€æœ‰å·ç çŠ¶æ€æ”¹ä¸ºæœªé€‰ï¼ˆä¹Ÿè®¸ä¼šè¾“å…¥ä¸¤æ¬¡ï¼‰
+            for i in range(0, 33):
+                checkBox_list[i].SetValue(False)
+            #å°†å·²é€‰æ‹©çš„å·ç æ˜¾ç¤ºä¸ºå·²é€‰çŠ¶æ€
             for i in range(0, (len(dlg.GetValue())+1)/3):
                 checkBox_list[int(dlg.GetValue()[i*3:i*3+2])-1].SetValue(True)
             
@@ -603,43 +589,42 @@ class FrameRedFiltratePanel(wx.Frame):
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----Ò»²½¹ıÂË°´Å¥----        
-    def OnButtononestepButton(self, event): #Ò»²½¹ıÂË°´Å¥
-        '''Ò»´ÎĞÔ¹ıÂË'''
+#----ä¸€æ­¥è¿‡æ»¤æŒ‰é’®----        
+    def OnButtononestepButton(self, event): #ä¸€æ­¥è¿‡æ»¤æŒ‰é’®
+        '''ä¸€æ¬¡æ€§è¿‡æ»¤'''
         global data_f, num_pool,filter_array
         if len(num_pool)>=6:
-            continue_f = True #ÊÇ·ñ¼ÌĞø½øĞĞ¹ıÂËÅĞ¶Ï·û
+            continue_f = True #æ˜¯å¦ç»§ç»­è¿›è¡Œè¿‡æ»¤åˆ¤æ–­ç¬¦
             if len(num_pool)>20:
-                
-                dlg = wx.MessageDialog(self, 'Ñ¡ÔñºÅÂë½Ï¶àÊ±£¬»¨·ÑÊ±¼ä»á±È½Ï³¤', 
-                                       'È·¶¨ÒªÒ»²½¹ıÂË£¿',
+                dlg = wx.MessageDialog(self, u'é€‰æ‹©å·ç è¾ƒå¤šæ—¶ï¼ŒèŠ±è´¹æ—¶é—´ä¼šæ¯”è¾ƒé•¿', 
+                                       u'ç¡®å®šè¦ä¸€æ­¥è¿‡æ»¤ï¼Ÿ',
                                        wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION
                                        )
                 result = dlg.ShowModal()
                 dlg.Destroy()
-                if result==wx.ID_YES: #È·¶¨ÁËÒªÒ»²½¹ıÂË
+                if result==wx.ID_YES: #ç¡®å®šäº†è¦ä¸€æ­¥è¿‡æ»¤
                     continue_f = True
-                if result==wx.ID_NO: #²»½øĞĞÒ»²½¹ıÂË
+                elif result==wx.ID_NO: #ä¸è¿›è¡Œä¸€æ­¥è¿‡æ»¤
                     continue_f = False
-            #if continue_f==True:
-            if continue_f:
-                #¿ªÊ¼Ê±¼ä
-                start_time = int(time.time())           
-                #--½ø¶ÈÌõ               
-                dlg = wx.ProgressDialog("¹ıÂËÖĞ¡­¡­",
-                                "ÇëÄÍĞÄµÈ´ı£¡",
-                                maximum = len(filter_array) + 1 + 1,
-                                parent = self,
-                                style = wx.PD_APP_MODAL
-                                )
-                #¹Ø±Õµ±Ç°´°¿Ú£¨ºìÇò¹ıÂËÃæ°å£© #Èç¹û²»¹Ø±Õ´°¿Ú£¬ÒòÎªstepµÄ±ä»¯£¬´°¿ÚÖĞÄÚÈİÒ²»á¸ú×Å±ä»¯
-                self.Close()                  
-                #--½«ºÅÂë³ØÖĞµÄÊı×Ö°´ÕÕ´ÓĞ¡µ½´óµÄË³ĞòÅÅÁĞ
+            if continue_f==True:
+                #å¼€å§‹æ—¶é—´
+                start_time = int(time.time())         
+                #--è¿›åº¦æ¡           
+                #dlg = wx.ProgressDialog(u"è¿‡æ»¤ä¸­â€¦â€¦",
+                #                u"è¯·è€å¿ƒç­‰å¾…ï¼",
+                #                maximum = len(filter_array) + 1 + 1,
+                #                parent = self,
+                #                style = wx.PD_APP_MODAL
+                #                )
+                #å…³é—­å½“å‰çª—å£ï¼ˆçº¢çƒè¿‡æ»¤é¢æ¿ï¼‰ #å¦‚æœä¸å…³é—­çª—å£ï¼Œå› ä¸ºstepçš„å˜åŒ–ï¼Œçª—å£ä¸­å†…å®¹ä¹Ÿä¼šè·Ÿç€å˜åŒ–
+                self.Close()           
+     
+                #--å°†å·ç æ± ä¸­çš„æ•°å­—æŒ‰ç…§ä»å°åˆ°å¤§çš„é¡ºåºæ’åˆ—
                 for i in range(len(num_pool)-1, 0, -1):
                     for j in range(0, i):
                         if num_pool[j]>num_pool[j+1]:
                             num_pool[j], num_pool[j+1] = num_pool[j+1], num_pool[j]
-                #--Éú³ÉĞèÒª±»¹ıÂËµÄËùÓĞÊı¾İ
+                #--ç”Ÿæˆéœ€è¦è¢«è¿‡æ»¤çš„æ‰€æœ‰æ•°æ®
                 pos1 = 0
                 for t1 in num_pool[pos1:-5]:
                     pos2 = pos1 + 1
@@ -658,72 +643,78 @@ class FrameRedFiltratePanel(wx.Frame):
                             pos3 = pos3 + 1
                         pos2 = pos2 + 1
                     pos1 = pos1 + 1
-                dlg.Update(1)
-                #ÏÔÊ¾Ô­Ê¼×¢Êı
+                #dlg.Update(1)  #win
+                #æ˜¾ç¤ºåŸå§‹æ³¨æ•°
                 #print len(data_f)
-                #--¿ªÊ¼¹ıÂË
+                #--å¼€å§‹è¿‡æ»¤
                 step = 0
                 for i in range(0, len(filter_array)):
                     #+1
                     step = step + 1
-                    #¸ÄÎª¡°ÊÇ¡±
-                    filter_array[step-1][2] = 'ÊÇ' + filter_array[step-1][2][2:]
-                    #¹ıÂË
+                    #æ”¹ä¸ºâ€œæ˜¯â€
+                    #filter_array[step-1][2] = 'æ˜¯' + filter_array[step-1][2][2:] #gbk10830??
+                    filter_array[step-1][2] = u'æ˜¯      ' #utf-8
+                    #è¿‡æ»¤
                     data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
-                    #¸üĞÂ½ø¶ÈÌõ
-                    dlg.Update(step+1)
-                    #ÏÔÊ¾¹ıÂËºóµÄ×¢Êı
+                    #æ›´æ–°è¿›åº¦æ¡
+                    #dlg.Update(step+1) #win
+                    #æ˜¾ç¤ºè¿‡æ»¤åçš„æ³¨æ•°
                     #print len(data_f)
-                    #¿ØÖÆÌ¨Êä³öÕıÔÚ½øĞĞµÄ²½Öè
+                    #æ§åˆ¶å°è¾“å‡ºæ­£åœ¨è¿›è¡Œçš„æ­¥éª¤
                     if step==1:
                         print '%.2d time=%d num=%d'%(step,int(time.time())-start_time,len(data_f))
                         last_time = int(time.time())
                     else:
                         print '%.2d time=%d num=%d'%(step,int(time.time())-last_time,len(data_f))
                         last_time = int(time.time())                    
-                #--½ø¶ÈÌõ¹Ø±Õ
-                dlg.Destroy()
-                #ÖÕÖ¹Ê±¼ä
+                #--è¿›åº¦æ¡å…³é—­
+                #dlg.Destroy()
+                #ç»ˆæ­¢æ—¶é—´
                 stop_time = int(time.time())
-                #Ğ´Êı¾İ
+                #å†™æ•°æ®
                 writePredictData(data_array, data_f, filter_array, num_pool)              
-                #ÌáÊ¾Éú³ÉµÄ×¢Êı£¬Ñ¯ÎÊÊÇ·ñ´ò¿ª¶ÔÓ¦ÎÄ¼ş¼Ğ
-                tip_text = '¹²Éú³É%d×¢£¬»¨·Ñ%dÃë'%(len(data_f),stop_time-start_time)
-                dlg_f = wx.MessageDialog(self, tip_text, 
-                                        '´ò¿ª¶ÔÓ¦ÎÄ¼ş¼Ğ£¿',
-                                        wx.YES_NO | wx.YES_DEFAULT | wx.ICON_INFORMATION
-                                        )
-                open_folder = dlg_f.ShowModal()
-                dlg_f.Destroy()
-                if open_folder==wx.ID_YES:
-                    #´ò¿ªÏàÓ¦ÎÄ¼ş¼Ğ
-                    os.startfile('%s'%(int(data_array[0][0])+1))
-                else:
-                    pass            
+                #æç¤ºç”Ÿæˆçš„æ³¨æ•°ï¼Œè¯¢é—®æ˜¯å¦æ‰“å¼€å¯¹åº”æ–‡ä»¶å¤¹
+                if wx.Platform == '__WXMSW__': #win
+                    tip_text = u'å…±ç”Ÿæˆ%dæ³¨ï¼ŒèŠ±è´¹%dç§’'%(len(data_f),stop_time-start_time)
+                    dlg_f = wx.MessageDialog(self, tip_text, 
+                                            u'æ‰“å¼€å¯¹åº”æ–‡ä»¶å¤¹ï¼Ÿ',
+                                            wx.YES_NO | wx.YES_DEFAULT | wx.ICON_INFORMATION
+                                            )
+                    dlg_f.Destroy()
+                    open_folder = dlg_f.ShowModal()
+                    if open_folder==wx.ID_YES:
+                        #æ‰“å¼€ç›¸åº”æ–‡ä»¶å¤¹
+                        os.startfile('%s'%(int(data_array[0][0])+1))
+                    else:
+                        pass
+                else: #linux #ä¸çŸ¥é“ä¸ºä»€ä¹ˆlinuxä¸‹ä¸ºä»€ä¹ˆä¼šå‡ºé”™
+                    print (u'å…±ç”Ÿæˆ%dæ³¨ï¼ŒèŠ±è´¹%dç§’'%(len(data_f),stop_time-start_time)).encode(locale.getdefaultlocale()[1])
+                    
         else:
-            #µ¯³öÌáÊ¾¿ò
-            dlg = wx.MessageDialog(self, 'Ñ¡ÖĞµÄºÅÂëÉÙÓÚ6¸ö£¡', 
-                                   'ÇëÖØĞÂÑ¡ÔñºÅÂë',
+            #å¼¹å‡ºæç¤ºæ¡†
+            dlg = wx.MessageDialog(self, u'é€‰ä¸­çš„å·ç å°‘äº6ä¸ªï¼', 
+                                   u'è¯·é‡æ–°é€‰æ‹©å·ç ',
                                    wx.OK | wx.ICON_INFORMATION
                                    )
             dlg.ShowModal()
-            dlg.Destroy()              
+            dlg.Destroy()            
+ 
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----ÍË³ö°´Å¥----       
-    def OnButtonexitButton(self, event): #ÍË³ö°´Å¥
-        '''ÍË³öºìÇò¹ıÂËÑ¡ºÅÃæ°å'''
-        #¹Ø±Õ´°¿Ú
+#----é€€å‡ºæŒ‰é’®----       
+    def OnButtonexitButton(self, event): #é€€å‡ºæŒ‰é’®
+        '''é€€å‡ºçº¢çƒè¿‡æ»¤é€‰å·é¢æ¿'''
+        #å…³é—­çª—å£
         self.Close()
 
         event.Skip()
 
 #-------------------------------------------------------------------------------
-#----Ñ¡ºÅÃæ°å----
-    def OnRadioButtonallyesRadiobutton(self, event): #È«Ñ¡°´Å¥
-        '''Ñ¡ÔñÈ«²¿µÄºÅÂë£¬²¢×¢ÂúºÅÂë³Ø'''
-        #Öµ¾ùÉèÎªTrue£¬¼´Ñ¡ÖĞ×´Ì¬ #Õâ²¿·Ö´úÂëÓ¦¸ÃÓĞÓÅ»¯µÄ¿Õ¼ä£¬Ctrl¼ü¶¼Ä¥Ã»ÁË
+#----é€‰å·é¢æ¿----
+    def OnRadioButtonallyesRadiobutton(self, event): #å…¨é€‰æŒ‰é’®
+        '''é€‰æ‹©å…¨éƒ¨çš„å·ç ï¼Œå¹¶æ³¨æ»¡å·ç æ± '''
+        #å€¼å‡è®¾ä¸ºTrueï¼Œå³é€‰ä¸­çŠ¶æ€ #è¿™éƒ¨åˆ†ä»£ç åº”è¯¥æœ‰ä¼˜åŒ–çš„ç©ºé—´ï¼ŒCtrlé”®éƒ½ç£¨æ²¡äº†
         self.checkBox01.SetValue(True)
         self.checkBox02.SetValue(True)
         self.checkBox03.SetValue(True)
@@ -757,20 +748,20 @@ class FrameRedFiltratePanel(wx.Frame):
         self.checkBox31.SetValue(True)
         self.checkBox32.SetValue(True)
         self.checkBox33.SetValue(True)
-        #×¢ÂúºÅÂë³Ø
+        #æ³¨æ»¡å·ç æ± 
         global num_pool
-        num_pool = [] #ÏÈÇå¿ÕÒ»ÏÂ£¬±ÜÃâºÅÂë³ØÖĞÒÑ¾­ÓĞÁËÒ»Ğ©ºÅÂë
+        num_pool = [] #å…ˆæ¸…ç©ºä¸€ä¸‹ï¼Œé¿å…å·ç æ± ä¸­å·²ç»æœ‰äº†ä¸€äº›å·ç 
         for i in range(1, 33+1):
             num_pool.append(i)
-        #ÏÔÊ¾Ñ¡ÔñÁË¶àÉÙ¸öÇò
+        #æ˜¾ç¤ºé€‰æ‹©äº†å¤šå°‘ä¸ªçƒ
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
-    def OnRadioButtonallnoRadiobutton(self, event): #È«²»Ñ¡°´Å¥
-        '''²»Ñ¡ÔñºÅÂë²¢Çå¿ÕºÅÂë³Ø'''
-        #Öµ¾ùÉèÎªFalse£¬¼´·´Ñ¡×´Ì¬ 
+    def OnRadioButtonallnoRadiobutton(self, event): #å…¨ä¸é€‰æŒ‰é’®
+        '''ä¸é€‰æ‹©å·ç å¹¶æ¸…ç©ºå·ç æ± '''
+        #å€¼å‡è®¾ä¸ºFalseï¼Œå³åé€‰çŠ¶æ€ 
         self.checkBox01.SetValue(False)
         self.checkBox02.SetValue(False)
         self.checkBox03.SetValue(False)
@@ -804,493 +795,500 @@ class FrameRedFiltratePanel(wx.Frame):
         self.checkBox31.SetValue(False)
         self.checkBox32.SetValue(False)
         self.checkBox33.SetValue(False)
-        #Çå¿ÕºÅÂë³Ø  
+        #æ¸…ç©ºå·ç æ±   
         global num_pool
         num_pool = []
-        #ÏÔÊ¾Ñ¡ÔñÁË¶àÉÙ¸öÇò
+        #æ˜¾ç¤ºé€‰æ‹©äº†å¤šå°‘ä¸ªçƒ
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox01Checkbox(self, event): #01
-        '''½«1Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†1æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
-        if 1 in num_pool: #¿´¿´ÔÚ²»ÔÚ
-            num_pool.remove(1) #É¾³ı     
+        if 1 in num_pool: #çœ‹çœ‹åœ¨ä¸åœ¨
+            num_pool.remove(1) #åˆ é™¤     
         else:
-            num_pool.append(1) #Ìí¼Ó
+            num_pool.append(1) #æ·»åŠ 
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
         
     def OnCheckBox02Checkbox(self, event): #02
-        '''½«2Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†2æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 2 in num_pool:
             num_pool.remove(2)      
         else:
             num_pool.append(2)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
         
     def OnCheckBox03Checkbox(self, event):#03
-        '''½«3Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†3æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 3 in num_pool:
             num_pool.remove(3)      
         else:
             num_pool.append(3)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox04Checkbox(self, event):#04
-        '''½«4Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†4æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 4 in num_pool:
             num_pool.remove(4)      
         else:
             num_pool.append(4)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox05Checkbox(self, event):#05
-        '''½«5Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†5æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 5 in num_pool:
             num_pool.remove(5)      
         else:
             num_pool.append(5)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
          
         event.Skip()
 
     def OnCheckBox06Checkbox(self, event):#06
-        '''½«6Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†6æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 6 in num_pool:
             num_pool.remove(6)      
         else:
             num_pool.append(6)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
         
     def OnCheckBox07Checkbox(self, event):#07
-        '''½«7Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†7æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 7 in num_pool:
             num_pool.remove(7)      
         else:
             num_pool.append(7)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
          
         event.Skip()
         
     def OnCheckBox08Checkbox(self, event):#08
-        '''½«8Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†8æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 8 in num_pool:
             num_pool.remove(8)      
         else:
             num_pool.append(8)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
         
     def OnCheckBox09Checkbox(self, event):#09
-        '''½«9Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†9æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 9 in num_pool:
             num_pool.remove(9)      
         else:
             num_pool.append(9)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
          
         event.Skip()
 
     def OnCheckBox10Checkbox(self, event):#10
-        '''½«10Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†10æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 10 in num_pool:
             num_pool.remove(10)      
         else:
             num_pool.append(10)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox11Checkbox(self, event):#11
-        '''½«11Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†11æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 11 in num_pool:
             num_pool.remove(11)      
         else:
             num_pool.append(11)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox12Checkbox(self, event):#12
-        '''½«12Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†12æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 12 in num_pool:
             num_pool.remove(12)      
         else:
             num_pool.append(12)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox13Checkbox(self, event):#13
-        '''½«13Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†13æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 13 in num_pool:
             num_pool.remove(13)      
         else:
             num_pool.append(13)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox14Checkbox(self, event):#14
-        '''½«14Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†14æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 14 in num_pool:
             num_pool.remove(14)      
         else:
             num_pool.append(14)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox15Checkbox(self, event):#15
-        '''½«15Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†15æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 15 in num_pool:
             num_pool.remove(15)      
         else:
             num_pool.append(15)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox16Checkbox(self, event):#16
-        '''½«16Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†16æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 16 in num_pool:
             num_pool.remove(16)      
         else:
             num_pool.append(16)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
         
     def OnCheckBox17Checkbox(self, event):#17
-        '''½«17Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†17æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 17 in num_pool:
             num_pool.remove(17)      
         else:
             num_pool.append(17)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox18Checkbox(self, event):#18
-        '''½«18Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†18æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 18 in num_pool:
             num_pool.remove(18)      
         else:
             num_pool.append(18)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox19Checkbox(self, event):#19
-        '''½«19Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†19æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 19 in num_pool:
             num_pool.remove(19)      
         else:
             num_pool.append(19)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox20Checkbox(self, event):#20
-        '''½«20Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†20æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 20 in num_pool:
             num_pool.remove(20)      
         else:
             num_pool.append(20)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox21Checkbox(self, event):#21
-        '''½«21Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†21æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 21 in num_pool:
             num_pool.remove(21)      
         else:
             num_pool.append(21)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox22Checkbox(self, event):#22
-        '''½«22Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†22æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 22 in num_pool:
             num_pool.remove(22)      
         else:
             num_pool.append(22)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox23Checkbox(self, event):#23
-        '''½«23Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†23æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 23 in num_pool:
             num_pool.remove(23)      
         else:
             num_pool.append(23)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox24Checkbox(self, event):#24
-        '''½«24Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†24æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 24 in num_pool:
             num_pool.remove(24)      
         else:
             num_pool.append(24)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox25Checkbox(self, event):#25
-        '''½«25Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†25æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 25 in num_pool:
             num_pool.remove(25)      
         else:
             num_pool.append(25)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox26Checkbox(self, event):#26
-        '''½«26Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†26æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 26 in num_pool:
             num_pool.remove(26)      
         else:
             num_pool.append(26)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox27Checkbox(self, event):#27
-        '''½«27Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†27æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 27 in num_pool:
             num_pool.remove(27)      
         else:
             num_pool.append(27)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox28Checkbox(self, event):#28
-        '''½«28Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†28æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 28 in num_pool:
             num_pool.remove(28)      
         else:
             num_pool.append(28)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox29Checkbox(self, event):#29
-        '''½«29Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†29æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 29 in num_pool:
             num_pool.remove(29)      
         else:
             num_pool.append(29)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox30Checkbox(self, event):#30
-        '''½«30Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†30æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 30 in num_pool:
             num_pool.remove(30)      
         else:
             num_pool.append(30)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox31Checkbox(self, event):#31
-        '''½«31Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†31æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 31 in num_pool:
             num_pool.remove(31)      
         else:
             num_pool.append(31)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
 
     def OnCheckBox32Checkbox(self, event):#32
-        '''½«32Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†32æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 32 in num_pool:
             num_pool.remove(32)      
         else:
             num_pool.append(32)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
     def OnCheckBox33Checkbox(self, event):#33
-        '''½«33Ìí¼Óµ½ºÅÂë³ØÖĞ£¬»ò´ÓºÅÂë³ØÖĞÉ¾³ı'''
+        '''å°†33æ·»åŠ åˆ°å·ç æ± ä¸­ï¼Œæˆ–ä»å·ç æ± ä¸­åˆ é™¤'''
         global num_pool
         if 33 in num_pool:
             num_pool.remove(33)      
         else:
             num_pool.append(33)
 
-        #ºÅÂë³Ø¸öÊıÏÔÊ¾¸üĞÂ
+        #å·ç æ± ä¸ªæ•°æ˜¾ç¤ºæ›´æ–°
         msg[1] = '%.2d'%(len(num_pool))
         self.Refresh()
         
         event.Skip()
        
 #-------------------------------------------------------------------------------
-#----»æÍ¼----
+#----ç»˜å›¾----
 
     def OnPanel1Paint(self, event):
         dc = wx.PaintDC(self.panel1)
         #self.panel1.DoPrepareDC(dc)
-        #»­ÃæÇå¿Õ       
+        #ç”»é¢æ¸…ç©º       
         dc.Clear()
-        #ÎÄ×ÖÉè¶¨
+        #æ–‡å­—è®¾å®š
         global msg
-        msg = ['','']
-        msg[0] = '¿ªÊ¼ºìÇò¹ıÂË£¬Ñ¡ÔñºÅÂëºóµã»÷¡°Éú³É³õÊ¼Êı¾İ¡±°´Å¥'
-        msg[1] = '%.2d'%(len(num_pool)) #ÏÔÊ¾ºÅÂë³ØÖĞµÄºÅÂë¸öÊı
-        #ÎÄ×Ö¸ñÊ½
+        msg = ['','','']
+        msg[0] = 'å¼€å§‹çº¢çƒè¿‡æ»¤ï¼Œé€‰æ‹©å·ç åç‚¹å‡»â€œç”Ÿæˆåˆå§‹æ•°æ®â€æŒ‰é’®'
+        msg[1] = '%.2d'%(len(num_pool)) #æ˜¾ç¤ºå·ç æ± ä¸­çš„å·ç ä¸ªæ•°
+        msg[2] = 'å°æç¤ºï¼šè“è‰²çš„å·ç ä¸ºä¸ŠæœŸå‡ºç°çš„å·ç ï¼Œå³ä¸Šè§’ç´«è‰²å·ç è¡¨ç¤ºå·²é€‰å·ç ä¸ªæ•°'
+        #æ–‡å­—æ ¼å¼
         dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-        #ÎÄ×ÖÑÕÉ«
+        #æ–‡å­—é¢œè‰²
         dc.SetTextForeground('BLUE')
-        #ÎÄ×ÖÎ»ÖÃ
-        dc.DrawText(msg[0], 5, 5)
+        #æ–‡å­—ä½ç½®
+        dc.DrawText(msg[0].decode('utf-8'), 5, 5)
+        #æ–‡å­—é¢œè‰²
+        dc.SetTextForeground('MEDIUM ORCHID')        
         dc.DrawText(msg[1], 450, 5)
+        #å°æç¤º
+        dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
+        dc.SetTextForeground('BROWN')
+        dc.DrawText(msg[2].decode('utf-8'), 30, 400)

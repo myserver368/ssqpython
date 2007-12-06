@@ -1,9 +1,12 @@
-# -*- coding: cp936 -*-
+#! usr/bin/python
+# -*- coding: utf-8 -*-
 # otherrrr@gmail.com
-# ¹Ì¶¨Í¶×¢ÎÄ¼ş¶ÁÈ¡
+# å›ºå®šæŠ•æ³¨æ–‡ä»¶è¯»å–
+
+import locale
 
 def readBetFileToArray():
-    f = open('data/¹Ì¶¨Í¶×¢.txt', 'r')
+    f = open(u'data/å›ºå®šæŠ•æ³¨.txt', 'r')
     bet_array_temp  = f.readlines()
     f.close()
 
@@ -11,7 +14,7 @@ def readBetFileToArray():
     
     for i in range(0, len(bet_array_temp)-1):
         
-        bet_term = ['ºìÇò1', 'ºìÇò2', 'ºìÇò3', 'ºìÇò4', 'ºìÇò5', 'ºìÇò6', 'À¶Çò']
+        bet_term = ['çº¢çƒ1', 'çº¢çƒ2', 'çº¢çƒ3', 'çº¢çƒ4', 'çº¢çƒ5', 'çº¢çƒ6', 'è“çƒ']
 
         bet_term[0] =  bet_array_temp[i].split('+')[0].split(',')[0]
         bet_term[1] =  bet_array_temp[i].split('+')[0].split(',')[1]
@@ -23,7 +26,7 @@ def readBetFileToArray():
 
         bet_array.append(bet_term)
 
-    #ÃüÁîĞĞÌáÊ¾
-    print '¶ÁÈ¡¹Ì¶¨Í¶×¢%d×é'%(len(bet_array))
+    #å‘½ä»¤è¡Œæç¤º
+    print (u'è¯»å–å›ºå®šæŠ•æ³¨%dç»„'%(len(bet_array))).encode(locale.getdefaultlocale()[1])
     
     return bet_array

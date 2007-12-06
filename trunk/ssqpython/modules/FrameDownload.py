@@ -1,9 +1,11 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameDownload
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# Êı¾İÏÂÔØÃæ°å
+# æ•°æ®ä¸‹è½½é¢æ¿
 
 import wx
+import locale
 
 from DataFileIO import readDataFileToString, writeStringToDataFile
         
@@ -29,107 +31,107 @@ class FrameDownload(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameDownloadÆô¶¯'
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameDownloadå¯åŠ¨').encode(locale.getdefaultlocale()[1])
         
-        #ÏÂÔØÊı¾İÊ±ÓĞ¿ÉÄÜÑÓ³Ù£¬ÏÔÊ¾Ò»¸ö»­Ãæ
+        #ä¸‹è½½æ•°æ®æ—¶æœ‰å¯èƒ½å»¶è¿Ÿï¼Œæ˜¾ç¤ºä¸€ä¸ªç”»é¢
         image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
         bmp = image.ConvertToBitmap()
         wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1800, None, -1)
-        wx.Yield()         
-        #Çå¿ÕÏÔÊ¾Çø
+        wx.Yield()    
+        #æ¸…ç©ºæ˜¾ç¤ºåŒº
         self.textCtrl1.Clear()
-        #·ÃÎÊÍøÖ·£¨ÎÒµÄblog£©
+        #è®¿é—®ç½‘å€ï¼ˆæˆ‘çš„blogï¼‰
         url = 'http://hi.baidu.com/otherrrr/blog/item/30172834dfbf8c3a5bb5f500.html'
-        self.textCtrl1.AppendText('·ÃÎÊÍøÖ·£ºhttp://hi.baidu.com/otherrrr/\n')
-        #µ¼Èë°ü
+        self.textCtrl1.AppendText(u'è®¿é—®ç½‘å€ï¼šhttp://hi.baidu.com/otherrrr/\n')
+        #å¯¼å…¥åŒ…
         import urllib2
-        #Ä¬ÈÏ²»ĞèÒª´úÀí
+        #é»˜è®¤ä¸éœ€è¦ä»£ç†
         using_proxy = False        
-        #Õì²âÍøÂçÊÇ·ñ´æÔÚProxy
+        #ä¾¦æµ‹ç½‘ç»œæ˜¯å¦å­˜åœ¨Proxy
         try:
             f = urllib2.urlopen(url)
             f.close()
-        except Exception,ex: #µÃµ½Òì³£ÀàĞÍ
+        except Exception,ex: #å¾—åˆ°å¼‚å¸¸ç±»å‹
             #print ex 
             if str(ex)=='HTTP Error 407: Proxy authorization required':
-                #ĞèÒª´úÀíÑéÖ¤
+                #éœ€è¦ä»£ç†éªŒè¯
                 using_proxy = True
             else:
                 using_proxy = False
-        #ÅĞ¶Ï·ÃÎÊÍøÂçÊÇ·ñ³ö´í
+        #åˆ¤æ–­è®¿é—®ç½‘ç»œæ˜¯å¦å‡ºé”™
         net_access = True
-        #²»ĞèÒª´úÀí
+        #ä¸éœ€è¦ä»£ç†
         if using_proxy==False:        
-            self.textCtrl1.AppendText('·ÃÎÊÍøÂçÖĞ¡­¡­£¨Î´Ê¹ÓÃ´úÀí·şÎñ£©\n')
+            self.textCtrl1.AppendText(u'è®¿é—®ç½‘ç»œä¸­â€¦â€¦ï¼ˆæœªä½¿ç”¨ä»£ç†æœåŠ¡ï¼‰\n')
             try:
                 f = urllib2.urlopen(url)
-                data_web = f.read() #µÃµ½ÍøÒ³
+                data_web = f.read() #å¾—åˆ°ç½‘é¡µ
                 f.close()
             except Exception,ex:
-                self.textCtrl1.AppendText('³ö´íÁË£¡\n')
+                self.textCtrl1.AppendText(u'å‡ºé”™äº†ï¼\n')
                 self.textCtrl1.AppendText(str(ex)+'\n')
                 net_access = False
-        #ĞèÒª´úÀí
+        #éœ€è¦ä»£ç†
         if using_proxy==True:
-            self.textCtrl1.AppendText('·ÃÎÊÍøÂçÖĞ¡­¡­£¨Ê¹ÓÃ´úÀí·şÎñ£©\n')            
-            #·ÃÎÊ¡°´úÀíÉèÖÃ.ini¡±µÃµ½²ÎÊı
-            f = open('data/´úÀíÉèÖÃ.ini', 'r')
+            self.textCtrl1.AppendText(u'è®¿é—®ç½‘ç»œä¸­â€¦â€¦ï¼ˆä½¿ç”¨ä»£ç†æœåŠ¡ï¼‰\n')            
+            #è®¿é—®â€œä»£ç†è®¾ç½®.iniâ€å¾—åˆ°å‚æ•°
+            f = open(u'data/ä»£ç†è®¾ç½®.ini', 'r')
             s = f.readlines()
             f.close()
-            server = s[1].split(':')[1][:-1] #·şÎñÆ÷
-            port = s[3].split(':')[1][:-1] #¶Ë¿Ú
-            username = s[5].split(':')[1][:-1] #ÕË»§Ãû
-            password = s[7].split(':')[1][:-1] #ÃÜÂë
-            protocol = s[9].split(':')[1][:-1] #Ğ­Òé
-            #ÉèÖÃ´úÀí
+            server = s[1].split(':')[1][:-1] #æœåŠ¡å™¨
+            port = s[3].split(':')[1][:-1] #ç«¯å£
+            username = s[5].split(':')[1][:-1] #è´¦æˆ·å
+            password = s[7].split(':')[1][:-1] #å¯†ç 
+            protocol = s[9].split(':')[1][:-1] #åè®®
+            #è®¾ç½®ä»£ç†
             proxy_handler = urllib2.ProxyHandler({protocol:protocol+'://'+username+':'+password+'@'+server+':'+port})
             opener = urllib2.build_opener(proxy_handler)
             try:
                 response = opener.open(url)
-                data_web = response.read() #µÃµ½ÍøÒ³
+                data_web = response.read() #å¾—åˆ°ç½‘é¡µ
             except Exception,ex:
-                self.textCtrl1.AppendText('³ö´íÁË£¡\n')                
+                self.textCtrl1.AppendText(u'å‡ºé”™äº†ï¼\n')                
                 self.textCtrl1.AppendText(str(ex)+'\n')
                 net_access = False                
-        #ÈôÒª²é¿´¾ßÌå´íÎó£¬¿ÉÊ¹ÓÃ±¸·İ¹¦ÄÜ
+        #è‹¥è¦æŸ¥çœ‹å…·ä½“é”™è¯¯ï¼Œå¯ä½¿ç”¨å¤‡ä»½åŠŸèƒ½
         '''
-        #±¸·İµÃµ½µÄÍøÒ³
+        #å¤‡ä»½å¾—åˆ°çš„ç½‘é¡µ
         f = open('backup.htm', 'w')
         f.write(data_web)
         f.close()
-        #´ò¿ª±¸·İµÄÍøÒ³
+        #æ‰“å¼€å¤‡ä»½çš„ç½‘é¡µ
         f = open('backup.htm', 'r')
         data_web = f.read()
         f.close()
         '''
-        #²éÕÒ³öÍøÂçÉÏµÄ×î½üµÄÊı¾İ
+        #æŸ¥æ‰¾å‡ºç½‘ç»œä¸Šçš„æœ€è¿‘çš„æ•°æ®
         if net_access==True and len(data_web)>10000:
-            #>10000ÊÇÒòÎª£ºÕı³£´óĞ¡ÊÇ33484£¬·ÇÕı³£´óĞ¡ÊÇ2699(2007.08.28²âµÃÊı¾İ)
-            pos = data_web.find('<div class="cnt">', 0, len(data_web)) #µÃµ½Î»ÖÃ
-            #pos = s.index('<div class="cnt">') #ÁíÒ»ÖÖµÃµ½Î»ÖÃµÄ·½·¨
-            self.textCtrl1.AppendText('ÍøÂçÊı¾İ×îºó¸üĞÂ£º\n'+str(data_web[pos+17:pos+17+28])+'\n') #×îºó¸üĞÂµÄÊı¾İ
-            #²é¿´±¾µØÊı¾İ
+            #>10000æ˜¯å› ä¸ºï¼šæ­£å¸¸å¤§å°æ˜¯33484ï¼Œéæ­£å¸¸å¤§å°æ˜¯2699(2007.08.28æµ‹å¾—æ•°æ®)
+            pos = data_web.find('<div class="cnt">', 0, len(data_web)) #å¾—åˆ°ä½ç½®
+            #pos = s.index('<div class="cnt">') #å¦ä¸€ç§å¾—åˆ°ä½ç½®çš„æ–¹æ³•
+            self.textCtrl1.AppendText(u'ç½‘ç»œæ•°æ®æœ€åæ›´æ–°ï¼š\n'+str(data_web[pos+17:pos+17+28])+'\n') #æœ€åæ›´æ–°çš„æ•°æ®
+            #æŸ¥çœ‹æœ¬åœ°æ•°æ®
             data_string = readDataFileToString()
-            self.textCtrl1.AppendText('±¾µØÊı¾İ×îºó¸üĞÂ£º\n'+data_string[:28]+'\n')
+            self.textCtrl1.AppendText(u'æœ¬åœ°æ•°æ®æœ€åæ›´æ–°ï¼š\n'+data_string[:28]+'\n')
             if int(data_web[pos+17:pos+17+7])==int(data_string[:7]):
-                self.textCtrl1.AppendText('±¾µØÊı¾İºÍÍøÂçÊı¾İÒÑÍ¬²½£¬ÎŞĞë¸üĞÂ£¡\n')
+                self.textCtrl1.AppendText(u'æœ¬åœ°æ•°æ®å’Œç½‘ç»œæ•°æ®å·²åŒæ­¥ï¼Œæ— é¡»æ›´æ–°ï¼\n')
             if int(data_web[pos+17:pos+17+7])<int(data_string[:7]):
-                self.textCtrl1.AppendText('±¾µØÊı¾İ±ÈÍøÂçÊı¾İ»¹ÒªĞÂ£¬ÎŞĞë¸üĞÂ£¡\n')
+                self.textCtrl1.AppendText(u'æœ¬åœ°æ•°æ®æ¯”ç½‘ç»œæ•°æ®è¿˜è¦æ–°ï¼Œæ— é¡»æ›´æ–°ï¼\n')
             if int(data_web[pos+17:pos+17+7])>int(data_string[:7]):
-                self.textCtrl1.AppendText('ÍøÂçÊı¾İ±È±¾µØÊı¾İÒªĞÂ£¬ÕıÔÚ¸üĞÂ£¡\n')
-                #È·¶¨ĞèÒª¸üĞÂ¶àÉÙ×éÊı¾İ
+                self.textCtrl1.AppendText(u'ç½‘ç»œæ•°æ®æ¯”æœ¬åœ°æ•°æ®è¦æ–°ï¼Œæ­£åœ¨æ›´æ–°ï¼\n')
+                #ç¡®å®šéœ€è¦æ›´æ–°å¤šå°‘ç»„æ•°æ®
                 group_num = int(data_web[pos+17:pos+17+7]) - int(data_string[:7])
-                self.textCtrl1.AppendText('ĞèÒª¸üĞÂ%d×éÊı¾İ\n'%group_num)
-                #È·¶¨ĞèÒª¸üĞÂµÄÊı¾İ
+                self.textCtrl1.AppendText(u'éœ€è¦æ›´æ–°%dç»„æ•°æ®\n'%group_num)
+                #ç¡®å®šéœ€è¦æ›´æ–°çš„æ•°æ®
                 new_data = ''
                 for i in range(0, group_num):
                     new_data = new_data + (data_web[pos+i*33+17:pos+i*33+17+28]+'\n')
                 self.textCtrl1.AppendText(new_data)
-                #¸üĞÂÊı¾İ
+                #æ›´æ–°æ•°æ®
                 writeStringToDataFile(new_data+data_string)
-                self.textCtrl1.AppendText('Êı¾İÒÑ¸üĞÂ£¬¿ÉÒÔ¹Ø±Õ´Ë´°¿Ú£¡\n')
+                self.textCtrl1.AppendText(u'æ•°æ®å·²æ›´æ–°ï¼Œå¯ä»¥å…³é—­æ­¤çª—å£ï¼\n')
         else:
-            self.textCtrl1.AppendText('ÎŞ·¨¸üĞÂÊı¾İ£¡\nÇëÖØĞÂ³¢ÊÔ£¬»òÁªÏµotherrrr@gmail.com\n')       
+            self.textCtrl1.AppendText(u'æ— æ³•æ›´æ–°æ•°æ®ï¼\nè¯·é‡æ–°å°è¯•ï¼Œæˆ–è”ç³»otherrrr@gmail.com\n')       
 
 

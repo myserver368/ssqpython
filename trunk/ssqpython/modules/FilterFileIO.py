@@ -1,30 +1,34 @@
-# -*- coding: cp936 -*-
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 # otherrrr@gmail.com
-# ¹ıÂË²ÎÊıÎÄ¼ş¶ÁĞ´
+# è¿‡æ»¤å‚æ•°æ–‡ä»¶è¯»å†™
 
-def readFilterFileToArray(): #¶ÁÈ¡¹ıÂË²ÎÊı
-    '''½«¹ıÂËÌõ¼ş.txt¶Á³ö£¬²¢×ª»»³ÉÊı×é'''
-    f = open('data/¹ıÂËÌõ¼ş.txt', 'r')
+import locale
+
+def readFilterFileToArray(): #è¯»å–è¿‡æ»¤å‚æ•°
+    '''å°†è¿‡æ»¤æ¡ä»¶.txtè¯»å‡ºï¼Œå¹¶è½¬æ¢æˆæ•°ç»„'''
+    f = open(u'data/è¿‡æ»¤æ¡ä»¶.txt', 'r')
     filter_array_temp = f.readlines()
     f.close()
 
-    #ÏÔÊ¾Ò»ÏÂ
-    print '¶ÁÈ¡¹ıÂËÌõ¼ş%d×é'%(len(filter_array_temp)-3)
+    #æ˜¾ç¤ºä¸€ä¸‹
+    print (u'è¯»å–è¿‡æ»¤æ¡ä»¶%dç»„'%(len(filter_array_temp)-3)).encode(locale.getdefaultlocale()[1])
     
     for i in range(0, len(filter_array_temp)):
         if '==BEGIN==' in filter_array_temp[i]:
-            pos_begin = i #¿ªÊ¼Î»ÖÃ
+            pos_begin = i #å¼€å§‹ä½ç½®
     for i in range(0, len(filter_array_temp)):
         if '==END==' in filter_array_temp[i]:
-            pos_end = i #½áÊøÎ»ÖÃ
+            pos_end = i #ç»“æŸä½ç½®
 
     filter_array = []
 
     for i in range(pos_begin+1, pos_end):
-        filter_term = ['µÚ¼¸Ïî', 'Ãû³Æ', 'ÊÇ·ñÆôÓÃ', '·¶Î§', 'ËµÃ÷']
+        filter_term = [u'ç¬¬å‡ é¡¹', u'åç§°', u'æ˜¯å¦å¯ç”¨', u'èŒƒå›´', u'è¯´æ˜']
+
         filter_term[0] =  filter_array_temp[i].split('()')[0]
         filter_term[1] =  filter_array_temp[i].split('()')[1]
-        filter_term[2] =  filter_array_temp[i].split('()')[2]
+        filter_term[2] =  filter_array_temp[i].split('()')[2].decode('utf-8') #20071203
         filter_term[3] =  filter_array_temp[i].split('()')[3]
         filter_term[4] =  filter_array_temp[i].split('()')[4][:-1]
 

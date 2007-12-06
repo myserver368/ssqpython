@@ -1,11 +1,14 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameRedFiltrate
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# ºìÇò¹ıÂËÃæ°å
+# çº¢çƒè¿‡æ»¤é¢æ¿
 
 import wx
+import wx.lib.ticker
 import os
 import time
+import locale
 
 from DataFileIO import readDataFileToArray
 from FilterFileIO import readFilterFileToArray
@@ -13,21 +16,27 @@ from PredictFileIO import writePredictData
 from BetFileIO import readBetFileToArray
 from DataCompute import redOrderCoumpute, dataParaCompute, percentCompute, dataFiltrate
 
-data_array = []  #Êı¾İ£¨Êı×é¸ñÊ½£©
-data_para_array = [] #Êı¾İµÄÏà¹Ø²ÎÊı
+data_array = []  #æ•°æ®ï¼ˆæ•°ç»„æ ¼å¼ï¼‰
+data_para_array = [] #æ•°æ®çš„ç›¸å…³å‚æ•°
 
-redOrder = [] #ºìÇòºÅÂë°´×Å³öÇò´ÎÊıÓÉ´óµ½Ğ¡ÅÅÁĞ
-redTimes = [] #ºìÇò¶ÔÓ¦³öºÅ´ÎÊı
+redOrder = [] #çº¢çƒå·ç æŒ‰ç€å‡ºçƒæ¬¡æ•°ç”±å¤§åˆ°å°æ’åˆ—
+redTimes = [] #çº¢çƒå¯¹åº”å‡ºå·æ¬¡æ•°
 
-num_pool = [] #ºÅÂë³Ø
+num_pool = [] #å·ç æ± 
 
-filter_array = [] #¹ıÂË²ÎÊı
-percent_array = [] #¹ıÂËÌõ¼şµÄ°Ù·Ö±È
-data_f = [] #¹ıÂËºóÉú³ÉµÄÊı¾İ
-step = 0 #¹ıÂË²½Öè
-msg = [] #ÏÔÊ¾ĞÅÏ¢ #Õâ¸öÆäÊµ¿ÉÒÔ¸Ä³Édict
+filter_array = [] #è¿‡æ»¤å‚æ•°
+percent_array = [] #è¿‡æ»¤æ¡ä»¶çš„ç™¾åˆ†æ¯”
+data_f = [] #è¿‡æ»¤åç”Ÿæˆçš„æ•°æ®
+step = 0 #è¿‡æ»¤æ­¥éª¤
+msg = [] #æ˜¾ç¤ºä¿¡æ¯ #è¿™ä¸ªå…¶å®å¯ä»¥æ”¹æˆdict
 
-term = 20 #¹ıÂËÌõ¼ş×ßÊÆÍ¼ÏÔÊ¾µÄÆÚÊı£¬Ä¬ÈÏÏÔÊ¾×î½ü20ÆÚ×ßÊÆ
+term = 20 #è¿‡æ»¤æ¡ä»¶èµ°åŠ¿å›¾æ˜¾ç¤ºçš„æœŸæ•°ï¼Œé»˜è®¤æ˜¾ç¤ºæœ€è¿‘20æœŸèµ°åŠ¿
+
+#20071123æ·»åŠ â€œåˆ é™¤ç»„æ•°æ˜¾ç¤ºâ€åŠŸèƒ½
+nums_before = [0, False]#è¿‡æ»¤ä¹‹å‰çš„ç»„æ•°/æ˜¯å¦æ˜¾ç¤º
+
+#20071126æ·»åŠ 
+data_f_origin = []#è¿‡æ»¤å‰çš„æ•°æ®
 
 def create(parent, ALL_datas):
     return FrameRedFiltrate(parent, ALL_datas)
@@ -35,22 +44,24 @@ def create(parent, ALL_datas):
 [wxID_FRAMEREDFILTRATE, wxID_FRAMEREDFILTRATEBUTTONEXIT, 
  wxID_FRAMEREDFILTRATEBUTTONLASTSTEP, wxID_FRAMEREDFILTRATEBUTTONLOWERMINUS, 
  wxID_FRAMEREDFILTRATEBUTTONLOWERPLUS, wxID_FRAMEREDFILTRATEBUTTONNEXTSTEP, 
- wxID_FRAMEREDFILTRATEBUTTONSAVE, wxID_FRAMEREDFILTRATEBUTTONUPPERMINUS, 
- wxID_FRAMEREDFILTRATEBUTTONUPPERPLUS, wxID_FRAMEREDFILTRATEBUTTONUSE, 
- wxID_FRAMEREDFILTRATEPANEL1, wxID_FRAMEREDFILTRATEPANEL3, 
- wxID_FRAMEREDFILTRATERADIOBUTTON10T, wxID_FRAMEREDFILTRATERADIOBUTTON20T, 
- wxID_FRAMEREDFILTRATERADIOBUTTON40T, wxID_FRAMEREDFILTRATETEXTCTRLDATAF, 
-] = [wx.NewId() for _init_ctrls in range(16)]
+ wxID_FRAMEREDFILTRATEBUTTONSAVE, wxID_FRAMEREDFILTRATEBUTTONSAVEOTHER, 
+ wxID_FRAMEREDFILTRATEBUTTONUPPERMINUS, wxID_FRAMEREDFILTRATEBUTTONUPPERPLUS, 
+ wxID_FRAMEREDFILTRATEBUTTONUSE, wxID_FRAMEREDFILTRATEPANEL1, 
+ wxID_FRAMEREDFILTRATEPANEL3, wxID_FRAMEREDFILTRATERADIOBUTTON10T, 
+ wxID_FRAMEREDFILTRATERADIOBUTTON20T, wxID_FRAMEREDFILTRATERADIOBUTTON40T, 
+ wxID_FRAMEREDFILTRATETEXTCTRLDATAF, wxID_FRAMEREDFILTRATETICKER1, 
+] = [wx.NewId() for _init_ctrls in range(18)]
 
 class FrameRedFiltrate(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAMEREDFILTRATE,
               name=u'FrameAbnormalFiltrate', parent=prnt, pos=wx.Point(388,
-              232), size=wx.Size(491, 489), style=wx.DEFAULT_FRAME_STYLE,
+              232), size=wx.Size(491, 482), style=wx.DEFAULT_FRAME_STYLE,
               title=u'\u7ea2\u7403\u8fc7\u6ee4')
         self.SetIcon(wx.Icon(u'pic/red.ico',wx.BITMAP_TYPE_ICO))
         self.SetClientSize(wx.Size(483, 455))
+        self.Bind(wx.EVT_CLOSE, self.OnFrameRedFiltrateClose)
 
         self.panel1 = wx.Panel(id=wxID_FRAMEREDFILTRATEPANEL1, name='panel1',
               parent=self, pos=wx.Point(0, 0), size=wx.Size(483, 455),
@@ -92,6 +103,14 @@ class FrameRedFiltrate(wx.Frame):
         self.buttonsave.SetForegroundColour(wx.Colour(255, 0, 0))
         self.buttonsave.Bind(wx.EVT_BUTTON, self.OnButtonsaveButton,
               id=wxID_FRAMEREDFILTRATEBUTTONSAVE)
+
+        self.buttonsaveother = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONSAVEOTHER,
+              label=u'\u88ab\u8fc7\u6ee4\u6389\u7684\u6570\u636e',
+              name=u'buttonsaveother', parent=self.panel1, pos=wx.Point(304,
+              80), size=wx.Size(104, 24), style=0)
+        self.buttonsaveother.SetForegroundColour(wx.Colour(0, 128, 128))
+        self.buttonsaveother.Bind(wx.EVT_BUTTON, self.OnButtonsaveotherButton,
+              id=wxID_FRAMEREDFILTRATEBUTTONSAVEOTHER)
 
         self.buttonlowerminus = wx.Button(id=wxID_FRAMEREDFILTRATEBUTTONLOWERMINUS,
               label=u'\u4e0b\u9650\uff0d', name=u'buttonlowerminus',
@@ -156,28 +175,37 @@ class FrameRedFiltrate(wx.Frame):
               size=wx.Size(448, 296), style=wx.TE_MULTILINE,
               value=u'\u663e\u793a\u8fc7\u6ee4\u540e\u6570\u636e')
 
+        self.ticker1 = wx.lib.ticker.Ticker(direction='rtl',
+              id=wxID_FRAMEREDFILTRATETICKER1, name='ticker1',
+              parent=self.panel1, pos=wx.Point(105, 423), size=wx.Size(160, 20),
+              start=True, style=0, text=u'\u663e\u793a\u6570\u636e')
+        self.ticker1.SetToolTipString(u'\u663e\u793a\u5f53\u524d\u6570\u636e')
+
     def __init__(self, parent, ALL_datas):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameRedFiltrateÆô¶¯'
-        #Êı¾İ¶¨Òå
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameRedFiltrateå¯åŠ¨').encode(locale.getdefaultlocale()[1])
+        #æ•°æ®å®šä¹‰
         global data_array, redOrder, redTimes, bet_array, data_f,\
                data_para_array, filter_array, percent_array, num_pool
-        #Êı¾İ´«Èë
+        #æ•°æ®ä¼ å…¥
         [data_array, redOrder, redTimes, bet_array,
          data_para_array, filter_array, percent_array,
          data_f, num_pool] = ALL_datas
-        #µ÷ÕûÎ»ÖÃ
-        self.Center()        
-        
-        #Ä¬ÈÏ½«step¹é1
+        #å¤‡ä»½ä¸€ä¸‹data_fä½œä¸ºåˆå§‹æ•°æ®ï¼Œè¿™æ ·å°±å¯ä»¥å‡å»è¿‡æ»¤åçš„æ•°æ®ï¼Œä»è€Œå¾—åˆ°è¢«è¿‡æ»¤æ•°æ®
+        global data_f_origin
+        data_f_origin = data_f
+        #è°ƒæ•´ä½ç½®
+        self.Center()          
+        #é»˜è®¤å°†stepå½’1
         global step
         step = 1
-        #°´Å¥¼°¿Ø¼şµÄÏÔÊ¾ºÍÒş²Ø    
+        #æŒ‰é’®åŠæ§ä»¶çš„æ˜¾ç¤ºå’Œéšè—    
         self.buttonnextstep.Show()
         self.buttonlaststep.Show(False)
-        self.buttonsave.Show(False)    
-        if '·ñ' in filter_array[step-1][2]:
+        self.buttonsave.Show(False)
+        self.buttonsaveother.Show(False)
+        if u'å¦      '==filter_array[step-1][2]:
             self.buttonuse.Show()
             self.buttonlowerminus.Show()
             self.buttonlowerplus.Show()
@@ -189,467 +217,586 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonlowerplus.Show(False)
             self.buttonupperplus.Show(False)
             self.buttonupperminus.Show(False)                
-        self.panel3.Show() #×ßÊÆÍ¼Ãæ°åÏÔÊ¾
-        self.textCtrldataf.Show(False) #Ô¤²âÊı¾İ½á¹û²»ÏÔÊ¾
-
-        #´´½¨Ìõ¼şÑ¡ÔñÏÂÀ­Ìõ
-        filter_name = [] #ËùÓĞ¹ıÂËÌõ¼şÃû³ÆÁĞ±í
+        self.panel3.Show() #èµ°åŠ¿å›¾é¢æ¿æ˜¾ç¤º
+        self.textCtrldataf.Show(False) #é¢„æµ‹æ•°æ®ç»“æœä¸æ˜¾ç¤º
+        #åˆ›å»ºæ¡ä»¶é€‰æ‹©ä¸‹æ‹‰æ¡
+        filter_name = [] #æ‰€æœ‰è¿‡æ»¤æ¡ä»¶åç§°åˆ—è¡¨
         for i in range(0, len(filter_array)):
-            filter_name.append(filter_array[i][1])
+            filter_name.append(filter_array[i][1].decode('utf-8')) #linux
         self.comboBox1 = wx.ComboBox(choices=filter_name,
               id=-1, name='comboBox1',
-              parent=self.panel1, pos=wx.Point(344, 17), size=wx.Size(110, 22),
+              parent=self.panel1, pos=wx.Point(344, 10), size=wx.Size(110, 22),
               style=0, value=u'\u9009\u62e9\u8fc7\u6ee4\u6761\u4ef6')
-        #°ó¶¨
-        self.comboBox1.Bind(wx.EVT_TEXT, self.OnComboBox1Text, id=-1)              
-        #Èç¹ûÒªÔÚunicode°æ±¾µÄwxPythonÖĞ²é¿´ºº×Ö£¬¾ÍÒª½øĞĞunicode²Ù×÷£¬ÈçÏÂ£º
+        #ç»‘å®š
+        self.comboBox1.Bind(wx.EVT_TEXT, self.OnComboBox1Text, id=-1)  
+        #æµ‹è¯•
+        self.UpdateRollingText()
+        #å¦‚æœè¦åœ¨unicodeç‰ˆæœ¬çš„wxPythonä¸­æŸ¥çœ‹æ±‰å­—ï¼Œå°±è¦è¿›è¡Œunicodeæ“ä½œï¼Œå¦‚ä¸‹ï¼š
         #print unicode(filter_array[0][1], 'mbcs')
         
 #-------------------------------------------------------------------------------
-#----»æÍ¼----
+#----ç»˜å›¾----
 
     def OnPanel1Paint(self, event):
         dc = wx.PaintDC(self.panel1)
         #self.panel1.DoPrepareDC(dc)
-        #»­ÃæÇå¿Õ       
+        #ç”»é¢æ¸…ç©º       
         dc.Clear()
-        #ÎÄ×ÖÉè¶¨
+        #æ–‡å­—è®¾å®š
         global msg
-        if step==0:
+        if step==0: #æ­¤é¡¹å·²æ— ç”¨
             msg = ['','']
-            msg[0] = '¿ªÊ¼ºìÇò¹ıÂË£¬Ñ¡ÔñºÅÂëºóµã»÷¡°Éú³É³õÊ¼Êı¾İ¡±°´Å¥'
-            msg[1] = '%.2d'%(len(num_pool)) #ÏÔÊ¾ºÅÂë³ØÖĞµÄºÅÂë¸öÊı
+            msg[0] = u'å¼€å§‹çº¢çƒè¿‡æ»¤ï¼Œé€‰æ‹©å·ç åç‚¹å‡»â€œç”Ÿæˆåˆå§‹æ•°æ®â€æŒ‰é’®'
+            msg[1] = '%.2d'%(len(num_pool)) #æ˜¾ç¤ºå·ç æ± ä¸­çš„å·ç ä¸ªæ•°
         if step>0 and step<=len(filter_array):
-            msg = ['','','','','','','','','']
-            msg[0] = 'µ±Ç°ÎªµÚ%.2d/%d²½£º%s'%(step, len(filter_array), filter_array[step-1][1])
-            msg[1] = '£¨%s£©'%(filter_array[step-1][4])
-            msg[2] = 'µ±Ç°×éÊıÎª%d£¬¹ıÂË±ÈÎª%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
-            msg[3] = 'µ±Ç°ÉèÖÃ·¶Î§Îª£º¡¾%d, %d¡¿'%(int(filter_array[step-1][3].split("-")[0]),int(filter_array[step-1][3].split("-")[1]))
-            msg[4] = 'ÒÑ¿ª½±Êı¾İÖĞµÄ·ûºÏ³Ì¶ÈÎª%s'%(percent_array[step-1])+'%'
-            msg[5] = 'ÊÇ·ñÊ¹ÓÃ´Ë¹ıÂËÌõ¼ş£º' 
-            if 'ÊÇ' in filter_array[step-1][2]:
-                msg[6] = 'ÊÇ'
+            msg = ['','','','','','','']
+            msg[0] = u'å½“å‰ä¸ºç¬¬%.2d/%dæ­¥ï¼š%s'%(step, len(filter_array), filter_array[step-1][1].decode('utf-8'))
+            msg[1] = u'ï¼ˆ%sï¼‰'%(filter_array[step-1][4].decode('utf-8'))
+            if u'æ˜¯      '==filter_array[step-1][2] and nums_before[1]==True:
+                msg[2] = u'å½“å‰ç»„æ•°ä¸º%dï¼Œè¿‡æ»¤æ¯”ä¸º%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'+u'ï¼Œæœ¬æ­¥è¿‡æ»¤æ‰%dç»„'%(nums_before[0]-len(data_f))
+            else:
+                msg[2] = u'å½“å‰ç»„æ•°ä¸º%dï¼Œè¿‡æ»¤æ¯”ä¸º%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
+            msg[3] = u'å½“å‰è®¾ç½®èŒƒå›´ä¸ºï¼šã€%d, %dã€‘'%(int(filter_array[step-1][3].split("-")[0]),int(filter_array[step-1][3].split("-")[1]))
+            msg[4] = u'å·²å¼€å¥–æ•°æ®ä¸­çš„ç¬¦åˆç¨‹åº¦ä¸º%s'%(percent_array[step-1])+'%'
+            msg[5] = u'æ˜¯å¦ä½¿ç”¨æ­¤è¿‡æ»¤æ¡ä»¶ï¼š' 
+            if u'æ˜¯      '==filter_array[step-1][2]:
+                msg[6] = u'æ˜¯'
             else :
-                msg[6] = '·ñ'        
+                msg[6] = u'å¦'        
         if step>len(filter_array):
             msg = ['','','']
-            msg[0] = '¹ıÂËÍê±Ï£¡'
-            msg[1] = 'µ±Ç°×éÊıÎª%d£¬¹ıÂË±ÈÎª%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
-            msg[2] = 'Èô±£´æÊı¾İÇëµã»÷¡°±£´æ¹ıÂËºóÊı¾İ¡±°´Å¥'
-        #»æÖÆÎÄ×Ö
+            msg[0] = u'è¿‡æ»¤å®Œæ¯•ï¼'
+            msg[1] = u'å½“å‰ç»„æ•°ä¸º%dï¼Œè¿‡æ»¤æ¯”ä¸º%.4f'%(len(data_f), len(data_f)*100.0/1107568)+'%'
+            msg[2] = u'è‹¥ä¿å­˜æ•°æ®è¯·ç‚¹å‡»â€œä¿å­˜è¿‡æ»¤åæ•°æ®â€æŒ‰é’®'
+        #ç»˜åˆ¶æ–‡å­—
         dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-        if len(msg)==2: #µÚ1²½
+        if len(msg)==2: #ç¬¬1æ­¥
             dc.SetTextForeground('BLUE')
             #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))
             dc.DrawText(msg[0], 5, 5)
             dc.DrawText(msg[1], 450, 5)
-        elif len(msg)==3: #×îºó1²½
+        elif len(msg)==3: #æœ€å1æ­¥
             dc.SetTextForeground('BLUE')
             #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
             for i in range(0, 3):
                 dc.DrawText(msg[i], 5, 5+i*16)
-        else : #ÖĞ¼ä²½
+        else : #ä¸­é—´æ­¥
             dc.SetTextForeground('BLUE')
             #dc.SetFont(wx.Font(10, wx.NORMAL, wx.NORMAL, wx.NORMAL))            
             for i in range(0, 6):
                 dc.DrawText(msg[i], 5, 5+i*16)
-            if msg[6]=='·ñ': #ºìÉ«µÄ¡°·ñ¡±
+            if msg[6]==u'å¦': #çº¢è‰²çš„â€œå¦â€
                 dc.SetTextForeground('RED')
                 dc.DrawText(msg[6], 5+150, 5+5*16)
-            if msg[6]=='ÊÇ': #ÂÌÉ«µÄ¡°ÊÇ¡±
+            if msg[6]==u'æ˜¯': #ç»¿è‰²çš„â€œæ˜¯â€
                 dc.SetTextForeground('#009900')
                 dc.DrawText(msg[6], 5+150, 5+5*16)
-        
+
         event.Skip()
         
 #-------------------------------------------------------------------------------
-#----³£¹æ°´Å¥----
-    def OnButtonnextstepButton(self, event): #ÏÂÒ»²½°´Å¥
-        '''½øĞĞÏÂÒ»²½¹ıÂË'''
+#----å¸¸è§„æŒ‰é’®----
+    def OnButtonnextstepButton(self, event): #ä¸‹ä¸€æ­¥æŒ‰é’®
+        '''è¿›è¡Œä¸‹ä¸€æ­¥è¿‡æ»¤'''
         global step 
         #+1
         if step<=len(filter_array):   
             step = step + 1  
         if step<=len(filter_array): 
-            if '·ñ' in filter_array[step-1][2]:
+            if u'å¦      '==filter_array[step-1][2]:
                 self.buttonuse.Show()
+                self.buttonsaveother.Show(False)
                 self.buttonlowerminus.Show()
                 self.buttonlowerplus.Show()
                 self.buttonupperminus.Show()
-                self.buttonupperplus.Show()                   
+                self.buttonupperplus.Show()
             else:
-                self.buttonuse.Show(False) 
+                self.buttonuse.Show(False)
+                self.buttonsaveother.Show(False)
                 self.buttonlowerminus.Show(False)
                 self.buttonlowerplus.Show(False)
                 self.buttonupperminus.Show(False)
                 self.buttonupperplus.Show(False)    
-        #ÏÔÊ¾¡°ÉÏÒ»²½¡±°´Å¥
+        #æ˜¾ç¤ºâ€œä¸Šä¸€æ­¥â€æŒ‰é’®
         if step>1:
             self.buttonlaststep.Show()
-        #Òş²Ø¡°ÏÂÒ»²½¡±°´Å¥£¨¾ÍÊÇ±¾Éí£©
+        #éšè—â€œä¸‹ä¸€æ­¥â€æŒ‰é’®ï¼ˆå°±æ˜¯æœ¬èº«ï¼‰
         if step>len(filter_array):
             self.buttonsave.Show()
+            self.buttonsaveother.Show(False)
             self.buttonnextstep.Show(False)
             self.buttonuse.Show(False) 
             self.buttonlowerminus.Show(False)
             self.buttonlowerplus.Show(False)
             self.buttonupperminus.Show(False)
             self.buttonupperplus.Show(False)
-            self.panel3.Show(False) #×ßÊÆÍ¼Ãæ°å²»ÏÔÊ¾
-            self.comboBox1.Show(False) #Ìõ¼şÑ¡ÔñÏÂÀ­Ìõ²»ÏÔÊ¾
-            self.textCtrldataf.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) #ÉèÖÃÒ»ÏÂ£¬¾ÍÄÜ´ÓÍ·¿ªÊ¼ÏÔÊ¾
-            self.textCtrldataf.Show() #Ô¤²âÊı¾İ½á¹ûÏÔÊ¾
-            #ÔÚÏÔÊ¾Ãæ°åÖĞĞ´ÈëÊı¾İ
+            self.panel3.Show(False) #èµ°åŠ¿å›¾é¢æ¿ä¸æ˜¾ç¤º
+            self.comboBox1.Show(False) #æ¡ä»¶é€‰æ‹©ä¸‹æ‹‰æ¡ä¸æ˜¾ç¤º
+            self.textCtrldataf.SetFont(wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, "")) #è®¾ç½®ä¸€ä¸‹ï¼Œå°±èƒ½ä»å¤´å¼€å§‹æ˜¾ç¤º
+            self.textCtrldataf.Show() #é¢„æµ‹æ•°æ®ç»“æœæ˜¾ç¤º
+            #åœ¨æ˜¾ç¤ºé¢æ¿ä¸­å†™å…¥æ•°æ®
             self.textCtrldataf.Clear()
             '''
-            self.textCtrldataf.AppendText('¹ıÂËºóÊı¾İÈçÏÂ£º\n')
+            self.textCtrldataf.AppendText('è¿‡æ»¤åæ•°æ®å¦‚ä¸‹ï¼š\n')
             for i in range(0, len(data_f)):
                 self.textCtrldataf.AppendText('%.2d %.2d %.2d %.2d %.2d %.2d\n'\
                                               %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5]))
             '''
-            #ÏÈ½«ÎÄ±¾´¦ÀíºÃÔÙÒ»´ÎĞÔÌí¼Óµ½ÏÔÊ¾¿Ø¼şÖĞ»á±È½ÏÊ¡Ê±¼ä£¬±È½ÏÃ»ÓĞÑÓ³ÙµÄ¸Ğ¾õ
-            #Èç¹û×¢Êı¹ı¶à£¬ºóÃæ²¿·ÖÃ»ÓĞÏÔÊ¾³öÀ´£¬ÒòÎªtextctrlÖ»ÄÜÏÔÊ¾64KBµÄÎÄ×Ö
-            #¿ÉÒÔ¸Ä³Érichtext£¬µ«ÊÇÖ»ÄÜÔÚwindowsÏÂÓÃ
+            #å…ˆå°†æ–‡æœ¬å¤„ç†å¥½å†ä¸€æ¬¡æ€§æ·»åŠ åˆ°æ˜¾ç¤ºæ§ä»¶ä¸­ä¼šæ¯”è¾ƒçœæ—¶é—´ï¼Œæ¯”è¾ƒæ²¡æœ‰å»¶è¿Ÿçš„æ„Ÿè§‰
+            #å¦‚æœæ³¨æ•°è¿‡å¤šï¼Œåé¢éƒ¨åˆ†æ²¡æœ‰æ˜¾ç¤ºå‡ºæ¥ï¼Œå› ä¸ºtextctrlåªèƒ½æ˜¾ç¤º64KBçš„æ–‡å­—
+            #å¯ä»¥æ”¹æˆrichtextï¼Œä½†æ˜¯åªèƒ½åœ¨windowsä¸‹ç”¨
             if len(data_f)>200:
-                show_txt = '¹ıÂËºóÊı¾İÈçÏÂ£º£¨×î¶àÏÔÊ¾200×é£©\n'                
-                for i in range(0, 200): #Ö»ÏÔÊ¾200×é
-                    show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
+                show_txt = u'è¿‡æ»¤åæ•°æ®å¦‚ä¸‹ï¼šï¼ˆæœ€å¤šæ˜¾ç¤º200ç»„ï¼‰\n'                
+                for i in range(0, 200): #åªæ˜¾ç¤º200ç»„
+                    show_txt = show_txt + u'%.2d %.2d %.2d %.2d %.2d %.2d\n'\
                                %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
             else:
-                show_txt = '¹ıÂËºóÊı¾İÈçÏÂ£º\n'  
+                show_txt = u'è¿‡æ»¤åæ•°æ®å¦‚ä¸‹ï¼š\n'  
                 for i in range(0, len(data_f)):
-                    show_txt = show_txt + '%.2d %.2d %.2d %.2d %.2d %.2d\n'\
+                    show_txt = show_txt + u'%.2d %.2d %.2d %.2d %.2d %.2d\n'\
                                %(data_f[i][0],data_f[i][1],data_f[i][2],data_f[i][3],data_f[i][4],data_f[i][5])
             self.textCtrldataf.AppendText(show_txt)
             self.textCtrldataf.SetInsertionPoint(0)
-        #Ë¢ĞÂ
+        #ä¸æ˜¾ç¤ºè¿‡æ»¤æ‰çš„ç»„æ•°
+        global nums_before
+        nums_before[1] = False            
+        #åˆ·æ–°
         self.Refresh() 
                     
         event.Skip()
 
-    def OnButtonlaststepButton(self, event): #ÉÏÒ»²½°´Å¥
-        '''·µ»ØÉÏÒ»²½¹ıÂË'''
+    def OnButtonlaststepButton(self, event): #ä¸Šä¸€æ­¥æŒ‰é’®
+        '''è¿”å›ä¸Šä¸€æ­¥è¿‡æ»¤'''
         global step
         #-1
         if step>1:
             step = step - 1  
-            if '·ñ' in filter_array[step-1][2]:
+            if u'å¦      '==filter_array[step-1][2]:
                 self.buttonuse.Show()
                 self.buttonlowerminus.Show()
+                self.buttonsaveother.Show(False)                
                 self.buttonlowerplus.Show()
                 self.buttonupperminus.Show()
-                self.buttonupperplus.Show()                    
+                self.buttonupperplus.Show()
             else:
-                self.buttonuse.Show(False) 
+                self.buttonuse.Show(False)
+                self.buttonsaveother.Show(False)
                 self.buttonlowerminus.Show(False)
                 self.buttonlowerplus.Show(False)
                 self.buttonupperminus.Show(False)
                 self.buttonupperplus.Show(False)                   
-        #ÏÔÊ¾¡°ÏÂÒ»²½¡±°´Å¥
+        #æ˜¾ç¤ºâ€œä¸‹ä¸€æ­¥â€æŒ‰é’®
         if step<=len(filter_array):
             self.buttonnextstep.Show()
-            self.panel3.Show() #×ßÊÆÍ¼Ãæ°åÏÔÊ¾
-            self.comboBox1.Show() #Ìõ¼şÑ¡ÔñÏÂÀ­ÌõÏÔÊ¾
-            self.buttonsave.Show(False)  
-            self.textCtrldataf.Show(False) #Ô¤²âÊı¾İ½á¹û²»ÏÔÊ¾
-        #Òş²Ø¡°ÉÏÒ»²½¡±°´Å¥£¨¾ÍÊÇ±¾Éí£©
+            self.panel3.Show() #èµ°åŠ¿å›¾é¢æ¿æ˜¾ç¤º
+            self.comboBox1.Show() #æ¡ä»¶é€‰æ‹©ä¸‹æ‹‰æ¡æ˜¾ç¤º
+            self.buttonsave.Show(False)
+            self.buttonsaveother.Show(False)
+            self.textCtrldataf.Show(False) #é¢„æµ‹æ•°æ®ç»“æœä¸æ˜¾ç¤º
+        #éšè—â€œä¸Šä¸€æ­¥â€æŒ‰é’®ï¼ˆå°±æ˜¯æœ¬èº«ï¼‰
         if step==1:
             self.buttonlaststep.Show(False)
-        #Ë¢ĞÂ
+        #ä¸æ˜¾ç¤ºè¿‡æ»¤æ‰çš„ç»„æ•°
+        global nums_before
+        nums_before[1] = False
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
         
-    def OnButtonexitButton(self, event): #ÍË³ö°´Å¥
-        '''ÍË³öºìÇò¹ıÂËÃæ°å'''
-        #¹Ø±Õ´°¿Ú
+    def OnButtonexitButton(self, event): #é€€å‡ºæŒ‰é’®
+        '''é€€å‡ºçº¢çƒè¿‡æ»¤é¢æ¿'''
+        #å…³é—­çª—å£
         self.Close()
 
         event.Skip()
         
 #-------------------------------------------------------------------------------
-#----¹ıÂËÌõ¼ş¿ØÖÆ°´Å¥----
-    def OnButtonuseButton(self, event): #Ê¹ÓÃ´ËÌõ¼ş°´Å¥
-        '''È·¶¨Ê¹ÓÃ¸ÃÌõ¼ş¹ıÂË£¬½«¡°·ñ¡±¸ÄÎª¡°ÊÇ¡±£¬
-           Ó¦ÓÃÏàÓ¦Ìõ¼ş¶ÔÊı¾İ½øĞĞ¹ıÂË£¬Ë¢ĞÂÏÔÊ¾µÄÊı¾İ
+#----è¿‡æ»¤æ¡ä»¶æ§åˆ¶æŒ‰é’®----
+    def OnButtonuseButton(self, event): #ä½¿ç”¨æ­¤æ¡ä»¶æŒ‰é’®
+        '''ç¡®å®šä½¿ç”¨è¯¥æ¡ä»¶è¿‡æ»¤ï¼Œå°†â€œå¦â€æ”¹ä¸ºâ€œæ˜¯â€ï¼Œ
+           åº”ç”¨ç›¸åº”æ¡ä»¶å¯¹æ•°æ®è¿›è¡Œè¿‡æ»¤ï¼Œåˆ·æ–°æ˜¾ç¤ºçš„æ•°æ®
         '''       
-        #¸ÄÎª¡°ÊÇ¡±
-        global filter_array, data_f
-        filter_array[step-1][2] = 'ÊÇ' + filter_array[step-1][2][2:]
-        #¹ıÂË
+        global filter_array, data_f, nums_before
+        #æ”¹ä¸ºâ€œæ˜¯â€
+        #filter_array[step-1][2] = 'æ˜¯' + filter_array[step-1][2][2:]
+	filter_array[step-1][2] = u'æ˜¯      ' #utf-8 20071203
+        #ä¿ç•™è¿‡æ»¤å‰ç»„æ•°ï¼Œå¹¶æ˜¾ç¤ºï¼ˆå½“æŒ‰ä¸Šä¸€æ­¥ã€ä¸‹ä¸€æ­¥ä¹‹åå°±å†ä¸æ˜¾ç¤ºäº†ï¼‰
+        nums_before[0] = len(data_f)
+        nums_before[1] = True
+        #æ›´æ–°è¢«è¿‡æ»¤å‰æ•°æ®
+        global data_f_origin
+        data_f_origin = data_f        
+        #è¿‡æ»¤
         data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
-        #Òş²Ø°´Å¥£¨±¾Éí£©
+        #éšè—æŒ‰é’®ï¼ˆæœ¬èº«ï¼‰
         self.buttonuse.Show(False) 
-        #Òş²Ø¿Éµ÷Õû·¶Î§°´Å¥ 
+        #éšè—å¯è°ƒæ•´èŒƒå›´æŒ‰é’® 
         self.buttonlowerminus.Show(False)
         self.buttonlowerplus.Show(False)
         self.buttonupperplus.Show(False)
         self.buttonupperminus.Show(False)
-        #Ë¢ĞÂ
+        #æ˜¾ç¤ºä¿å­˜è¢«è¿‡æ»¤æ‰çš„æ•°æ®æŒ‰é’®
+        self.buttonsaveother.Show(True)
+        #åˆ·æ–°
         self.Refresh() 
+        #æ›´æ–°æ»šåŠ¨æ˜¾ç¤º
+        self.UpdateRollingText()
         
         event.Skip()
         
-    def OnButtonlowerminusButton(self, event): #·¶Î§ÖĞµÄÏÂÏŞÖµ¼õĞ¡
-        '''½«·¶Î§ÖĞµÄÏÂÏŞÖµ¼õ1£¬²¢Ë¢ĞÂÏÔÊ¾Êı¾İ'''
+    def OnButtonlowerminusButton(self, event): #èŒƒå›´ä¸­çš„ä¸‹é™å€¼å‡å°
+        '''å°†èŒƒå›´ä¸­çš„ä¸‹é™å€¼å‡1ï¼Œå¹¶åˆ·æ–°æ˜¾ç¤ºæ•°æ®'''
         global filter_array, percent_array
-        #ÏÂÏŞ¼õ1
+        #ä¸‹é™å‡1
         tmp = int(filter_array[step-1][3].split('-')[0])
         if tmp!=0 and tmp<1000:
             tmp = int(filter_array[step-1][3].split('-')[0]) - 1 
-        #¸üĞÂ¹ıÂËÌõ¼ş
-        #×¢Òâ£ºÒòÎªsplitÖ®ºóµÃµ½µÄÊÇstr£¬µ«ÊÇÎÒÃÇĞèÒªint£¬ËùÒÔÎÒÃÇ×ª»»ÁË
-        #      µ«ÊÇÓĞÊ±ºò10»á¼õµ½9,ÕâÑù»Ö¸´³ÉstrµÄÊ±ºò¾ÍÉÙÁË1Î»
-        #      Ò²ÓĞ¿ÉÄÜ9¼Óµ½10£¬strÔö¼Ó1Î»
-        #      Òò´ËÎÒÃÇÔÚĞ´ĞÂµÄÎÄ¼şÊ±(****_¹ıÂËÌõ¼ş.txt)ÒªÖØĞÂ´¦ÀíÕâÒ»²¿·Ö
+        #æ›´æ–°è¿‡æ»¤æ¡ä»¶
+        #æ³¨æ„ï¼šå› ä¸ºsplitä¹‹åå¾—åˆ°çš„æ˜¯strï¼Œä½†æ˜¯æˆ‘ä»¬éœ€è¦intï¼Œæ‰€ä»¥æˆ‘ä»¬è½¬æ¢äº†
+        #      ä½†æ˜¯æœ‰æ—¶å€™10ä¼šå‡åˆ°9,è¿™æ ·æ¢å¤æˆstrçš„æ—¶å€™å°±å°‘äº†1ä½
+        #      ä¹Ÿæœ‰å¯èƒ½9åŠ åˆ°10ï¼Œstrå¢åŠ 1ä½
+        #      å› æ­¤æˆ‘ä»¬åœ¨å†™æ–°çš„æ–‡ä»¶æ—¶(****_è¿‡æ»¤æ¡ä»¶.txt)è¦é‡æ–°å¤„ç†è¿™ä¸€éƒ¨åˆ†
         filter_array[step-1][3] = '%d'%(tmp) + '-' + filter_array[step-1][3].split('-')[1]\
                                              + '-' + filter_array[step-1][3].split('-')[2]
-        #ÖØĞÂ¼ÆËã°Ù·Ö±È
+        #é‡æ–°è®¡ç®—ç™¾åˆ†æ¯”
         percent_array = percentCompute(filter_array, data_para_array)
-        #Ë¢ĞÂ
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
 
-    def OnButtonlowerplusButton(self, event): #·¶Î§ÖĞµÄÏÂÏŞÖµÔö´ó
-        '''½«·¶Î§ÖĞµÄÏÂÏŞÖµ¼Ó1£¬²¢Ë¢ĞÂÏÔÊ¾Êı¾İ'''
+    def OnButtonlowerplusButton(self, event): #èŒƒå›´ä¸­çš„ä¸‹é™å€¼å¢å¤§
+        '''å°†èŒƒå›´ä¸­çš„ä¸‹é™å€¼åŠ 1ï¼Œå¹¶åˆ·æ–°æ˜¾ç¤ºæ•°æ®'''
         global filter_array, percent_array
-        #ÏÂÏŞ¼Ó1
+        #ä¸‹é™åŠ 1
         tmp = int(filter_array[step-1][3].split('-')[0])
         if tmp<int(filter_array[step-1][3].split('-')[1]):
             tmp = int(filter_array[step-1][3].split('-')[0]) + 1 
-        #¸üĞÂ¹ıÂËÌõ¼ş
+        #æ›´æ–°è¿‡æ»¤æ¡ä»¶
         filter_array[step-1][3] = '%d'%(tmp) + '-' + filter_array[step-1][3].split('-')[1]\
                                              + '-' + filter_array[step-1][3].split('-')[2]     
-        #ÖØĞÂ¼ÆËã°Ù·Ö±È
+        #é‡æ–°è®¡ç®—ç™¾åˆ†æ¯”
         percent_array = percentCompute(filter_array, data_para_array)
-        #Ë¢ĞÂ
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
         
-    def OnButtonupperminusButton(self, event): #·¶Î§ÖĞµÄÉÏÏŞÖµ¼õĞ¡
-        '''½«·¶Î§ÖĞµÄÉÏÏŞÖµ¼õ1£¬²¢Ë¢ĞÂÏÔÊ¾Êı¾İ'''
+    def OnButtonupperminusButton(self, event): #èŒƒå›´ä¸­çš„ä¸Šé™å€¼å‡å°
+        '''å°†èŒƒå›´ä¸­çš„ä¸Šé™å€¼å‡1ï¼Œå¹¶åˆ·æ–°æ˜¾ç¤ºæ•°æ®'''
         global filter_array, percent_array
-        #ÉÏÏŞ¼õ1
+        #ä¸Šé™å‡1
         tmp = int(filter_array[step-1][3].split('-')[1])
         if tmp>int(filter_array[step-1][3].split('-')[0]):
             tmp = int(filter_array[step-1][3].split('-')[1]) - 1            
-        #¸üĞÂ¹ıÂËÌõ¼ş
+        #æ›´æ–°è¿‡æ»¤æ¡ä»¶
         filter_array[step-1][3] = filter_array[step-1][3].split('-')[0] + '-' + '%d'%(tmp)\
                                              + '-' + filter_array[step-1][3].split('-')[2]                
-        #ÖØĞÂ¼ÆËã°Ù·Ö±È
+        #é‡æ–°è®¡ç®—ç™¾åˆ†æ¯”
         percent_array = percentCompute(filter_array, data_para_array)
-        #Ë¢ĞÂ
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
         
-    def OnButtonupperplusButton(self, event): #·¶Î§ÖĞµÄÉÏÏŞÖµÔö´ó
-        '''½«·¶Î§ÖĞµÄÉÏÏŞÖµ¼Ó1£¬²¢Ë¢ĞÂÏÔÊ¾Êı¾İ'''
+    def OnButtonupperplusButton(self, event): #èŒƒå›´ä¸­çš„ä¸Šé™å€¼å¢å¤§
+        '''å°†èŒƒå›´ä¸­çš„ä¸Šé™å€¼åŠ 1ï¼Œå¹¶åˆ·æ–°æ˜¾ç¤ºæ•°æ®'''
         global filter_array, percent_array
-        #ÉÏÏŞ¼Ó1
+        #ä¸Šé™åŠ 1
         tmp = int(filter_array[step-1][3].split('-')[1])
         if tmp<999:
             tmp = int(filter_array[step-1][3].split('-')[1]) + 1           
-        #¸üĞÂ¹ıÂËÌõ¼ş
+        #æ›´æ–°è¿‡æ»¤æ¡ä»¶
         filter_array[step-1][3] = filter_array[step-1][3].split('-')[0] + '-' + '%d'%(tmp)\
                                              + '-' + filter_array[step-1][3].split('-')[2]           
-        #ÖØĞÂ¼ÆËã°Ù·Ö±È
+        #é‡æ–°è®¡ç®—ç™¾åˆ†æ¯”
         percent_array = percentCompute(filter_array, data_para_array)
-        #Ë¢ĞÂ
+        #åˆ·æ–°
         self.Refresh() 
         
         event.Skip()
         
-    def OnButtonsaveButton(self, event): #±£´æ°´Å¥
-        '''±£´æ¹ıÂËºóÊı¾İ¼°Ó¦ÓÃµ½µÄ¹ıÂËÌõ¼ş''' 
-        
-        #Ğ´Êı¾İ
+    def OnButtonsaveButton(self, event): #ä¿å­˜æŒ‰é’®
+        '''ä¿å­˜è¿‡æ»¤åæ•°æ®åŠåº”ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶''' 
+       
+        #å†™æ•°æ®
         writePredictData(data_array, data_f, filter_array, num_pool)
-        #´ò¿ªÏàÓ¦ÎÄ¼ş¼Ğ
-        os.startfile('%s'%(int(data_array[0][0])+1))
-        #¹Ø±Õ´°¿Ú
-        #»¹ÊÇÒ»Ö±ÏÔÊ¾×Å±È½ÏºÃÒ»µã£¬ÄãËµÄØ£¿
-        self.Close() 
+        #æ‰“å¼€ç›¸åº”æ–‡ä»¶å¤¹
+        #os.startfile('%s'%(int(data_array[0][0])+1))
+        #å…³é—­çª—å£
+        #è¿˜æ˜¯ä¸€ç›´æ˜¾ç¤ºç€æ¯”è¾ƒå¥½ä¸€ç‚¹ï¼Œä½ è¯´å‘¢ï¼Ÿ
+        #self.Close() 
+        
+        #20071126ä¿®æ”¹ä¿å­˜åçš„æ˜¾ç¤ºæ–¹å¼
+        #å¼¹å‡ºæç¤ºæ¡†
+        dlg = wx.MessageDialog(self, u'è¿‡æ»¤åæ•°æ®åŠè¿‡æ»¤æ¡ä»¶å·²ä¿å­˜åˆ°%dç›®å½•ä¸‹'\
+        %(int(data_array[0][0])+1), 
+                               u'æç¤ºï¼š',
+                               wx.OK | wx.ICON_INFORMATION
+                               )
+        dlg.ShowModal()
+        dlg.Destroy()         
         
         event.Skip()
 
+    def OnButtonsaveotherButton(self, event): #ä¿å­˜è¢«è¿‡æ»¤æ‰çš„æ•°æ®
+        '''ä¿å­˜è¢«è¿‡æ»¤æ‰çš„æ•°æ®'''
+        #æ±‚å¾—è¢«è¿‡æ»¤æ‰çš„æ•°æ®
+        #æƒ³ç®€å•ç‚¹ï¼Œä½†æ˜¯å‡ºç°list objects are unhashableé”™è¯¯
+        #data_f_rest = list(set(data_f_origin)-set(data_f))
+        #åªå¥½å¤æ‚ä¸€ç‚¹äº†
+        data_f_rest = []
+        for dt in data_f_origin:
+            if dt not in data_f:
+                data_f_rest.append(dt)
+        
+        #æ˜¾ç¤ºæ–‡ä»¶é€‰æ‹©æ¡†
+        dlg = wx.FileDialog(
+            self, message=u"ä¿å­˜è¢«è¿‡æ»¤æ‰çš„æ•°æ®",
+            defaultFile="",
+            style=wx.SAVE
+            )
+        #è®¾ç½®ä¿å­˜çš„é»˜è®¤æ–‡ä»¶å
+        dlg.SetFilename(u'è¢«æ»¤æ•°æ®.txt')
+        #ç‚¹å‡»â€œæ‰“å¼€â€æŒ‰é’®
+        if dlg.ShowModal()==wx.ID_OK:
+            #å†™å…¥æ•°æ®
+	    if wx.Platform == '__WXMSW__':
+		f = open(dlg.GetPath().encode('mbcs'), 'w')
+	    else:
+		f = open(dlg.GetPath(), 'w')
+            for i in range(0, len(data_f_rest)):
+                f.write('%.2d %.2d %.2d %.2d %.2d %.2d\n'\
+                        %(data_f_rest[i][0],data_f_rest[i][1],data_f_rest[i][2],\
+                          data_f_rest[i][3],data_f_rest[i][4],data_f_rest[i][5]))
+            f.close()
+            #æœ¬èº«ä¸æ˜¾ç¤º
+            self.buttonsaveother.Show(False)
+            
+        #å…³é—­    
+        dlg.Destroy()
+        
+        event.Skip()
 #-------------------------------------------------------------------------------
-#----¹ıÂËÌõ¼ş×ßÊÆÍ¼ÏÔÊ¾----
-    def OnPanel3Paint(self, event): #»æÖÆ×ßÊÆÍ¼
+#----è¿‡æ»¤æ¡ä»¶èµ°åŠ¿å›¾æ˜¾ç¤º----
+    def OnPanel3Paint(self, event): #ç»˜åˆ¶èµ°åŠ¿å›¾
         dc = wx.PaintDC(self.panel3)     
         dc.Clear()
         
-        #Ãû³Æ³ıÈ¥ºóÃæµÄ¿Õ¸ñ
-        name_no_blank = filter_array[step-1][1].split(' ')[0]
-        #×î½ü10ÆÚµÄ
+        #åç§°é™¤å»åé¢çš„ç©ºæ ¼
+        name_no_blank = filter_array[step-1][1].split(' ')[0].decode('utf-8') 
+        #æœ€è¿‘10æœŸçš„
         if term==10:
-            #±êÌâ
-            dc.SetTextForeground('FIREBRICK') #ÄÍ»ğ×©É«  
-            dc.DrawText('%s×ßÊÆÍ¼£¨×î½ü10ÆÚ£©'%name_no_blank, 10, 10)
-            #»­×ø±êÏß
+            #æ ‡é¢˜
+            dc.SetTextForeground('FIREBRICK') #è€ç«ç –è‰²  
+            dc.DrawText(u'%sèµ°åŠ¿å›¾ï¼ˆæœ€è¿‘10æœŸï¼‰'%name_no_blank, 10, 10)
+            #ç”»åæ ‡çº¿
             dc.SetPen(wx.Pen('BLUE', 1))
-            dc.DrawLine(20,30,20,280) #ÊúÏß
-            dc.DrawLine(10,270,420,270) #ºáÏß
-            dc.DrawLine(20,30,15,35) #ÊúÏßµÄ¼ıÍ·
+            dc.DrawLine(20,30,20,280) #ç«–çº¿
+            dc.DrawLine(10,270,420,270) #æ¨ªçº¿
+            dc.DrawLine(20,30,15,35) #ç«–çº¿çš„ç®­å¤´
             dc.DrawLine(20,30,25,35)
-            dc.DrawLine(420,270,415,265) #ºáÏßµÄ¼ıÍ·
+            dc.DrawLine(420,270,415,265) #æ¨ªçº¿çš„ç®­å¤´
             dc.DrawLine(420,270,415,275)
-            #µÃµ½×î½ü10ÆÚµÄÖµµÄÁĞ±í
+            #å¾—åˆ°æœ€è¿‘10æœŸçš„å€¼çš„åˆ—è¡¨
             value_10 = []
             for i in range(0, 10):
-                value_10.append(data_para_array[i][name_no_blank])
-            #Ëã³öÆ½¾ùÖµ
+                value_10.append(data_para_array[i][name_no_blank.encode('utf-8')])
+            #ç®—å‡ºå¹³å‡å€¼
             value_a = 0.0
             for i in range(0, 10):
                 value_a = value_a + value_10[i]
             value_a = value_a*1.0/10
-            #×î´óÖµ£½Æ½¾ùÖµ¡Á4
+            #æœ€å¤§å€¼ï¼å¹³å‡å€¼Ã—4
             value_max = int(value_a*4)
-            #»­10¸ö³¤·½ĞÎ
-            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #ÉèÖÃÍâ±ß¿òÑÕÉ«
-            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID)) #ÉèÖÃÄÚ²¿Ìî³äÑÕÉ«
+            #ç”»10ä¸ªé•¿æ–¹å½¢
+            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #è®¾ç½®å¤–è¾¹æ¡†é¢œè‰²
+            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID)) #è®¾ç½®å†…éƒ¨å¡«å……é¢œè‰²
             for i in range(0, 10):
-                #²ÎÊıÒÀ´ÎÎª£º×óÉÏ½Çºá×ø±ê¡¢×óÉÏ½Ç×İ×ø±ê¡¢¿í¡¢¸ß
+                #å‚æ•°ä¾æ¬¡ä¸ºï¼šå·¦ä¸Šè§’æ¨ªåæ ‡ã€å·¦ä¸Šè§’çºµåæ ‡ã€å®½ã€é«˜
                 dc.DrawRectangle(40+i*36, 270-240*value_10[9-i]/value_max, 20, 240*value_10[9-i]/value_max)
-            #ÔÚ³¤·½ĞÎ¶¥¶Ë£¬±ê×¢¾ßÌåÊı×Ö
+            #åœ¨é•¿æ–¹å½¢é¡¶ç«¯ï¼Œæ ‡æ³¨å…·ä½“æ•°å­—
             dc.SetTextForeground('ORANGE RED') 
             for i in range(0, 10):
                 dc.DrawText('%s'%value_10[9-i], 40+i*36, (270-240*value_10[9-i]/value_max)-15)
-            #ÔÚ×ø±êÖáÏÂ·½±ê×¢¾ßÌåµÄÆÚÊı
+            #åœ¨åæ ‡è½´ä¸‹æ–¹æ ‡æ³¨å…·ä½“çš„æœŸæ•°
             dc.SetTextForeground('ORCHID')
             dc.SetFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))  
             for i in range(0, 10):
-                dc.DrawRotatedText('%s'%data_array[9-i][0], 40+i*36-8, 275, 15) #Ğı×ªÎÄ×Ö
-            #»­³ö10ÆÚ¾ùÖµÏß
+                dc.DrawRotatedText('%s'%data_array[9-i][0], 40+i*36-8, 275, 15) #æ—‹è½¬æ–‡å­—
+            #ç”»å‡º10æœŸå‡å€¼çº¿
             dc.SetPen(wx.Pen('DARK OLIVE GREEN', 1, wx.DOT_DASH))
             dc.DrawLine(20,270-240*value_a/value_max,420,270-240*value_a/value_max)
-            #ÔÚ10ÆÚ¾ùÖµÏßÉÏ±ê×¢¾ßÌåµÄÊı×Ö
+            #åœ¨10æœŸå‡å€¼çº¿ä¸Šæ ‡æ³¨å…·ä½“çš„æ•°å­—
             dc.SetTextForeground('DARK OLIVE GREEN')
             dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-            dc.DrawText('10ÆÚ¾ùÖµ%s'%value_a, 360, 270-240*value_a/value_max-15)
-        #×î½ü20ÆÚµÄ
+            dc.DrawText(u'10æœŸå‡å€¼%s'%value_a, 360, 270-240*value_a/value_max-15)
+        #æœ€è¿‘20æœŸçš„
         if term==20:
-            #±êÌâ
-            dc.SetTextForeground('FIREBRICK') #ÄÍ»ğ×©É«  
-            dc.DrawText('%s×ßÊÆÍ¼£¨×î½ü20ÆÚ£©'%name_no_blank, 10, 10)
-            #»­×ø±êÏß
+            #æ ‡é¢˜
+            dc.SetTextForeground('FIREBRICK') #è€ç«ç –è‰²  
+            dc.DrawText(u'%sèµ°åŠ¿å›¾ï¼ˆæœ€è¿‘20æœŸï¼‰'%name_no_blank, 10, 10)
+            #ç”»åæ ‡çº¿
             dc.SetPen(wx.Pen('BLUE', 1))
-            dc.DrawLine(20,30,20,280) #ÊúÏß
-            dc.DrawLine(10,270,420,270) #ºáÏß
-            dc.DrawLine(20,30,15,35) #ÊúÏßµÄ¼ıÍ·
+            dc.DrawLine(20,30,20,280) #ç«–çº¿
+            dc.DrawLine(10,270,420,270) #æ¨ªçº¿
+            dc.DrawLine(20,30,15,35) #ç«–çº¿çš„ç®­å¤´
             dc.DrawLine(20,30,25,35)
-            dc.DrawLine(420,270,415,265) #ºáÏßµÄ¼ıÍ·
+            dc.DrawLine(420,270,415,265) #æ¨ªçº¿çš„ç®­å¤´
             dc.DrawLine(420,270,415,275)
-            #µÃµ½×î½ü20ÆÚµÄÖµµÄÁĞ±í
+            #å¾—åˆ°æœ€è¿‘20æœŸçš„å€¼çš„åˆ—è¡¨
             value_20 = []
             for i in range(0, 20):
-                value_20.append(data_para_array[i][name_no_blank])
-            #Ëã³öÆ½¾ùÖµ
+                value_20.append(data_para_array[i][name_no_blank.encode('utf-8')])
+            #ç®—å‡ºå¹³å‡å€¼
             value_a = 0.0
             for i in range(0, 20):
                 value_a = value_a + value_20[i]
             value_a = value_a*1.0/20
-            #×î´óÖµ£½Æ½¾ùÖµ¡Á4
-            value_max = int(value_a*4) #¼ÓintÊÇÒòÎªfloat»áµ¼ÖÂ³¤·½ĞÎµ×²¿ÓĞÊ±ÎŞ·¨½Ó´¥µ½xÖá
-            #»­20¸ö³¤·½ĞÎ
-            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #ÉèÖÃÍâ±ß¿òÑÕÉ«
-            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #ÉèÖÃÄÚ²¿Ìî³äÑÕÉ«
+            #æœ€å¤§å€¼ï¼å¹³å‡å€¼Ã—4
+            value_max = int(value_a*4) #åŠ intæ˜¯å› ä¸ºfloatä¼šå¯¼è‡´é•¿æ–¹å½¢åº•éƒ¨æœ‰æ—¶æ— æ³•æ¥è§¦åˆ°xè½´
+            #ç”»20ä¸ªé•¿æ–¹å½¢
+            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #è®¾ç½®å¤–è¾¹æ¡†é¢œè‰²
+            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #è®¾ç½®å†…éƒ¨å¡«å……é¢œè‰²
             for i in range(0, 20):
-            #²ÎÊıÒÀ´ÎÎª£º×óÉÏ½Çºá×ø±ê¡¢×óÉÏ½Ç×İ×ø±ê¡¢¿í¡¢¸ß
+            #å‚æ•°ä¾æ¬¡ä¸ºï¼šå·¦ä¸Šè§’æ¨ªåæ ‡ã€å·¦ä¸Šè§’çºµåæ ‡ã€å®½ã€é«˜
                 dc.DrawRectangle(30+i*18, 270-240*value_20[19-i]/value_max, 10, 240*value_20[19-i]/value_max)
-            #ÔÚ³¤·½ĞÎ¶¥¶Ë£¬±ê×¢¾ßÌåÊı×Ö
+            #åœ¨é•¿æ–¹å½¢é¡¶ç«¯ï¼Œæ ‡æ³¨å…·ä½“æ•°å­—
             dc.SetTextForeground('ORANGE RED') 
             for i in range(0, 20):
                 dc.DrawText('%s'%value_20[19-i], 30+i*18, (270-240*value_20[19-i]/value_max)-15)
-            #ÔÚ×ø±êÖáÏÂ·½±ê×¢¾ßÌåµÄÆÚÊı
+            #åœ¨åæ ‡è½´ä¸‹æ–¹æ ‡æ³¨å…·ä½“çš„æœŸæ•°
             dc.SetTextForeground('ORCHID')
             dc.SetFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))  
-            for i in range(3, 20, 4): #¸ô4ÆÚÏÔÊ¾£¬Òª²»Ì«¼·ÁË
+            for i in range(3, 20, 4): #éš”4æœŸæ˜¾ç¤ºï¼Œè¦ä¸å¤ªæŒ¤äº†
                 dc.DrawText('%s'%data_array[19-i][0], 30+i*18-4, 275)
-            #»­³ö20ÆÚ¾ùÖµÏß
+            #ç”»å‡º20æœŸå‡å€¼çº¿
             dc.SetPen(wx.Pen('DARK OLIVE GREEN', 1, wx.DOT_DASH))
             dc.DrawLine(20,270-240*value_a/value_max,420,270-240*value_a/value_max)
-            #ÔÚ20ÆÚ¾ùÖµÏßÉÏ±ê×¢¾ßÌåµÄÊı×Ö
+            #åœ¨20æœŸå‡å€¼çº¿ä¸Šæ ‡æ³¨å…·ä½“çš„æ•°å­—
             dc.SetTextForeground('DARK OLIVE GREEN')
             dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-            dc.DrawText('20ÆÚ¾ùÖµ%s'%value_a, 360, 270-240*value_a/value_max-15)
-        #×î½ü40ÆÚµÄ
+            dc.DrawText(u'20æœŸå‡å€¼%s'%value_a, 360, 270-240*value_a/value_max-15)
+        #æœ€è¿‘40æœŸçš„
         if term==40:
-            #±êÌâ
-            dc.SetTextForeground('FIREBRICK') #ÄÍ»ğ×©É«  
-            dc.DrawText('%s×ßÊÆÍ¼£¨×î½ü40ÆÚ£©'%name_no_blank, 10, 10)
-            #»­×ø±êÏß
+            #æ ‡é¢˜
+            dc.SetTextForeground('FIREBRICK') #è€ç«ç –è‰²  
+            dc.DrawText(u'%sèµ°åŠ¿å›¾ï¼ˆæœ€è¿‘40æœŸï¼‰'%name_no_blank, 10, 10)
+            #ç”»åæ ‡çº¿
             dc.SetPen(wx.Pen('BLUE', 1))
-            dc.DrawLine(20,30,20,280) #ÊúÏß
-            dc.DrawLine(10,270,420,270) #ºáÏß
-            dc.DrawLine(20,30,15,35) #ÊúÏßµÄ¼ıÍ·
+            dc.DrawLine(20,30,20,280) #ç«–çº¿
+            dc.DrawLine(10,270,420,270) #æ¨ªçº¿
+            dc.DrawLine(20,30,15,35) #ç«–çº¿çš„ç®­å¤´
             dc.DrawLine(20,30,25,35)
-            dc.DrawLine(420,270,415,265) #ºáÏßµÄ¼ıÍ·
+            dc.DrawLine(420,270,415,265) #æ¨ªçº¿çš„ç®­å¤´
             dc.DrawLine(420,270,415,275)
-            #µÃµ½×î½ü40ÆÚµÄÖµµÄÁĞ±í
+            #å¾—åˆ°æœ€è¿‘40æœŸçš„å€¼çš„åˆ—è¡¨
             value_40 = []
             for i in range(0, 40):
-                value_40.append(data_para_array[i][name_no_blank])
-            #Ëã³öÆ½¾ùÖµ
+                value_40.append(data_para_array[i][name_no_blank.encode('utf-8')])
+            #ç®—å‡ºå¹³å‡å€¼
             value_a = 0.0
             for i in range(0, 40):
                 value_a = value_a + value_40[i]
             value_a = value_a*1.0/40
-            #×î´óÖµ£½Æ½¾ùÖµ¡Á4
-            value_max = int(value_a*4) #¼ÓintÊÇÒòÎªfloat»áµ¼ÖÂ³¤·½ĞÎµ×²¿ÓĞÊ±ÎŞ·¨½Ó´¥µ½xÖá
-            #»­40¸ö³¤·½ĞÎ
-            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #ÉèÖÃÍâ±ß¿òÑÕÉ«
-            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #ÉèÖÃÄÚ²¿Ìî³äÑÕÉ«
+            #æœ€å¤§å€¼ï¼å¹³å‡å€¼Ã—4
+            value_max = int(value_a*4) #åŠ intæ˜¯å› ä¸ºfloatä¼šå¯¼è‡´é•¿æ–¹å½¢åº•éƒ¨æœ‰æ—¶æ— æ³•æ¥è§¦åˆ°xè½´
+            #ç”»40ä¸ªé•¿æ–¹å½¢
+            dc.SetPen(wx.Pen('MEDIUM VIOLET RED', 1)) #è®¾ç½®å¤–è¾¹æ¡†é¢œè‰²
+            dc.SetBrush(wx.Brush('#FFD5D5', wx.SOLID )) #è®¾ç½®å†…éƒ¨å¡«å……é¢œè‰²
             for i in range(0, 40):
-            #²ÎÊıÒÀ´ÎÎª£º×óÉÏ½Çºá×ø±ê¡¢×óÉÏ½Ç×İ×ø±ê¡¢¿í¡¢¸ß
+            #å‚æ•°ä¾æ¬¡ä¸ºï¼šå·¦ä¸Šè§’æ¨ªåæ ‡ã€å·¦ä¸Šè§’çºµåæ ‡ã€å®½ã€é«˜
                 dc.DrawRectangle(30+i*9, 270-240*value_40[39-i]/value_max, 5, 240*value_40[39-i]/value_max)
-            #ÔÚ³¤·½ĞÎ¶¥¶Ë£¬±ê×¢¾ßÌåÊı×Ö
+            #åœ¨é•¿æ–¹å½¢é¡¶ç«¯ï¼Œæ ‡æ³¨å…·ä½“æ•°å­—
             dc.SetTextForeground('ORANGE RED') 
             for i in range(0, 40):
                 dc.DrawText('%s'%value_40[39-i], 30+i*9, (270-240*value_40[39-i]/value_max)-15)
-            #ÔÚ×ø±êÖáÏÂ·½±ê×¢¾ßÌåµÄÆÚÊı
+            #åœ¨åæ ‡è½´ä¸‹æ–¹æ ‡æ³¨å…·ä½“çš„æœŸæ•°
             dc.SetTextForeground('ORCHID')
             dc.SetFont(wx.Font(7, wx.SWISS, wx.NORMAL, wx.NORMAL))  
-            for i in range(3, 40, 8): #¸ô8ÆÚÏÔÊ¾£¬Òª²»Ì«¼·ÁË
+            for i in range(3, 40, 8): #éš”8æœŸæ˜¾ç¤ºï¼Œè¦ä¸å¤ªæŒ¤äº†
                 dc.DrawText('%s'%data_array[19-i][0], 30+i*18-4, 275)
-            #»­³ö40ÆÚ¾ùÖµÏß
+            #ç”»å‡º40æœŸå‡å€¼çº¿
             dc.SetPen(wx.Pen('DARK OLIVE GREEN', 1, wx.DOT_DASH))
             dc.DrawLine(20,270-240*value_a/value_max,420,270-240*value_a/value_max)
-            #ÔÚ40ÆÚ¾ùÖµÏßÉÏ±ê×¢¾ßÌåµÄÊı×Ö
+            #åœ¨40æœŸå‡å€¼çº¿ä¸Šæ ‡æ³¨å…·ä½“çš„æ•°å­—
             dc.SetTextForeground('DARK OLIVE GREEN')
             dc.SetFont(wx.Font(8, wx.NORMAL, wx.NORMAL, wx.NORMAL))
-            dc.DrawText('40ÆÚ¾ùÖµ%s'%value_a, 360, 270-240*value_a/value_max-15)
+            dc.DrawText(u'40æœŸå‡å€¼%s'%value_a, 360, 270-240*value_a/value_max-15)
         
         event.Skip()
 
-    def OnRadioButton10tRadiobutton(self, event): #ÏÔÊ¾10ÆÚ×ßÊÆÍ¼
+    def OnRadioButton10tRadiobutton(self, event): #æ˜¾ç¤º10æœŸèµ°åŠ¿å›¾
         global term
         term = 10
-        self.Refresh() #Ë¢ĞÂ£¬ÕâÑù¾ÍËù¸Ä¼´ËùµÃÁË
+        self.Refresh() #åˆ·æ–°ï¼Œè¿™æ ·å°±æ‰€æ”¹å³æ‰€å¾—äº†
         event.Skip()
 
-    def OnRadioButton20tRadiobutton(self, event): #ÏÔÊ¾20ÆÚ×ßÊÆÍ¼
+    def OnRadioButton20tRadiobutton(self, event): #æ˜¾ç¤º20æœŸèµ°åŠ¿å›¾
         global term
         term = 20    
-        self.Refresh() #Ë¢ĞÂ
+        self.Refresh() #åˆ·æ–°
         event.Skip()
         
-    def OnRadioButton40tRadiobutton(self, event): #ÏÔÊ¾40ÆÚ×ßÊÆÍ¼
+    def OnRadioButton40tRadiobutton(self, event): #æ˜¾ç¤º40æœŸèµ°åŠ¿å›¾
         global term
         term = 40    
-        self.Refresh() #Ë¢ĞÂ
+        self.Refresh() #åˆ·æ–°
         event.Skip()
         
     def OnComboBox1Text(self, event):
-        #ÅĞ¶ÏÊÇÑ¡ÔñÁËÄÄ¸ö¹ıÂËÌõ¼ş£¬²¢Ìø×ªµ½ÄÇ¸öÌõ¼ş£¨¼´ÏÔÊ¾¸ÃÌõ¼şµÄÊı¾İºÍ²ÎÊı£©
-        #×¢Òâ£¡event.GetString()µÃµ½µÄÊµ¼ÊÉÏ²»ÊÇstring¶øÊÇunicode
+        #åˆ¤æ–­æ˜¯é€‰æ‹©äº†å“ªä¸ªè¿‡æ»¤æ¡ä»¶ï¼Œå¹¶è·³è½¬åˆ°é‚£ä¸ªæ¡ä»¶ï¼ˆå³æ˜¾ç¤ºè¯¥æ¡ä»¶çš„æ•°æ®å’Œå‚æ•°ï¼‰
+        #æ³¨æ„ï¼event.GetString()å¾—åˆ°çš„å®é™…ä¸Šä¸æ˜¯stringè€Œæ˜¯unicode
         global step
         for i in range(0, len(filter_array)):
-            if event.GetString().encode('cp936') in filter_array[i][1]:
+            if event.GetString().encode('utf-8') in filter_array[i][1]:
                 step = i+1
                 self.Refresh()
                 break
-
+        #è¿˜è¦æ§åˆ¶ä¸€ä¸‹æŒ‰é’®çš„æ˜¾ç¤ºï¼ˆ20071108ï¼‰
+        if step==1: #ä¸Šä¸€æ­¥/ä¸‹ä¸€æ­¥æŒ‰é’®
+            self.buttonnextstep.Show()
+            self.buttonlaststep.Show(False)
+        else:
+            self.buttonnextstep.Show()
+            self.buttonlaststep.Show()              
+        if u'å¦      '==filter_array[step-1][2]: #æ¡ä»¶ä½¿ç”¨/èŒƒå›´è°ƒæ•´æŒ‰é’®
+            self.buttonuse.Show()
+            self.buttonlowerminus.Show()
+            self.buttonlowerplus.Show()
+            self.buttonupperminus.Show()
+            self.buttonupperplus.Show()                  
+        else:
+            self.buttonuse.Show(False)
+            self.buttonsaveother.Show(False)
+            self.buttonlowerminus.Show(False)
+            self.buttonlowerplus.Show(False)
+            self.buttonupperplus.Show(False)
+            self.buttonupperminus.Show(False)
+        #ä¸æ˜¾ç¤ºè¿‡æ»¤æ‰çš„ç»„æ•°
+        global nums_before
+        nums_before[1] = False
+        
         event.Skip()
+
+    def UpdateRollingText(self):
+        #æ›´æ–°æ»šåŠ¨æ–‡å­—æ˜¾ç¤º
+        s_tmp = ''
+        if len(data_f)>100: #åº”è¯¥åŒ…æ‹¬æ‰€æœ‰çš„ï¼Œä½†æ˜¯å¤ªæ…¢äº†
+            for i in range(0, 100): 
+                a_tmp = data_f[i]
+                s_tmp = s_tmp +'%.2d %.2d %.2d %.2d %.2d %.2d          '\
+                                %(a_tmp[0],a_tmp[1],a_tmp[2],a_tmp[3],a_tmp[4],a_tmp[5])
+        else:
+            for i in range(0, len(data_f)): 
+                a_tmp = data_f[i]
+                s_tmp = s_tmp +'%.2d %.2d %.2d %.2d %.2d %.2d          '\
+                                %(a_tmp[0],a_tmp[1],a_tmp[2],a_tmp[3],a_tmp[4],a_tmp[5])
+        self.ticker1.SetText(s_tmp)
+
+    def OnFrameRedFiltrateClose(self, event):
+        #å…³é—­çª—å£æ—¶è¦åšçš„äº‹ï¼ˆæ¯”å¦‚å…³æ‰è¿›ç¨‹ç­‰ç­‰ï¼‰
+        
+        event.Skip()
+

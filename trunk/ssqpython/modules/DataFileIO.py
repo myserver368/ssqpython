@@ -1,47 +1,62 @@
-# -*- coding: cp936 -*-
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 # otherrrr@gmail.com
-# ¿ª½±Êı¾İÎÄ¼ş¶ÁĞ´
+# å¼€å¥–æ•°æ®æ–‡ä»¶è¯»å†™
 
-def readDataFileToString(): #¶ÁÈ¡¿ª½±Êı¾İ
-    '''¶ÁÈ¡¿ª½±Êı¾İ.txt£¬µÃµ½string±äÁ¿'''
-    f = open('data/¿ª½±Êı¾İ.txt', 'r')
+import locale
+
+def readDataFileToString(): #è¯»å–å¼€å¥–æ•°æ®
+    '''è¯»å–å¼€å¥–æ•°æ®.txtï¼Œå¾—åˆ°stringå˜é‡'''
+    f = open(u'data/å¼€å¥–æ•°æ®.txt', 'r')
     data_string  = f.read()
     f.close()
 
     return data_string
     
-def readDataFileToArray(): #¶ÁÈ¡¿ª½±Êı¾İ
-    '''¶ÁÈ¡¿ª½±Êı¾İ.txt£¬µÃµ½list±äÁ¿'''
-    f = open('data/¿ª½±Êı¾İ.txt', 'r')
+def readDataFileToArray(): #è¯»å–å¼€å¥–æ•°æ®
+    '''è¯»å–å¼€å¥–æ•°æ®.txtï¼Œå¾—åˆ°listå˜é‡'''
+    f = open(u'data/å¼€å¥–æ•°æ®.txt', 'r')
     data_array_temp  = f.readlines()
     f.close()
 
     data_array = []
     
     for i in range(0, len(data_array_temp)):
-        data_term = ['ÈÕÆÚ', 'ºìÇò1', 'ºìÇò2', 'ºìÇò3', 'ºìÇò4', 'ºìÇò5', 'ºìÇò6', 'À¶Çò']
-        #Ò²¿ÉÒÔÖ±½Ó¶ÁÈ¡"Î»Êı"¡£ÏÖÔÚÊÇÓÃ"·ÖÁÑ"(split)
-        data_term[0] =  data_array_temp[i].split(' ')[0]
-        data_term[1] =  data_array_temp[i].split(' ')[1].split(',')[0]
-        data_term[2] =  data_array_temp[i].split(' ')[1].split(',')[1]
-        data_term[3] =  data_array_temp[i].split(' ')[1].split(',')[2]
-        data_term[4] =  data_array_temp[i].split(' ')[1].split(',')[3]
-        data_term[5] =  data_array_temp[i].split(' ')[1].split(',')[4]
-        data_term[6] =  data_array_temp[i].split(' ')[1].split(',')[5][0:2]
-        data_term[7] =  data_array_temp[i].split('+')[1][0:2]
-
+        data_term = [u'æ—¥æœŸ', u'çº¢çƒ1', u'çº¢çƒ2', u'çº¢çƒ3', u'çº¢çƒ4', u'çº¢çƒ5', u'çº¢çƒ6', 'è“çƒ']
+        #ç”¨"åˆ†è£‚"æ–¹å¼è¯»å–
+        '''
+        data_term[0] = data_array_temp[i].split(' ')[0]
+        data_term[1] = data_array_temp[i].split(' ')[1].split(',')[0]
+        data_term[2] = data_array_temp[i].split(' ')[1].split(',')[1]
+        data_term[3] = data_array_temp[i].split(' ')[1].split(',')[2]
+        data_term[4] = data_array_temp[i].split(' ')[1].split(',')[3]
+        data_term[5] = data_array_temp[i].split(' ')[1].split(',')[4]
+        data_term[6] = data_array_temp[i].split(' ')[1].split(',')[5][0:2]
+        data_term[7] = data_array_temp[i].split('+')[1][0:2]
+        '''
+        #ç”¨"ä½æ•°"æ–¹å¼è¯»å–
+        ##å¯é˜²æ­¢ç”¨æˆ·å°†ç©ºæ ¼ä½œä¸ºå·ç ä¹‹é—´çš„é—´éš”ï¼ˆè™½ç„¶ç”¨æˆ·åº”è¯¥æŒ‰ç…§æˆ‘çš„æ–¹å¼æ¥ï¼Œä½†æ˜¯é¢„é˜²ä¸‡ä¸€ï¼‰
+        data_term[0] = data_array_temp[i][0:7]
+        data_term[1] = data_array_temp[i][8:10]
+        data_term[2] = data_array_temp[i][11:13]
+        data_term[3] = data_array_temp[i][14:16]
+        data_term[4] = data_array_temp[i][17:19]
+        data_term[5] = data_array_temp[i][20:22]
+        data_term[6] = data_array_temp[i][23:25]
+        data_term[7] = data_array_temp[i][26:28]
+        
         data_array.append(data_term)
 
-    #ÃüÁîĞĞÌáÊ¾
-    print '¶ÁÈ¡¿ª½±Êı¾İ%d×é'%(len(data_array))
+    #å‘½ä»¤è¡Œæç¤º
+    print (u'è¯»å–å¼€å¥–æ•°æ®%dç»„'%(len(data_array))).encode(locale.getdefaultlocale()[1])
     
     return data_array
 
-def writeStringToDataFile(data_string): #Ğ´Èë¿ª½±Êı¾İ
-    '''½«stringĞ´Èë¿ª½±Êı¾İ.txtÖĞ'''
-    f = open('data/¿ª½±Êı¾İ.txt', 'w')
+def writeStringToDataFile(data_string): #å†™å…¥å¼€å¥–æ•°æ®
+    '''å°†stringå†™å…¥å¼€å¥–æ•°æ®.txtä¸­'''
+    f = open(u'data/å¼€å¥–æ•°æ®.txt', 'w')
     f.write(data_string)
     f.close()
 
-    #ÃüÁîĞĞÌáÊ¾
-    print 'Ğ´Èë¿ª½±Êı¾İ'    
+    #å‘½ä»¤è¡Œæç¤º
+    print u'å†™å…¥å¼€å¥–æ•°æ®'.encode(locale.getdefaultlocale()[1])  

@@ -1,10 +1,12 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameReport
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# ¹ıÂËÊı¾İ²é¿´±¨¸æÃæ°å
+# è¿‡æ»¤æ•°æ®æŸ¥çœ‹æŠ¥å‘Šé¢æ¿
 
 import wx
 import os
+import locale
 
 from DataFileIO import readDataFileToArray
 from PredictFileIO import readPredictData
@@ -35,82 +37,82 @@ class FrameReport(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameReportÆô¶¯'
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameReportå¯åŠ¨').encode(locale.getdefaultlocale()[1])
         
-        #¶ÁÈ¡¿ª½±Êı¾İ
+        #è¯»å–å¼€å¥–æ•°æ®
         data_array = readDataFileToArray()
-        #ÏÔÊ¾Ãæ°åÇå¿Õ
+        #æ˜¾ç¤ºé¢æ¿æ¸…ç©º
         self.textCtrl1.Clear()
-        #¼ÆËã²¢µÃµ½Êı¾İ²ÎÊı
+        #è®¡ç®—å¹¶å¾—åˆ°æ•°æ®å‚æ•°
         redOrder, redTimes = redOrderCoumpute(data_array)
         bet_array = readBetFileToArray()
         data_para_array = dataParaCompute(data_array, redOrder, bet_array) 
-        #×îĞÂÒ»ÆÚµÄÆÚºÅ
+        #æœ€æ–°ä¸€æœŸçš„æœŸå·
         date = int(data_array[0][0])
         for i in range(0, 10):
-            #ÅĞ¶ÏÊÇ·ñ´æÔÚÔ¤²âÊı¾İ£¨×î½ü10ÆÚ£©£¬¼´ÅĞ¶ÏÎÄ¼ş¼ĞÊÇ·ñ´æÔÚ
+            #åˆ¤æ–­æ˜¯å¦å­˜åœ¨é¢„æµ‹æ•°æ®ï¼ˆæœ€è¿‘10æœŸï¼‰ï¼Œå³åˆ¤æ–­æ–‡ä»¶å¤¹æ˜¯å¦å­˜åœ¨
             if '%s'%date in os.listdir(os.curdir):
-                #¶ÁÈ¡Ô¤²âÊı¾İÎÄ¼şºÍÊ¹ÓÃµ½µÄ¹ıÂËÌõ¼şÎÄ¼ş£¨Êı×é¸ñÊ½£©
+                #è¯»å–é¢„æµ‹æ•°æ®æ–‡ä»¶å’Œä½¿ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶æ–‡ä»¶ï¼ˆæ•°ç»„æ ¼å¼ï¼‰
                 predict_data, predict_filter, select_num =readPredictData(date)
-                #ÅĞ¶ÏÔ¤²âÊı¾İÓë¿ª½±ºÅÂëÏàÍ¬Çé¿ö
+                #åˆ¤æ–­é¢„æµ‹æ•°æ®ä¸å¼€å¥–å·ç ç›¸åŒæƒ…å†µ
                 same = [0,0,0,0,0,0,0]
                 for j in range(0, len(predict_data)):
-                    count = 0 #¼ÆÊı
+                    count = 0 #è®¡æ•°
                     for k in range(0, 6):
                         if predict_data[j][k] in data_array[i][1:6+1]:
                             count = count + 1
                     same[count] = same[count] + 1
-                    #ÔÚÃüÁîĞĞ´°¿ÚÏÔÊ¾>=5µÄÍ¶×¢
+                    #åœ¨å‘½ä»¤è¡Œçª—å£æ˜¾ç¤º>=5çš„æŠ•æ³¨
                     if count>=5:
                         print predict_data[j],j+1
-                #ÅĞ¶Ï¹ıÂËÌõ¼şÕıÎóÇé¿ö
-                filter_wrong = [] #´íÎóÇé¿öÁĞ±í
-                wrong_detail = ['Ìõ¼şÃû³Æ','Ô¤²â·¶Î§ÏÂÏŞ','Ô¤²â·¶Î§ÉÏÏŞ','Êµ¼ÊÖµ'] #´íÎóÏêÏ¸ËµÃ÷
+                #åˆ¤æ–­è¿‡æ»¤æ¡ä»¶æ­£è¯¯æƒ…å†µ
+                filter_wrong = [] #é”™è¯¯æƒ…å†µåˆ—è¡¨
+                wrong_detail = ['æ¡ä»¶åç§°','é¢„æµ‹èŒƒå›´ä¸‹é™','é¢„æµ‹èŒƒå›´ä¸Šé™','å®é™…å€¼'] #é”™è¯¯è¯¦ç»†è¯´æ˜
                 for j in range(0, len(predict_filter)):
-                    tmp_1 = predict_filter[j][1] #Ê¹ÓÃµ½µÄ¹ıÂËÌõ¼şÃû³Æ
-                    tmp_2 = tmp_1.split(' ')[0] #È¥µôÃû³ÆºóÃæµÄ¿Õ¸ñ
-                    tmp_3 = data_para_array[i][tmp_2] #¿ª½±Êı¾İµÄ¶ÔÓ¦²ÎÊıÖµ
-                    min_num = int(predict_filter[j][3].split('-')[0]) #Ê¹ÓÃµ½µÄ¹ıÂËÌõ¼şµÄ×îĞ¡Öµ
-                    max_num = int(predict_filter[j][3].split('-')[1]) #Ê¹ÓÃµ½µÄ¹ıÂËÌõ¼şµÄ×î´óÖµ
-                    #ÅĞ¶ÏÊÇ·ñ´óÓÚµÈÓÚ×îĞ¡Öµ£¬Ğ¡ÓÚµÈÓÚ×î´óÖµ£¬Èç¹û²»·ûºÏÌõ¼ş£¬ÔòÌí¼Óµ½´íÎóÁĞ±íÖĞ  
+                    tmp_1 = predict_filter[j][1] #ä½¿ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶åç§°
+                    tmp_2 = tmp_1.split(' ')[0] #å»æ‰åç§°åé¢çš„ç©ºæ ¼
+                    tmp_3 = data_para_array[i][tmp_2] #å¼€å¥–æ•°æ®çš„å¯¹åº”å‚æ•°å€¼
+                    min_num = int(predict_filter[j][3].split('-')[0]) #ä½¿ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶çš„æœ€å°å€¼
+                    max_num = int(predict_filter[j][3].split('-')[1]) #ä½¿ç”¨åˆ°çš„è¿‡æ»¤æ¡ä»¶çš„æœ€å¤§å€¼
+                    #åˆ¤æ–­æ˜¯å¦å¤§äºç­‰äºæœ€å°å€¼ï¼Œå°äºç­‰äºæœ€å¤§å€¼ï¼Œå¦‚æœä¸ç¬¦åˆæ¡ä»¶ï¼Œåˆ™æ·»åŠ åˆ°é”™è¯¯åˆ—è¡¨ä¸­  
                     if tmp_3<min_num or tmp_3>max_num:
                         wrong_detail = [tmp_2,min_num,max_num,tmp_3]
                         filter_wrong.append(wrong_detail)
-                #Éú³É±¨¸æ
+                #ç”ŸæˆæŠ¥å‘Š
                 report = ''
-                report = report + '=%dÆÚÔ¤²âÊı¾İ¶Ò½±=\n'%date
-                report = report + '¿ª½±ºÅÂë:%s,%s,%s,%s,%s,%s+%s\n'\
+                report = report + '=%dæœŸé¢„æµ‹æ•°æ®å…‘å¥–=\n'%date
+                report = report + 'å¼€å¥–å·ç :%s,%s,%s,%s,%s,%s+%s\n'\
                          %(data_array[i][1],data_array[i][2],data_array[i][3],\
                            data_array[i][4],data_array[i][5],data_array[i][6],data_array[i][7])
-                report = report + 'Ô¤²âÊı¾İ:%s×é\n'%(len(predict_data))
-                report = report + 'Ñ¡ÔñÁË%d¸öºìÇò\n'%(len(select_num))
-                for j in range(0, 6):#¿´¿´ÄÄ¼¸¸öÇòÃ»Ñ¡ÉÏ
+                report = report + 'é¢„æµ‹æ•°æ®:%sç»„\n'%(len(predict_data))
+                report = report + 'é€‰æ‹©äº†%dä¸ªçº¢çƒ\n'%(len(select_num))
+                for j in range(0, 6):#çœ‹çœ‹å“ªå‡ ä¸ªçƒæ²¡é€‰ä¸Š
                     if data_array[i][j+1] not in select_num:
-                        report = report + 'Â©Ñ¡ÁË*' + data_array[i][j+1]+'*\n'
-                report = report + '----6ÇòÏàÍ¬*%s×¢*\n'%same[6]
-                report = report + '----5ÇòÏàÍ¬*%s×¢*\n'%same[5]
-                report = report + '----4ÇòÏàÍ¬*%s×¢*\n'%same[4]
-                report = report + '----3ÇòÏàÍ¬%s×¢\n'%same[3]
-                report = report + '----2ÇòÏàÍ¬%s×¢\n'%same[2]
-                report = report + '----1ÇòÏàÍ¬%s×¢\n'%same[1]
-                report = report + '----0ÇòÏàÍ¬%s×¢\n'%same[0]
-                report = report + 'Ê¹ÓÃ¹ıÂËÌõ¼ş:%s×é\n'%(len(predict_filter))
-                report = report + '----ÕıÈ·:%s×é\n'%(len(predict_filter)-len(filter_wrong))
-                report = report + '----´íÎó:%s×é\n'%(len(filter_wrong))
-                if len(filter_wrong)!=0: #Èç¹ûÓĞ´íÎóµÄ»°¾ÍÏÔÊ¾Ö®
+                        report = report + 'æ¼é€‰äº†*' + data_array[i][j+1]+'*\n'
+                report = report + '----6çƒç›¸åŒ*%sæ³¨*\n'%same[6]
+                report = report + '----5çƒç›¸åŒ*%sæ³¨*\n'%same[5]
+                report = report + '----4çƒç›¸åŒ*%sæ³¨*\n'%same[4]
+                report = report + '----3çƒç›¸åŒ%sæ³¨\n'%same[3]
+                report = report + '----2çƒç›¸åŒ%sæ³¨\n'%same[2]
+                report = report + '----1çƒç›¸åŒ%sæ³¨\n'%same[1]
+                report = report + '----0çƒç›¸åŒ%sæ³¨\n'%same[0]
+                report = report + 'ä½¿ç”¨è¿‡æ»¤æ¡ä»¶:%sç»„\n'%(len(predict_filter))
+                report = report + '----æ­£ç¡®:%sç»„\n'%(len(predict_filter)-len(filter_wrong))
+                report = report + '----é”™è¯¯:%sç»„\n'%(len(filter_wrong))
+                if len(filter_wrong)!=0: #å¦‚æœæœ‰é”™è¯¯çš„è¯å°±æ˜¾ç¤ºä¹‹
                     for j in range(0, len(filter_wrong)):
-                        report = report + '--------%s--------Ô¤²â·¶Î§[%s,%s]--Êµ¼ÊÖµ(%s)\n'\
+                        report = report + '--------%s--------é¢„æµ‹èŒƒå›´[%s,%s]--å®é™…å€¼(%s)\n'\
                                  %(filter_wrong[j][0],filter_wrong[j][1],filter_wrong[j][2],filter_wrong[j][3],)
-                #½«±¨¸æÌí¼Óµ½ÏÔÊ¾Ãæ°åÖĞ
-                self.textCtrl1.AppendText(report)
-                #Í£Ö¹²éÕÒ
+                #å°†æŠ¥å‘Šæ·»åŠ åˆ°æ˜¾ç¤ºé¢æ¿ä¸­
+                self.textCtrl1.AppendText(report.decode('utf-8'))
+                #åœæ­¢æŸ¥æ‰¾
                 break
             else:
-                self.textCtrl1.AppendText('Î´ÕÒµ½%sÆÚÔ¤²âÊı¾İ£¡\n\n'%date)
-                #ÆÚºÅ-1£¬¼ÌĞø²éÕÒ
+                self.textCtrl1.AppendText(u'æœªæ‰¾åˆ°%sæœŸé¢„æµ‹æ•°æ®ï¼\n\n'%date)
+                #æœŸå·-1ï¼Œç»§ç»­æŸ¥æ‰¾
                 date = date - 1
-        #Èç¹û10ÆÚÖ®ºó»¹Î´ÕÒµ½£¬¸øÒ»¸öÌáÊ¾
+        #å¦‚æœ10æœŸä¹‹åè¿˜æœªæ‰¾åˆ°ï¼Œç»™ä¸€ä¸ªæç¤º
         if date==(int(data_array[0][0])-10):
-            self.textCtrl1.AppendText('Ä¿Â¼ÏÂÎŞ×î½ü10ÆÚÔ¤²âÊı¾İ£¡')
+            self.textCtrl1.AppendText(u'ç›®å½•ä¸‹æ— æœ€è¿‘10æœŸé¢„æµ‹æ•°æ®ï¼')
         

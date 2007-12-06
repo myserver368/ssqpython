@@ -1,18 +1,20 @@
+#! usr/bin/python
+# -*- coding:utf-8 -*-
 #Boa:Frame:FrameRedShrink
-# -*- coding: cp936 -*-
 # otherrrr@gmail.com
-# ºìÇòËõË®Ãæ°å
+# çº¢çƒç¼©æ°´é¢æ¿
 
 import wx
 import os
 import random
+import locale
 
 from DataFileIO import readDataFileToArray
 from PredictFileIO import readPredictData
 
-predict_data = [] #¹ıÂËºóµÄÊı¾İ£¨´ÓÎÄ¼şÖĞ¶Á³öÀ´µÄ£©
-data_s = [] #ËõË®ºóµÄÊı¾İ
-date = [] #ÈÕÆÚ
+predict_data = [] #è¿‡æ»¤åçš„æ•°æ®ï¼ˆä»æ–‡ä»¶ä¸­è¯»å‡ºæ¥çš„ï¼‰
+data_s = [] #ç¼©æ°´åçš„æ•°æ®
+date = [] #æ—¥æœŸ
 
 def create(parent):
     return FrameRedShrink(parent)
@@ -70,39 +72,39 @@ class FrameRedShrink(wx.Frame):
 
     def __init__(self, parent):
         self._init_ctrls(parent)
-        #ÃüÁîĞĞÌáÊ¾
-        print 'FrameRedShrinkÆô¶¯'
+        #å‘½ä»¤è¡Œæç¤º
+        print (u'FrameRedShrinkå¯åŠ¨').encode(locale.getdefaultlocale()[1])
         
-        #ÏÔÊ¾Ãæ°åÇå¿Õ
+        #æ˜¾ç¤ºé¢æ¿æ¸…ç©º
         self.textCtrl1.Clear()
-        #¶ÁÈ¡¿ª½±Êı¾İ
+        #è¯»å–å¼€å¥–æ•°æ®
         data_array = readDataFileToArray()
-        #×îĞÂÒ»ÆÚµÄÆÚºÅ
-        global date #±£´æÊı¾İÊ±»áÓÃµ½£¬¹Êglobal        
+        #æœ€æ–°ä¸€æœŸçš„æœŸå·
+        global date #ä¿å­˜æ•°æ®æ—¶ä¼šç”¨åˆ°ï¼Œæ•…global        
         date = int(data_array[0][0])        
-        #¶ÁÈ¡¹ıÂËÊı¾İ
-        global predict_data #Éú³ÉËõË®Ìõ¼ş1Ê±»áÓÃµ½¹ıÂËÊı¾İ£¬¹Êglobal
+        #è¯»å–è¿‡æ»¤æ•°æ®
+        global predict_data #ç”Ÿæˆç¼©æ°´æ¡ä»¶1æ—¶ä¼šç”¨åˆ°è¿‡æ»¤æ•°æ®ï¼Œæ•…global
         predict_data, predict_filter, select_num =readPredictData(date+1)
-        self.textCtrl1.AppendText('ÒÑ¶ÁÈ¡¹ıÂËºóÊı¾İ¡°%s¹ıÂËÊı¾İ.txt¡±'%(date+1))
-        self.textCtrl1.AppendText('£¨%d×é£©\n'%len(predict_data))
+        self.textCtrl1.AppendText(u'å·²è¯»å–è¿‡æ»¤åæ•°æ®â€œ%sè¿‡æ»¤æ•°æ®.txtâ€'%(date+1))
+        self.textCtrl1.AppendText(u'ï¼ˆ%dç»„ï¼‰\n'%len(predict_data))
         
-        global data_s #µ÷ÓÃ×ÜµÄ¹ıÂËºóÊı¾İ
-        data_s = predict_data #³õÊ¼Ê±£¬¹ıÂËºóÊı¾İµÈÓÚÔ¤²âÊı¾İ
+        global data_s #è°ƒç”¨æ€»çš„è¿‡æ»¤åæ•°æ®
+        data_s = predict_data #åˆå§‹æ—¶ï¼Œè¿‡æ»¤åæ•°æ®ç­‰äºé¢„æµ‹æ•°æ®
         
     def OnButton1Button(self, event):
-        '''µÚ1¸öËõË®Ìõ¼ş'''
-        self.textCtrl1.AppendText('Ê¹ÓÃËõË®Ìõ¼ş1£¨¾ùÔÈ·Ö²¼£©\n')
-        #ÇóµÃµÚ1¸öËõË®Ìõ¼ş
-        t_num = [] #33¸öºÅÂë
-        t_times = [] #33¸öºÅÂëµÄ³öÏÖ´ÎÊı
-        for i in range(1, 33+1): #³õÊ¼»¯
+        '''ç¬¬1ä¸ªç¼©æ°´æ¡ä»¶'''
+        self.textCtrl1.AppendText(u'ä½¿ç”¨ç¼©æ°´æ¡ä»¶1ï¼ˆå‡åŒ€åˆ†å¸ƒï¼‰\n')
+        #æ±‚å¾—ç¬¬1ä¸ªç¼©æ°´æ¡ä»¶
+        t_num = [] #33ä¸ªå·ç 
+        t_times = [] #33ä¸ªå·ç çš„å‡ºç°æ¬¡æ•°
+        for i in range(1, 33+1): #åˆå§‹åŒ–
             t_num.append('%.2d'%i)
             t_times.append(0)
-        for i in range(0, len(predict_data)): #ÇóµÃ´ÎÊı
+        for i in range(0, len(predict_data)): #æ±‚å¾—æ¬¡æ•°
             for j in range(0, len(t_num)):
                 if t_num[j] in predict_data[i]:
                     t_times[j] = t_times[j] + 1
-        for t1 in range(0, len(t_times)-1): #°´ÕÕ´ÎÊıÅÅĞò
+        for t1 in range(0, len(t_times)-1): #æŒ‰ç…§æ¬¡æ•°æ’åº
             for t2 in range(len(t_times)-2, t1-1, -1):
                 if t_times[t2]>t_times[t2+1]:
                     tmp_t = t_times[t2]
@@ -111,17 +113,17 @@ class FrameRedShrink(wx.Frame):
                     tmp_n = t_num[t2]
                     t_num[t2] = t_num[t2+1]
                     t_num[t2+1] = tmp_n
-        c_num = t_num[:11] #ÀäºÅ
-        w_num = t_num[11:22] #ÎÂºÅ
-        h_num = t_num[22:] #ÈÈºÅ
-        self.textCtrl1.AppendText('1Çø£º%s\n'%(str(c_num)))
-        self.textCtrl1.AppendText('2Çø£º%s\n'%(str(w_num)))
-        self.textCtrl1.AppendText('3Çø£º%s\n'%(str(h_num)))
-        self.textCtrl1.AppendText('Ã¿Ò»Çø·Ö²¼¸öÊıÔÚ0¡«4Ö®¼ä\n')
-        #Ê¹ÓÃµÚ1¸öËõË®Ìõ¼ş
-        global data_s #µ÷ÓÃ×ÜµÄËõË®ºóÊı¾İ
-        print len(data_s) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-        data_s1 = [] #Ê¹ÓÃËõË®Ìõ¼ş1ºóµÄÊı¾İ
+        c_num = t_num[:11] #å†·å·
+        w_num = t_num[11:22] #æ¸©å·
+        h_num = t_num[22:] #çƒ­å·
+        self.textCtrl1.AppendText(u'1åŒºï¼š%s\n'%(str(c_num)))
+        self.textCtrl1.AppendText(u'2åŒºï¼š%s\n'%(str(w_num)))
+        self.textCtrl1.AppendText(u'3åŒºï¼š%s\n'%(str(h_num)))
+        self.textCtrl1.AppendText(u'æ¯ä¸€åŒºåˆ†å¸ƒä¸ªæ•°åœ¨0ï½4ä¹‹é—´\n')
+        #ä½¿ç”¨ç¬¬1ä¸ªç¼©æ°´æ¡ä»¶
+        global data_s #è°ƒç”¨æ€»çš„ç¼©æ°´åæ•°æ®
+        print len(data_s) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+        data_s1 = [] #ä½¿ç”¨ç¼©æ°´æ¡ä»¶1åçš„æ•°æ®
         for i in range(0, len(data_s)):
             c_t = 0
             w_t = 0
@@ -135,11 +137,11 @@ class FrameRedShrink(wx.Frame):
                     h_t = h_t + 1
             if 0<=c_t<=4 and 0<=w_t<=4 and 0<=h_t<=4:
                 data_s1.append(data_s[i])
-        print len(data_s1) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-        self.textCtrl1.AppendText('£¨ËõË®ºóµÄÊı¾İ£º%d×é£©\n'%len(data_s1))
-        #´«µİÖµ
+        print len(data_s1) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+        self.textCtrl1.AppendText(u'ï¼ˆç¼©æ°´åçš„æ•°æ®ï¼š%dç»„ï¼‰\n'%len(data_s1))
+        #ä¼ é€’å€¼
         data_s = data_s1
-        #ÅĞ¶ÏÊÇ·ñ×éÊı´óÓÚ10£¬Èô´óÓÚ10Ôò²»ÏÔÊ¾
+        #åˆ¤æ–­æ˜¯å¦ç»„æ•°å¤§äº10ï¼Œè‹¥å¤§äº10åˆ™ä¸æ˜¾ç¤º
         if len(data_s)>10:
             pass
         else:
@@ -149,10 +151,10 @@ class FrameRedShrink(wx.Frame):
         event.Skip()
 
     def OnButton2Button(self, event):
-        '''µÚ2¸öËõË®Ìõ¼ş'''
-        self.textCtrl1.AppendText('Ê¹ÓÃËõË®Ìõ¼ş2£¨ËÄÔªËõË®£©\n')
-        #ÇóµÃµÚ2¸öËõË®Ìõ¼ş
-        f = open('data/ËõË®Ìõ¼ş.txt', 'r')
+        '''ç¬¬2ä¸ªç¼©æ°´æ¡ä»¶'''
+        self.textCtrl1.AppendText(u'ä½¿ç”¨ç¼©æ°´æ¡ä»¶2ï¼ˆå››å…ƒç¼©æ°´ï¼‰\n')
+        #æ±‚å¾—ç¬¬2ä¸ªç¼©æ°´æ¡ä»¶
+        f = open(u'data/ç¼©æ°´æ¡ä»¶.txt', 'r')
         s = f.readlines()
         f.close()
         m4 = []
@@ -161,12 +163,12 @@ class FrameRedShrink(wx.Frame):
             for j in range(0, 4):
                 t.append(s[i][j*3:j*3+2])
             m4.append(t)
-        self.textCtrl1.AppendText('ËÄÔª×é¸öÊı£º%d\n'%len(m4))
-        self.textCtrl1.AppendText('Ã¿¸öËÄÔª×é·Ö²¼¸öÊıÔÚ0¡«2Ö®¼ä\n')
-        #Ê¹ÓÃµÚ2¸öËõË®Ìõ¼ş
-        global data_s #µ÷ÓÃ×ÜµÄËõË®ºóÊı¾İ
-        print len(data_s) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-        data_s2 = [] #Ê¹ÓÃËõË®Ìõ¼ş2ºóµÄÊı¾İ
+        self.textCtrl1.AppendText(u'å››å…ƒç»„ä¸ªæ•°ï¼š%d\n'%len(m4))
+        self.textCtrl1.AppendText(u'æ¯ä¸ªå››å…ƒç»„åˆ†å¸ƒä¸ªæ•°åœ¨0ï½2ä¹‹é—´\n')
+        #ä½¿ç”¨ç¬¬2ä¸ªç¼©æ°´æ¡ä»¶
+        global data_s #è°ƒç”¨æ€»çš„ç¼©æ°´åæ•°æ®
+        print len(data_s) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+        data_s2 = [] #ä½¿ç”¨ç¼©æ°´æ¡ä»¶2åçš„æ•°æ®
         for i in range(0, len(data_s)):
             Judge = True
             for j in range(0, len(m4)):
@@ -179,11 +181,11 @@ class FrameRedShrink(wx.Frame):
                     break
             if Judge:
                 data_s2.append(data_s[i])
-        print len(data_s2) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-        self.textCtrl1.AppendText('£¨ËõË®ºóµÄÊı¾İ£º%d×é£©\n'%len(data_s2))
-        #´«µİÖµ      
+        print len(data_s2) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+        self.textCtrl1.AppendText(u'ï¼ˆç¼©æ°´åçš„æ•°æ®ï¼š%dç»„ï¼‰\n'%len(data_s2))
+        #ä¼ é€’å€¼      
         data_s = data_s2        
-        #ÅĞ¶ÏÊÇ·ñ×éÊı´óÓÚ10£¬Èô´óÓÚ10Ôò²»ÏÔÊ¾
+        #åˆ¤æ–­æ˜¯å¦ç»„æ•°å¤§äº10ï¼Œè‹¥å¤§äº10åˆ™ä¸æ˜¾ç¤º
         if len(data_s)>10:
             pass
         else:
@@ -193,38 +195,38 @@ class FrameRedShrink(wx.Frame):
         event.Skip()
 
     def OnButton3Button(self, event):
-        '''µÚ3¸öËõË®Ìõ¼ş'''
-        self.textCtrl1.AppendText('Ê¹ÓÃËõË®Ìõ¼ş3£¨ÖĞ6±£4£©\n')       
-        #Ê¹ÓÃµÚ3¸öËõË®Ìõ¼ş
-        global data_s #µ÷ÓÃ×ÜµÄËõË®ºóÊı¾İ
-        print len(data_s) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-        data_s3 = [] #Ê¹ÓÃËõË®Ìõ¼ş3ºóµÄÊı¾İ
-        while True:
+        '''ç¬¬3ä¸ªç¼©æ°´æ¡ä»¶'''
+        self.textCtrl1.AppendText(u'ä½¿ç”¨ç¼©æ°´æ¡ä»¶3ï¼ˆä¸­6ä¿4ï¼‰\n')       
+        #ä½¿ç”¨ç¬¬3ä¸ªç¼©æ°´æ¡ä»¶
+        global data_s #è°ƒç”¨æ€»çš„ç¼©æ°´åæ•°æ®
+        print len(data_s) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+        data_s3 = [] #ä½¿ç”¨ç¼©æ°´æ¡ä»¶3åçš„æ•°æ®
+        while True and len(data_s)!=0:
             t = data_s[random.randint(0, len(data_s)-1)]
-            data_s3.append(t) #Ìí¼Ó
-            data_s.remove(t) #É¾³ı
-            t_del = [] #ÒªÉ¾³ıµÄÊı¾İ
-            for i in range(0, len(data_s)): #Ñ­»·Ìí¼Ó
+            data_s3.append(t) #æ·»åŠ 
+            data_s.remove(t) #åˆ é™¤
+            t_del = [] #è¦åˆ é™¤çš„æ•°æ®
+            for i in range(0, len(data_s)): #å¾ªç¯æ·»åŠ 
                 option = 0
                 for j in range(0, len(t)):
                     if t[j] in data_s[i]:
                         option = option + 1
                 if option>=4:
                     t_del.append(data_s[i])
-            for i in range(0, len(t_del)): #Ñ­»·É¾³ı
+            for i in range(0, len(t_del)): #å¾ªç¯åˆ é™¤
                 data_s.remove(t_del[i])
-            print len(data_s),len(data_s3) #ÃüÁîĞĞÏÔÊ¾Ò»ÏÂ
-            #ÅĞ¶ÏÊÇ·ñÖ»Ê£×îºóÒ»×¢
+            print len(data_s),len(data_s3) #å‘½ä»¤è¡Œæ˜¾ç¤ºä¸€ä¸‹
+            #åˆ¤æ–­æ˜¯å¦åªå‰©æœ€åä¸€æ³¨
             if len(data_s)==1:
                 data_s3.append(data_s[0])
                 break
-            #Èç¹ûÒÑ¾­È«²¿¹ıÂËÍêÁË£¬¾ÍÖ±½ÓÍË³ö
+            #å¦‚æœå·²ç»å…¨éƒ¨è¿‡æ»¤å®Œäº†ï¼Œå°±ç›´æ¥é€€å‡º
             if len(data_s)==0:
                 break
-        self.textCtrl1.AppendText('£¨ËõË®ºóµÄÊı¾İ£º%d×é£©\n'%len(data_s3))
-        #´«µİÖµ
+        self.textCtrl1.AppendText(u'ï¼ˆç¼©æ°´åçš„æ•°æ®ï¼š%dç»„ï¼‰\n'%len(data_s3))
+        #ä¼ é€’å€¼
         data_s = data_s3
-        #ÅĞ¶ÏÊÇ·ñ×éÊı´óÓÚ10£¬Èô´óÓÚ10Ôò²»ÏÔÊ¾
+        #åˆ¤æ–­æ˜¯å¦ç»„æ•°å¤§äº10ï¼Œè‹¥å¤§äº10åˆ™ä¸æ˜¾ç¤º
         if len(data_s)>10:
             pass
         else:
@@ -234,18 +236,21 @@ class FrameRedShrink(wx.Frame):
         event.Skip()
 
     def OnButton4Button(self, event):
-        '''±£´æÊı¾İ'''
-        #Ğ´³öÉú³ÉÊı¾İ
-        f = open('%s/%sËõË®Êı¾İ.txt'%(date+1,date+1), 'w')
-        #Ğ´Êı¾İ
+        '''ä¿å­˜æ•°æ®'''
+        #å†™å‡ºç”Ÿæˆæ•°æ®
+        f = open(u'%s/%sç¼©æ°´æ•°æ®.txt'%(date+1,date+1), 'w')
+        #å†™æ•°æ®
         for i in range(0, len(data_s)):
-            #ÕâÀïÈç¹ûÊ¹ÓÃÒ»¸ö×ÓÑ­»·µÄ»°£¬»á»¨·Ñ¸ü¶àÊ±¼ä
+            #è¿™é‡Œå¦‚æœä½¿ç”¨ä¸€ä¸ªå­å¾ªç¯çš„è¯ï¼Œä¼šèŠ±è´¹æ›´å¤šæ—¶é—´
             f.write('%s %s %s %s %s %s\n'\
                     %(data_s[i][0],data_s[i][1],data_s[i][2],data_s[i][3],data_s[i][4],data_s[i][5]))
         f.close()
-        #¹Ø±ÕÒ³Ãæ
+        #å…³é—­é¡µé¢
         self.Close()
-        #´ò¿ªÏàÓ¦ÎÄ¼ş¼Ğ
-        os.startfile('%s'%(date+1))
+        #æ‰“å¼€ç›¸åº”æ–‡ä»¶å¤¹
+        if wx.Platform == '__WXMSW__': #windows
+            os.startfile('%s'%(date+1))
+        else: #linux
+            print (u'ç¼©æ°´æ•°æ®æ–‡ä»¶å·²ä¿å­˜ï¼').encode(locale.getdefaultlocale()[1])
         
         event.Skip()
