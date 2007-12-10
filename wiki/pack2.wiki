@@ -1,0 +1,15 @@
+#summary 使用Pyinstaller打包
+#labels pyinstaller
+
+= Introduction =
+
+使用Pyinstaller将Python源文件打包成exe文件
+
+
+= Details =
+
+下载及安装
+
+生成spec文件
+
+生成exe文件
