@@ -1,4 +1,4 @@
-#summary 使用Pyinstaller打包
+#summary 打包说明2
 #labels pyinstaller
 
 = Introduction =
