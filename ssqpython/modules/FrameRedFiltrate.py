@@ -38,6 +38,9 @@ nums_before = [0, False]#过滤之前的组数/是否显示
 #20071126添加
 data_f_origin = []#过滤前的数据
 
+#20071225添加
+data_f_down = []#被过滤的数据
+
 def create(parent, ALL_datas):
     return FrameRedFiltrate(parent, ALL_datas)
 
@@ -427,8 +430,12 @@ class FrameRedFiltrate(wx.Frame):
         #更新被过滤前数据
         global data_f_origin
         data_f_origin = data_f        
-        #过滤
-        data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+        #过滤（20071225修改）
+##        data_f = dataFiltrate(data_array, data_f, step,
+##                              filter_array, redOrder, bet_array)
+        global data_f_down
+        data_f, data_f_down = dataFiltrate(data_array, data_f, step,
+                                           filter_array, redOrder, bet_array)
         #隐藏按钮（本身）
         self.buttonuse.Show(False) 
         #隐藏可调整范围按钮 
@@ -543,14 +550,18 @@ class FrameRedFiltrate(wx.Frame):
     def OnButtonsaveotherButton(self, event): #保存被过滤掉的数据
         '''保存被过滤掉的数据'''
         #求得被过滤掉的数据
-        #想简单点，但是出现list objects are unhashable错误
-        #data_f_rest = list(set(data_f_origin)-set(data_f))
-        #只好复杂一点了
-        data_f_rest = []
-        for dt in data_f_origin:
-            if dt not in data_f:
-                data_f_rest.append(dt)
-        
+##        #方法3
+##        #还是很慢
+##        data_f_rest = []
+##        data_f_rest = [i for i in data_f_origin if i not in data_f]
+##        #方法1
+##        #想简单点，但是出现list objects are unhashable错误
+##        data_f_test = list(set(data_f_origin)-set(data_f))
+##        #方法2
+##        #当组数特别多的时候，很慢！！
+##        for dt in data_f_origin:
+##            if dt not in data_f:
+##                data_f_rest.append(dt)
         #显示文件选择框
         dlg = wx.FileDialog(
             self, message=u"保存被过滤掉的数据",
@@ -563,13 +574,16 @@ class FrameRedFiltrate(wx.Frame):
         if dlg.ShowModal()==wx.ID_OK:
             #写入数据
 	    if wx.Platform == '__WXMSW__':
-		f = open(dlg.GetPath().encode('mbcs'), 'w')
+                if '.txt' in dlg.GetPath().encode('mbcs'): #20071225
+                    f = open(dlg.GetPath().encode('mbcs'), 'w')
+                else:
+                    f = open(dlg.GetPath().encode('mbcs')+'.txt', 'w')
 	    else:
 		f = open(dlg.GetPath(), 'w')
-            for i in range(0, len(data_f_rest)):
+            for i in range(0, len(data_f_down)):
                 f.write('%.2d %.2d %.2d %.2d %.2d %.2d\n'\
-                        %(data_f_rest[i][0],data_f_rest[i][1],data_f_rest[i][2],\
-                          data_f_rest[i][3],data_f_rest[i][4],data_f_rest[i][5]))
+                        %(data_f_down[i][0],data_f_down[i][1],data_f_down[i][2],\
+                          data_f_down[i][3],data_f_down[i][4],data_f_down[i][5]))
             f.close()
             #本身不显示
             self.buttonsaveother.Show(False)

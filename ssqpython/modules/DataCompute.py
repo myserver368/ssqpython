@@ -963,32 +963,46 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
     min_num = int(filter_array[step-1][3].split('-')[0]) #最小值
     max_num = int(filter_array[step-1][3].split('-')[1]) #最大值
     #临时数组
-    data_f_tmp = [] 
+    data_f_tmp = []
+    #被过滤掉的数据（20071225）
+    data_f_down = []
     #各过滤条件
     if '1号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][0]<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:#所有的条件都加上（20071225）
+                data_f_down.append(data_f[i])#所有的条件都加上（20071225）
     if '2号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][1]<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '3号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][2]<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '4号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][3]<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '5号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][4]<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '6号位' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             if min_num<=data_f[i][5]<=max_num:
-                data_f_tmp.append(data_f[i])  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '总和值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum_num = 0
@@ -996,6 +1010,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 sum_num = sum_num + data_f[i][j]
             if min_num<=sum_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '前4位和值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum14_num = 0
@@ -1003,13 +1019,17 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 sum14_num = sum14_num + data_f[i][j]
             if min_num<=sum14_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '后4位和值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum36_num = 0
             for j in range(2, 6):
                 sum36_num = sum36_num + data_f[i][j]
             if min_num<=sum36_num<=max_num:
-                data_f_tmp.append(data_f[i])                 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '奇数' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             odd_num = 0 
@@ -1017,7 +1037,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]%2==1:
                     odd_num = odd_num + 1
             if min_num<=odd_num<=max_num:
-                data_f_tmp.append(data_f[i])  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '偶数' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             even_num = 0 
@@ -1025,42 +1047,58 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]%2==0:
                     even_num = even_num + 1
             if min_num<=even_num<=max_num:
-                data_f_tmp.append(data_f[i])   
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '61间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_61 = data_f[i][5] - data_f[i][0]
             if min_num<=max_space_61<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '21间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_21 = data_f[i][1] - data_f[i][0]
             if min_num<=max_space_21<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '41间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_41 = data_f[i][3] - data_f[i][0]
             if min_num<=max_space_41<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                 
     if '43间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_43 = data_f[i][3] - data_f[i][2]
             if min_num<=max_space_43<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '52间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_52 = data_f[i][4] - data_f[i][1]
             if min_num<=max_space_52<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '63间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_63 = data_f[i][5] - data_f[i][2]
             if min_num<=max_space_63<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '65间隔' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             max_space_65 = data_f[i][5] - data_f[i][4]
             if min_num<=max_space_65<=max_num:
-                data_f_tmp.append(data_f[i])                  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '质数' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             prime_num = 0  
@@ -1068,7 +1106,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [2,3,5,7,11,13,17,19,23,29,31]:
                     prime_num = prime_num + 1
             if min_num<=prime_num<=max_num:
-                data_f_tmp.append(data_f[i]) 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除3余0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num30 = 0  
@@ -1076,7 +1116,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [3,6,9,12,15,18,21,24,27,30,33]:
                     residue_num30 = residue_num30 + 1
             if min_num<=residue_num30<=max_num:
-                data_f_tmp.append(data_f[i]) 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除3余1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num31 = 0  
@@ -1084,7 +1126,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [1,4,7,10,13,16,19,22,25,28,31]:
                     residue_num31 = residue_num31 + 1
             if min_num<=residue_num31<=max_num:
-                data_f_tmp.append(data_f[i])  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除3余2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num32 = 0  
@@ -1093,6 +1137,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num32 = residue_num32 + 1
             if min_num<=residue_num32<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除4余0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num40 = 0  
@@ -1101,6 +1147,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num40 = residue_num40 + 1
             if min_num<=residue_num40<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除4余1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num41 = 0  
@@ -1109,6 +1157,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num41 = residue_num41 + 1
             if min_num<=residue_num41<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除4余2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num42 = 0  
@@ -1117,6 +1167,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num42 = residue_num42 + 1
             if min_num<=residue_num42<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除4余3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num43 = 0  
@@ -1124,7 +1176,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [3,7,11,15,19,23,27,31]:
                     residue_num43 = residue_num43 + 1
             if min_num<=residue_num43<=max_num:
-                data_f_tmp.append(data_f[i])                 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除5余0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num50 = 0  
@@ -1133,6 +1187,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num50 = residue_num50 + 1
             if min_num<=residue_num50<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除5余1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num51 = 0  
@@ -1141,6 +1197,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num51 = residue_num51 + 1
             if min_num<=residue_num51<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除5余2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num52 = 0  
@@ -1149,6 +1207,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num52 = residue_num52 + 1
             if min_num<=residue_num52<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除5余3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num53 = 0  
@@ -1157,6 +1217,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num53 = residue_num53 + 1
             if min_num<=residue_num53<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除5余4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num54 = 0  
@@ -1165,6 +1227,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num54 = residue_num54 + 1
             if min_num<=residue_num54<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num60 = 0  
@@ -1173,6 +1237,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num60 = residue_num60 + 1
             if min_num<=residue_num60<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num61 = 0  
@@ -1181,6 +1247,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num61 = residue_num61 + 1
             if min_num<=residue_num61<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num62 = 0  
@@ -1189,6 +1257,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num62 = residue_num62 + 1
             if min_num<=residue_num62<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num63 = 0  
@@ -1197,6 +1267,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num63 = residue_num63 + 1
             if min_num<=residue_num63<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num64 = 0  
@@ -1205,6 +1277,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num64 = residue_num64 + 1
             if min_num<=residue_num64<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除6余5' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num65 = 0  
@@ -1212,7 +1286,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [5,11,17,23,29]:
                     residue_num65 = residue_num65 + 1
             if min_num<=residue_num65<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余0' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num70 = 0  
@@ -1221,6 +1297,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num70 = residue_num70 + 1
             if min_num<=residue_num70<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num71 = 0  
@@ -1229,6 +1307,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num71 = residue_num71 + 1
             if min_num<=residue_num71<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num72 = 0  
@@ -1237,6 +1317,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num72 = residue_num72 + 1
             if min_num<=residue_num72<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num73 = 0  
@@ -1244,7 +1326,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [3,10,17,24,31]:
                     residue_num73 = residue_num73 + 1
             if min_num<=residue_num73<=max_num:
-                data_f_tmp.append(data_f[i])     
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余4' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num74 = 0  
@@ -1253,6 +1337,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num74 = residue_num74 + 1
             if min_num<=residue_num74<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余5' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num75 = 0  
@@ -1261,6 +1347,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     residue_num75 = residue_num75 + 1
             if min_num<=residue_num75<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '除7余6' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             residue_num76 = 0  
@@ -1268,7 +1356,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in [6,13,20,27]:
                     residue_num76 = residue_num76 + 1
             if min_num<=residue_num76<=max_num:
-                data_f_tmp.append(data_f[i])                  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '高值区' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             high_num = 0  
@@ -1276,7 +1366,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]>17:
                     high_num = high_num + 1
             if min_num<=high_num<=max_num:
-                data_f_tmp.append(data_f[i])   
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '低值区' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             low_num = 0  
@@ -1284,7 +1376,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]<17:
                     low_num = low_num + 1
             if min_num<=low_num<=max_num:
-                data_f_tmp.append(data_f[i])     
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '区间1' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area1_num = 0  
@@ -1292,7 +1386,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]<12:
                     area1_num = area1_num + 1
             if min_num<=area1_num<=max_num:
-                data_f_tmp.append(data_f[i])   
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '区间2' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area2_num = 0  
@@ -1300,7 +1396,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if 11<data_f[i][j]<23:
                     area2_num = area2_num + 1
             if min_num<=area2_num<=max_num:
-                data_f_tmp.append(data_f[i]) 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '区间3' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             area3_num = 0  
@@ -1308,7 +1406,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j]>22:
                     area3_num = area3_num + 1
             if min_num<=area3_num<=max_num:
-                data_f_tmp.append(data_f[i])     
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '连号' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             continuous_num = 0  
@@ -1317,6 +1417,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     continuous_num = continuous_num + 1
             if min_num<=continuous_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '同尾' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             same_nail_num = 0
@@ -1330,6 +1432,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     same_nail_num = same_nail_num + 1                 
             if min_num<=same_nail_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '开奖号码和' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             sum_12 = 0
@@ -1338,13 +1442,17 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 sum_12 = sum_12 + int(data_f[i][j])/10
             if min_num<=sum_12<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '尾号和' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             nail_sum = 0
             for j in range(0, 6):
                 nail_sum = nail_sum + int(data_f[i][j])%10
             if min_num<=nail_sum<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if 'AC值' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             ac_num = 0  
@@ -1357,7 +1465,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                         details.append(data_f[i][t2] - data_f[i][t1])
             ac_num = len(details) - (6-1)
             if min_num<=ac_num<=max_num:
-                data_f_tmp.append(data_f[i])  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '热号全' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             hot_num = 0  
@@ -1365,7 +1475,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if '%.2d'%(data_f[i][j]) in redOrder[:11]:
                     hot_num = hot_num + 1
             if min_num<=hot_num<=max_num:
-                data_f_tmp.append(data_f[i]) 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '温号全' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             warm_num = 0  
@@ -1373,7 +1485,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if '%.2d'%(data_f[i][j]) in redOrder[11:22]:
                     warm_num = warm_num + 1
             if min_num<=warm_num<=max_num:
-                data_f_tmp.append(data_f[i])  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '冷号全' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             cold_num = 0  
@@ -1382,6 +1496,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     cold_num = cold_num + 1
             if min_num<=cold_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '热号100' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             hot100_num = 0  
@@ -1390,6 +1506,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     hot100_num = hot100_num + 1
             if min_num<=hot100_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '1期重号' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             repeat1_num = 0  
@@ -1398,6 +1516,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     repeat1_num = repeat1_num + 1
             if min_num<=repeat1_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '3期重号' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前3期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1413,7 +1533,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in tmp_list:
                     repeat3_num = repeat3_num + 1
             if min_num<=repeat3_num<=max_num:
-                data_f_tmp.append(data_f[i])                
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '5期重号' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前5期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1434,6 +1556,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     repeat5_num = repeat5_num + 1
             if min_num<=repeat5_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '10期重号' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前5+4期的数据（没有重复的）
         #在添加'10期重号'的时候感觉上面那个“4”好像不对～～
@@ -1467,7 +1591,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if data_f[i][j] in tmp_list:
                     repeat10_num = repeat10_num + 1
             if min_num<=repeat10_num<=max_num:
-                data_f_tmp.append(data_f[i])                  
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '1期临近值' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，将上一期中所有＋1/－1的数存起来
         for j in range(1, 6+1):
@@ -1480,6 +1606,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     near_num = near_num + 1
             if min_num<=near_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '3期个数' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前2期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1494,6 +1622,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     num_l3 = num_l3 + 1
             if min_num<=num_l3<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '5期个数' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前4期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1512,6 +1642,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     num_l5 = num_l5 + 1
             if min_num<=num_l5<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '7期个数' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前6期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1534,6 +1666,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     num_l7 = num_l7 + 1
             if min_num<=num_l7<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '9期个数' in filter_array[step-1][1]:
         tmp_list = [] #临时数组(int)，前8期的数据（没有重复的）
         for j in range(1, 6+1):
@@ -1560,6 +1694,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     num_l9 = num_l9 + 1
             if min_num<=num_l9<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '遗漏值和' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             miss_sum = 0
@@ -1569,7 +1705,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                         miss_sum = miss_sum + (k+1)
                         break
             if min_num<=miss_sum<=max_num:
-                data_f_tmp.append(data_f[i])               
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '固定投注' in filter_array[step-1][1]:
         for i in range(0, len(data_f)):
             num_fix = 0
@@ -1582,6 +1720,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     num_fix = num_tmp            
             if min_num<=num_fix<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '长列表' in filter_array[step-1][1]:
         long_list = ['01','02','05','07','10','11','13','14',\
                      '17','18','19','20','21','22','23','24',\
@@ -1593,6 +1733,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     long_list_num = long_list_num + 1
             if min_num<=long_list_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '三分之一' in filter_array[step-1][1]:
         div31_list = ['01','03','04','05','07','08','14','17',\
                      '18','20','22','26','27','30','32']#共15个        
@@ -1603,6 +1745,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     div31_num = div31_num + 1
             if min_num<=div31_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '三分之二' in filter_array[step-1][1]: 
         div32_list = ['01','02','03','04','05','07','08','14',\
                       '17','18','20','21','27','30','32']#共15个        
@@ -1613,6 +1757,8 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                     div32_num = div32_num + 1
             if min_num<=div32_num<=max_num:
                 data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '三分之三' in filter_array[step-1][1]: #只有204/614!!
         div33_list = ['02','03','04','05','08','14','17','18',\
                       '20','21','22','26','27','30','32']#共15个        
@@ -1622,13 +1768,15 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 if '%.2d'%(data_f[i][j]) in div33_list:
                     div33_num = div33_num + 1
             if min_num<=div33_num<=max_num:                
-                data_f_tmp.append(data_f[i])                 
+                data_f_tmp.append(data_f[i])
+            else:
+                data_f_down.append(data_f[i])                
     if '往期数据' in filter_array[step-1][1]:
         t1 = time.time()
         if min_num==4 and max_num==5:
             #新的过滤方法
             ##  8818-->8821  | 49s-->9s(14s)
-            print u'注：使用[4,5](新)，花费',
+            print (u'注：使用[4,5](新)，花费').encode(locale.getdefaultlocale()[1]),
             for i in range(0, len(data_f)):
                 #这个版本没有误差率了
                 option1 = True
@@ -1649,7 +1797,9 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                             option2 = True
                             break
                 if option2==True:
-                    data_f_tmp.append(data_f[i])                        
+                    data_f_tmp.append(data_f[i])
+                else:
+                    data_f_down.append(data_f[i])                    
                 '''#这个版本有误差
                 option = False
                 data_ft = '%.2d %.2d %.2d %.2d %.2d %.2d'\
@@ -1681,7 +1831,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
         elif min_num==4 and max_num==4: 
             #修改后的过滤方法 #在旧的基础上
             ##50s-->25s
-            print u'注：使用[4,4](修)，花费',
+            print (u'注：使用[4,4](修)，花费').encode(locale.getdefaultlocale()[1]),
             option = False
             for i in range(0, len(data_f)):
                 option = False
@@ -1701,8 +1851,10 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                         option = True
                 if option:
                     data_f_tmp.append(data_f[i])
+                else:
+                    data_f_down.append(data_f[i])                    
         else:
-            print u'注：使用普通过滤方法，花费',
+            print (u'注：使用普通过滤方法，花费').encode(locale.getdefaultlocale()[1]),
             #这里太慢了!!!!
             for i in range(0, len(data_f)):
                 num_old = 0
@@ -1720,14 +1872,16 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                         num_old = num_tmp
                 if min_num<=num_old<=max_num:
                     data_f_tmp.append(data_f[i])
+                else:
+                    data_f_down.append(data_f[i])                    
         t2 = time.time()
-        print t2-t1,u'秒'
+        print t2-t1,(u'秒').encode(locale.getdefaultlocale()[1])
     #转换回去
     #data_f = data_f_tmp 
     #返回数据    
     #return data_f
     #直接将临时数组传回去也可以，不知道哪样会更“经济”一些
-    return data_f_tmp
+    return data_f_tmp, data_f_down
 
 def blueCoumpute(data_array): #蓝球统计及计算
     '''计算蓝球各球的出球次数、步长和遗漏值'''
