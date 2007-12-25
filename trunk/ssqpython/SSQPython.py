@@ -65,7 +65,8 @@ class SSQPythonApp(wx.App):
                 step = step + 1
                 #filter_array[step-1][2] = '是' + filter_array[step-1][2][2:]
                 filter_array[step-1][2] = u'是      ' #utf-8 20071201
-                data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+                data_f_down = [] #20071225
+                data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
                 if step==1:
                     #print u'%.2d time=%d num=%d %s'%(step,int(time.time())-start_time,len(data_f),filter_array[step-1][4]) #windows
                     print u'%.2d time=%d num=%d %s'\
@@ -154,7 +155,7 @@ class SSQPythonApp(wx.App):
 
             return True
         elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-h' or sys.argv[1:][0]=='h'): #判断是否有参数(-h)，有则提示帮助
-            print u'    双色蟒彩票分析软件  1.0.3'
+            print u'    双色蟒彩票分析软件  1.0.5'
             print u'       otherrrr@gmail.com'
             print u'http://code.google.com/p/ssqpython/'
             print u''

@@ -22,6 +22,7 @@ import FrameDownload
 import FrameRedShrink
 import FrameOptional
 import FrameReplace
+import FrameSafe
 
 import os
 import random
@@ -52,8 +53,9 @@ def create(parent):
 
 [wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, wxID_FRAMEMAINMENUFILTRATEITEMSFRED, 
  wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL, 
- wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE, wxID_FRAMEMAINMENUFILTRATEITEMSSRED, 
-] = [wx.NewId() for _init_coll_menuFiltrate_Items in range(5)]
+ wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE, wxID_FRAMEMAINMENUFILTRATEITEMSSAFE, 
+ wxID_FRAMEMAINMENUFILTRATEITEMSSRED, 
+] = [wx.NewId() for _init_coll_menuFiltrate_Items in range(6)]
 
 [wxID_FRAMEMAINMENUCHECKITEMSCCOMPLEX, wxID_FRAMEMAINMENUCHECKITEMSCFIXED, 
  wxID_FRAMEMAINMENUCHECKITEMSCPREDICT, wxID_FRAMEMAINMENUCHECKITEMSCSELF, 
@@ -140,6 +142,9 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u84dd\u7403\u63a8\u8350',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSFBLUE, kind=wx.ITEM_NORMAL,
               text=u'\u84dd\u7403\u63a8\u8350(&B)\tF7')
+        parent.Append(help=u'\u7a33\u80c6\u7f29\u6c34',
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSSAFE, kind=wx.ITEM_NORMAL,
+              text=u'\u7a33\u80c6\u7f29\u6c34(&D)\tCtrl+U')
         parent.Append(help=u'\u81ea\u9009\u8fc7\u6ee4',
               id=wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL, kind=wx.ITEM_NORMAL,
               text=u'\u81ea\u9009\u8fc7\u6ee4(&O)\tCtrl+O')
@@ -156,6 +161,8 @@ class FrameMain(wx.Frame):
               id=wxID_FRAMEMAINMENUFILTRATEITEMSOPTIONAL)
         self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemsreplaceMenu,
               id=wxID_FRAMEMAINMENUFILTRATEITEMSREPLACE)
+        self.Bind(wx.EVT_MENU, self.OnMenuFiltrateItemssafeMenu,
+              id=wxID_FRAMEMAINMENUFILTRATEITEMSSAFE)
 
     def _init_coll_menuRandom_Items(self, parent):
         # generated method, don't edit
@@ -233,7 +240,7 @@ class FrameMain(wx.Frame):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAMEMAIN, name='', parent=prnt,
               pos=wx.Point(280, 120), size=wx.Size(620, 415),
-              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2 1.0.4')
+              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2 1.0.5')
         self._init_utils()
         self.SetClientSize(wx.Size(612, 388))
         self.SetMenuBar(self.menuBar1)
@@ -578,7 +585,27 @@ class FrameMain(wx.Frame):
         
         event.Skip()
 
+    def OnMenuFiltrateItemssafeMenu(self, event): #稳胆缩水
+        '''稳胆缩水功能'''
 
+        #数据最新一期的期号
+        date = int(data_array[0][0])
+        #判断是否存在预测数据，即判断文件夹是否存在
+        if '%s'%(date+1) in os.listdir(os.curdir):
+            #若有则可以打开稳胆缩水面板
+            _FrameSafe = FrameSafe.create(None)
+            _FrameSafe.Show()
+        else :
+            #若没有，则提示需要先过滤数据
+            dlg = wx.MessageDialog(self, u'未找到对应文件夹，请先生成过滤数据！',
+                                   u'提示',
+                                   wx.OK | wx.ICON_INFORMATION
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()
+            
+        event.Skip()
+        
     def OnMenuFiltrateItemsoptionalMenu(self, event): #自选过滤
         '''自选过滤功能'''
         _FrameOptional = FrameOptional.create(None)
@@ -988,7 +1015,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = u"双色蟒"
-        info.Version = u"1.0.4"
+        info.Version = u"1.0.5"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",
@@ -1360,4 +1387,6 @@ class FrameMain(wx.Frame):
         self.SetFocus()
         
         event.Skip()
+
+
 
