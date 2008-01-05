@@ -155,7 +155,7 @@ class SSQPythonApp(wx.App):
 
             return True
         elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-h' or sys.argv[1:][0]=='h'): #判断是否有参数(-h)，有则提示帮助
-            print u'    双色蟒彩票分析软件  1.0.5'
+            print u'    双色蟒彩票分析软件  1.0.6'
             print u'       otherrrr@gmail.com'
             print u'http://code.google.com/p/ssqpython/'
             print u''

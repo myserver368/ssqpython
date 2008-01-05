@@ -21,7 +21,7 @@ setup(
                    ],
         data_files=[("pic", ["pic/logo.ico","pic/red.ico","pic/report.ico",\
                              "pic/splash.jpg","pic/blue.ico","pic/advice.png",\
-                             "pic/pen.ico","pic/flash.swf"]),
+                             "pic/pen.ico","pic/flash.swf","pic/flashC.swf"]),
                     ("data", ["data/固定投注.txt","data/过滤条件.txt","data/开奖数据.txt",\
                               "data/说明文档.txt","data/代理设置.ini","data/缩水条件.txt",\
                               "data/自选条件.txt"]),
