@@ -180,9 +180,9 @@ def XmlWrite(filename,data_array,data_para_array,redOrder,redTimes): #创建用�
     #打开文件
     f = open(filename, 'w')
     f.write('<?xml version="1.0" encoding="utf-8"?>\n')
-    ##写入最近9期开奖号码
+    ##写入最近20期开奖号码
     f.write('<datas>\n') 
-    for i in range(0, 9):
+    for i in range(0, 20):
         f.write('    <data0%d>\n'%i)
         f.write('        <data date=\'%s\''%data_array[i][0])
         for j in range(1, 6+1):
@@ -190,7 +190,7 @@ def XmlWrite(filename,data_array,data_para_array,redOrder,redTimes): #创建用�
         f.write('/>\n')
         f.write('    </data0%d>\n'%i)
     f.write('</datas>\n')
-    ##写入期数对应信息
+    ##写入期数对应信息(9期）
     f.write('<dateInfos>\n')
     for i in range(0, 9):
         f.write('    <dateInfo%.2d>\n'%i)

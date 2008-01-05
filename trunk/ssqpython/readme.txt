@@ -2,7 +2,7 @@
 #              SSQPython               #
 #               双色蟒                 #
 # http://code.google.com/p/ssqpython/  #
-#               1.0.4                  #
+#               1.0.6                  #
 #                                      #
 # 详细说明请见data目录下的“说明文档” #
 #                                      #
