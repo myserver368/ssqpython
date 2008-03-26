@@ -19,9 +19,9 @@ def create(parent):
     return FrameSafe(parent)
 
 [wxID_FRAMESAFE, wxID_FRAMESAFEBUTTON1, wxID_FRAMESAFEBUTTON2, 
- wxID_FRAMESAFECHECKLISTBOX1, wxID_FRAMESAFEPANEL1, wxID_FRAMESAFEPANEL2, 
- wxID_FRAMESAFEPANEL3, wxID_FRAMESAFETEXTCTRL1, 
-] = [wx.NewId() for _init_ctrls in range(8)]
+ wxID_FRAMESAFEBUTTON3, wxID_FRAMESAFECHECKLISTBOX1, wxID_FRAMESAFEPANEL1, 
+ wxID_FRAMESAFEPANEL2, wxID_FRAMESAFEPANEL3, wxID_FRAMESAFETEXTCTRL1, 
+] = [wx.NewId() for _init_ctrls in range(9)]
 
 class FrameSafe(wx.Frame):
     def _init_coll_boxSizer1_Items(self, parent):
@@ -89,15 +89,21 @@ class FrameSafe(wx.Frame):
 
         self.button1 = wx.Button(id=wxID_FRAMESAFEBUTTON1,
               label=u'\u4fdd\u5b58', name='button1', parent=self.panel3,
-              pos=wx.Point(64, 8), size=wx.Size(75, 24), style=0)
+              pos=wx.Point(244, 8), size=wx.Size(75, 24), style=0)
         self.button1.Bind(wx.EVT_BUTTON, self.OnButton1Button,
               id=wxID_FRAMESAFEBUTTON1)
 
         self.button2 = wx.Button(id=wxID_FRAMESAFEBUTTON2,
               label=u'\u7f29\u6c34', name='button2', parent=self.panel3,
-              pos=wx.Point(227, 8), size=wx.Size(75, 24), style=0)
+              pos=wx.Point(134, 8), size=wx.Size(75, 24), style=0)
         self.button2.Bind(wx.EVT_BUTTON, self.OnButton2Button,
               id=wxID_FRAMESAFEBUTTON2)
+
+        self.button3 = wx.Button(id=wxID_FRAMESAFEBUTTON3,
+              label=u'\u6253\u5f00', name='button3', parent=self.panel3,
+              pos=wx.Point(24, 8), size=wx.Size(75, 24), style=0)
+        self.button3.Bind(wx.EVT_BUTTON, self.OnButton3Button,
+              id=wxID_FRAMESAFEBUTTON3)
 
         self._init_sizers()
 
@@ -111,19 +117,21 @@ class FrameSafe(wx.Frame):
 
         #显示面板清空
         self.textCtrl1.Clear()
+        #提示
+        self.textCtrl1.AppendText(u'请先选择需要被过滤的文件！\n')
         #读取开奖数据
         data_array = readDataFileToArray()
         #最新一期的期号
         global date #保存数据时会用到，故global        
         date = int(data_array[0][0])        
-        #读取过滤数据
-        global predict_data #生成缩水条件1时会用到过滤数据，故global
-        predict_data, predict_filter, select_num =readPredictData(date+1)
-        self.textCtrl1.AppendText(u'已读取过滤后数据“%s过滤数据.txt”'%(date+1))
-        self.textCtrl1.AppendText(u'（%d组）\n'%len(predict_data))
-        
-        global data_s #调用总的过滤后数据
-        data_s = predict_data #初始时，过滤后数据等于预测数据
+##        #读取过滤数据
+##        global predict_data #生成缩水条件1时会用到过滤数据，故global
+##        predict_data, predict_filter, select_num =readPredictData(date+1)
+##        self.textCtrl1.AppendText(u'已读取过滤后数据“%s过滤数据.txt”'%(date+1))
+##        self.textCtrl1.AppendText(u'（%d组）\n'%len(predict_data))
+##        
+##        global data_s #调用总的过滤后数据
+##        data_s = predict_data #初始时，过滤后数据等于预测数据
         
         global safe_nums #稳胆号码初始化均为False
         for i in range(0, 33):
@@ -131,16 +139,49 @@ class FrameSafe(wx.Frame):
 
     def OnButton1Button(self, event): #保存
         '''保存数据'''
-        #写出生成数据
-        f = open(u'%s/%s稳胆数据.txt'%(date+1,date+1), 'w')
-        #写数据
-        for i in range(0, len(data_s)):
-            f.write('%s %s %s %s %s %s\n'\
-                    %(data_s[i][0],data_s[i][1],data_s[i][2],data_s[i][3],data_s[i][4],data_s[i][5]))
-        f.close()
-
-        #显示一下
-        self.textCtrl1.AppendText(u'数据保存到“%s/%s稳胆数据.txt”\n'%(date+1,date+1))
+##        #写出生成数据
+##        f = open(u'%s/%s稳胆数据.txt'%(date+1,date+1), 'w')
+##        #写数据
+##        for i in range(0, len(data_s)):
+##            f.write('%s %s %s %s %s %s\n'\
+##                    %(data_s[i][0],data_s[i][1],data_s[i][2],data_s[i][3],data_s[i][4],data_s[i][5]))
+##        f.close()
+##
+##        #显示一下
+##        self.textCtrl1.AppendText(u'数据保存到“%s/%s稳胆数据.txt”\n'%(date+1,date+1))
+        #保存的文件类型设置
+        wildcard = u"文本文档(*.txt)|*.txt|"     \
+                   u"所有文件|*.*"
+        #显示文件选择框
+        dlg = wx.FileDialog(
+            self, message=u"另存为",
+            #defaultDir=os.getcwd()+"\%s"%(date+1), ##改为默认打开过滤、缩水数据文件夹 #linux 20071129
+            defaultFile="",
+            wildcard = wildcard, #加一个过滤条件，默认保存为文本文件
+            style=wx.SAVE
+            )
+        #设置保存的默认文件名
+        dlg.SetFilename(u'%s稳胆数据.txt'%(date+1))
+        #点击“打开”按钮
+        if dlg.ShowModal()==wx.ID_OK:
+            #写入数据
+	    if wx.Platform == '__WXMSW__':
+		f = open(dlg.GetPath().encode('mbcs'), 'w') #强制编码一下可防止“放置于桌面出错”问题
+	    else:
+		f = open(dlg.GetPath(), 'w')
+            for i in range(0, len(data_s)):
+                f.write('%s %s %s %s %s %s\n'\
+                        %(data_s[i][0],data_s[i][1],data_s[i][2],\
+                          data_s[i][3],data_s[i][4],data_s[i][5]))
+            f.close()
+            #窗口显示一下
+            self.textCtrl1.AppendText(u'已保存数据\n')
+	    if wx.Platform == '__WXMSW__': #windows
+                self.textCtrl1.AppendText('%s\n'%(dlg.GetPath().encode('mbcs')))
+            else: #linux
+                self.textCtrl1.AppendText('%s\n'%(dlg.GetPath()))
+        #关闭    
+        dlg.Destroy()
         
         event.Skip()
 
@@ -149,25 +190,61 @@ class FrameSafe(wx.Frame):
         for i in range(len(safe_nums)):
             if safe_nums[i]==True:
                 safe_numbers.append('%.2d'%(i+1))
-                
-        global data_s
-        data_s_new = []
-        for i in range(len(data_s)):
-            option = False
-            for j in range(len(safe_numbers)):
-                if safe_numbers[j] in data_s[i]:
-                    option = True
-                    break
-            if option:
-                data_s_new.append(data_s[i])                    
-        data_s = data_s_new
 
-        #显示一下
-        self.textCtrl1.AppendText(u'选择稳胆号码：')
-        for i in range(0, len(safe_numbers)):
-            self.textCtrl1.AppendText(u'%s '%safe_numbers[i])
-        self.textCtrl1.AppendText(u'\n')
-        self.textCtrl1.AppendText(u'缩水后数据为%d组\n'%(len(data_s))) 
+        if len(safe_numbers)==0:
+            self.textCtrl1.AppendText(u'请选择至少一个稳胆号码！\n')
+        else:
+            global data_s
+            data_s_new = []
+            for i in range(len(data_s)):
+                option = False
+                for j in range(len(safe_numbers)):
+                    if safe_numbers[j] in data_s[i]:
+                        option = True
+                        break
+                if option:
+                    data_s_new.append(data_s[i])                    
+            data_s = data_s_new
+
+            #显示一下
+            self.textCtrl1.AppendText(u'选择稳胆号码：')
+            for i in range(0, len(safe_numbers)):
+                self.textCtrl1.AppendText(u'%s '%safe_numbers[i])
+            self.textCtrl1.AppendText(u'\n')
+            self.textCtrl1.AppendText(u'缩水后数据为%d组\n'%(len(data_s))) 
+            
+        event.Skip()
+
+    def OnButton3Button(self, event): #打开
+        '''加载数据'''
+        global data_s
+        #数据清空
+        data_s = []
+        #显示文件选择框
+        dlg = wx.FileDialog(
+            self, message=u"选择需要加载的文件",
+            defaultFile="",
+            style=wx.OPEN
+            )
+        #点击“打开”按钮
+        if dlg.ShowModal()==wx.ID_OK:         
+            #读取选择文件中的数据
+            f = open(dlg.GetPaths()[0], 'r') 
+            s = f.readlines()
+            f.close()
+            #数据格式转换
+            for st in s:
+                data_s.append([st[0:2],st[3:5],st[6:8],\
+                              st[9:11],st[12:14],st[15:17]])
+            #窗口显示一下
+            self.textCtrl1.AppendText(u'加载文件：\n')
+	    if wx.Platform == '__WXMSW__': #windows
+                self.textCtrl1.AppendText('%s\n'%(dlg.GetPaths()[0].encode('mbcs')))
+            else: #linux
+                self.textCtrl1.AppendText('%s\n'%(dlg.GetPaths()[0])) 
+            self.textCtrl1.AppendText(u'共%d组数据\n'%len(data_s))
+        #关闭    
+        dlg.Destroy()
         
         event.Skip()
 

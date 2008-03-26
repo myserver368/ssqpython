@@ -49,14 +49,17 @@ class FrameReport(wx.Frame):
         bet_array = readBetFileToArray()
         data_para_array = dataParaCompute(data_array, redOrder, bet_array) 
         #最新一期的期号
-        date = int(data_array[0][0])
-        for i in range(0, 10):
-            #判断是否存在预测数据（最近10期），即判断文件夹是否存在
+        #date = int(data_array[0][0])
+        for i in range(0, len(data_array)):#20080309--10期改成所有期
+            date = int(data_array[i][0])
+            #判断是否存在预测数据（最近800期），即判断文件夹是否存在
             if '%s'%date in os.listdir(os.curdir):
                 #读取预测数据文件和使用到的过滤条件文件（数组格式）
                 predict_data, predict_filter, select_num =readPredictData(date)
                 #判断预测数据与开奖号码相同情况
                 same = [0,0,0,0,0,0,0]
+                #20080309（添加>5的注数显示）
+                msg5 = '5球相同以上的：\n'
                 for j in range(0, len(predict_data)):
                     count = 0 #计数
                     for k in range(0, 6):
@@ -66,6 +69,8 @@ class FrameReport(wx.Frame):
                     #在命令行窗口显示>=5的投注
                     if count>=5:
                         print predict_data[j],j+1
+                        #20080309
+                        msg5 = msg5 + '%s---第%s行\n'%(predict_data[j],j+1)
                 #判断过滤条件正误情况
                 filter_wrong = [] #错误情况列表
                 wrong_detail = ['条件名称','预测范围下限','预测范围上限','实际值'] #错误详细说明
@@ -104,15 +109,18 @@ class FrameReport(wx.Frame):
                     for j in range(0, len(filter_wrong)):
                         report = report + '--------%s--------预测范围[%s,%s]--实际值(%s)\n'\
                                  %(filter_wrong[j][0],filter_wrong[j][1],filter_wrong[j][2],filter_wrong[j][3],)
+                #20080309
+                report = report + msg5 + '\n'
                 #将报告添加到显示面板中
                 self.textCtrl1.AppendText(report.decode('utf-8'))
                 #停止查找
-                break
-            else:
-                self.textCtrl1.AppendText(u'未找到%s期预测数据！\n\n'%date)
+                #break
+            #date = date - 1
+            #else:
+                #self.textCtrl1.AppendText(u'未找到%s期预测数据！\n\n'%date)
                 #期号-1，继续查找
-                date = date - 1
+                #date = date - 1
         #如果10期之后还未找到，给一个提示
-        if date==(int(data_array[0][0])-10):
-            self.textCtrl1.AppendText(u'目录下无最近10期预测数据！')
+        #if date==(int(data_array[0][0])-800):
+         #   self.textCtrl1.AppendText(u'目录下无最近800期预测数据！')
         
