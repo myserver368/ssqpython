@@ -780,7 +780,8 @@ class FrameRedFiltrate(wx.Frame):
             self.buttonlowerminus.Show()
             self.buttonlowerplus.Show()
             self.buttonupperminus.Show()
-            self.buttonupperplus.Show()                  
+            self.buttonupperplus.Show()
+            self.buttonsaveother.Show(False) #20080107
         else:
             self.buttonuse.Show(False)
             self.buttonsaveother.Show(False)

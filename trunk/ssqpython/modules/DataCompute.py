@@ -323,7 +323,7 @@ def dataParaCompute(data_array, redOrder, bet_array): #开奖数据的参数计�
         continuous_num = 0 
         for j in range(1, 5+1):
             if int(data_array[i][j+1])-int(data_array[i][j])==1:
-                continuous_num = continuous_num + 1 
+                continuous_num = continuous_num + 1
         data_para_one['连号'] = continuous_num
         #计算同尾组数
         same_nail_num = 0

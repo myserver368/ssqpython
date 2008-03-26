@@ -8,11 +8,11 @@ import wx
 import os
 import locale
 
-def create(parent):
-    return FrameCompare(parent)
+def create(parent, date):
+    return FrameCompare(parent, date)
 
 class FrameCompare(wx.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, date):
 
         wx.Frame.__init__(self, parent, name='FrameCompare',
                           title=u"查看过滤数据", pos=wx.DefaultPosition,
@@ -22,7 +22,7 @@ class FrameCompare(wx.Frame):
         self.SetIcon(wx.Icon(u'pic/red.ico',wx.BITMAP_TYPE_ICO))
         #命令行提示
         print (u'FrameCompare启动').encode(locale.getdefaultlocale()[1])
-        
+
         # Create a Panel
         panel = wx.Panel(self, -1)
 
@@ -31,12 +31,13 @@ class FrameCompare(wx.Frame):
         self.panels = []
         self.flash = []
         # Get all datas(embedded '被滤数据')
-        for ts in os.listdir(os.curdir):
-            if (u'被滤数据').encode(locale.getdefaultlocale()[1]) in ts:
-                self.fileList.append(ts)
+        if '%d'%(date+1) in os.listdir(os.curdir):
+            for ts in os.listdir('%d'%(date+1)):
+                if (u'被滤数据').encode(locale.getdefaultlocale()[1]) in ts:
+                    self.fileList.append(ts)
 
         if len(self.fileList)==0:
-            wx.StaticText(panel, -1, u"对不起，未在根目录下发现被滤数据！\n请将被滤数据放置在程序根目录下！", \
+            wx.StaticText(panel, -1, u"对不起，未在%d目录下发现被滤数据！\n或者不存在%d目录！"%(date+1,date+1), \
                           pos=(20, 34))
         elif wx.Platform!='__WXMSW__':
             wx.StaticText(panel, -1, u"对不起，您的系统不支持Flash控件！\n该功能只在Windows下可用。", \
@@ -59,7 +60,7 @@ class FrameCompare(wx.Frame):
                 # Create a Panel, and add to panels[]
                 self.panels.append(wx.Panel(listBook, -1))
                 # Read file
-                f = open(self.fileList[i], 'r')
+                f = open('%d/%s'%(date+1,self.fileList[i]), 'r')
                 s = f.read()
                 f.close()
                 # Flash
