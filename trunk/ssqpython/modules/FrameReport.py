@@ -123,4 +123,6 @@ class FrameReport(wx.Frame):
         #如果10期之后还未找到，给一个提示
         #if date==(int(data_array[0][0])-800):
          #   self.textCtrl1.AppendText(u'目录下无最近800期预测数据！')
-        
+        # 如果没有任何数据，给一个提示（2008.04.07）
+        if self.textCtrl1.GetValue()=='':
+            self.textCtrl1.AppendText(u'目录下无任何预测数据！\n（格式应为：200XABC，即只有7位数字）')

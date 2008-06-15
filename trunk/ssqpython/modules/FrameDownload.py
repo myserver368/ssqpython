@@ -41,33 +41,40 @@ class FrameDownload(wx.Frame):
         wx.Yield()    
         #清空显示区
         self.textCtrl1.Clear()
-        #访问网址（我的blog）
-        url = 'http://hi.baidu.com/otherrrr/blog/item/30172834dfbf8c3a5bb5f500.html'
-        self.textCtrl1.AppendText(u'访问网址：http://hi.baidu.com/otherrrr/\n')
+        #访问网址(500wan & bwlc) 2008.06.12
+        url = ['http://north.500wan.com/Info/ssq/datachart/history.aspx',\
+               'http://www.bwlc.gov.cn/search/aspsuangse_ss.asp?']
         #导入包
         import urllib2
         #默认不需要代理
         using_proxy = False        
         #侦测网络是否存在Proxy
         try:
-            f = urllib2.urlopen(url)
+            f = urllib2.urlopen('http://www.baidu.com/')
             f.close()
         except Exception,ex: #得到异常类型
             #print ex 
             if str(ex)=='HTTP Error 407: Proxy authorization required':
                 #需要代理验证
                 using_proxy = True
-            else:
-                using_proxy = False
         #判断访问网络是否出错
         net_access = True
+        # 下载到的网页内容
+        data_web = ''
+        # 使用的网址
+        url_used = ''
+##        url_used = url[0]
         #不需要代理
         if using_proxy==False:        
             self.textCtrl1.AppendText(u'访问网络中……（未使用代理服务）\n')
             try:
-                f = urllib2.urlopen(url)
-                data_web = f.read() #得到网页
-                f.close()
+                for url_t in url:
+                    f = urllib2.urlopen(url_t)
+                    data_web = f.read() #得到网页
+                    f.close()
+                    if len(data_web)>10000:
+                        url_used = url_t
+                        break
             except Exception,ex:
                 self.textCtrl1.AppendText(u'出错了！\n')
                 self.textCtrl1.AppendText(str(ex)+'\n')
@@ -88,45 +95,77 @@ class FrameDownload(wx.Frame):
             proxy_handler = urllib2.ProxyHandler({protocol:protocol+'://'+username+':'+password+'@'+server+':'+port})
             opener = urllib2.build_opener(proxy_handler)
             try:
-                response = opener.open(url)
-                data_web = response.read() #得到网页
+                for url_t in url:
+                    response = opener.open(url)
+                    data_web = response.read() #得到网页
+                    if len(data_web)>10000:
+                        url_used = url_t
+                        break                    
             except Exception,ex:
                 self.textCtrl1.AppendText(u'出错了！\n')                
                 self.textCtrl1.AppendText(str(ex)+'\n')
                 net_access = False                
-        #若要查看具体错误，可使用备份功能
-        '''
-        #备份得到的网页
-        f = open('backup.htm', 'w')
-        f.write(data_web)
-        f.close()
-        #打开备份的网页
-        f = open('backup.htm', 'r')
-        data_web = f.read()
-        f.close()
-        '''
+##        #若要查看具体错误，可使用备份功能
+##        #备份得到的网页
+##        f = open('backup.htm', 'w')
+##        f.write(data_web)
+##        f.close()
+##        #打开备份的网页
+##        f = open('backup.htm', 'r')
+##        data_web = f.read()
+##        f.close()
         #查找出网络上的最近的数据
-        if net_access==True and len(data_web)>10000:
-            #>10000是因为：正常大小是33484，非正常大小是2699(2007.08.28测得数据)
-            pos = data_web.find('<div class="cnt">', 0, len(data_web)) #得到位置
-            #pos = s.index('<div class="cnt">') #另一种得到位置的方法
-            self.textCtrl1.AppendText(u'网络数据最后更新：\n'+str(data_web[pos+17:pos+17+28])+'\n') #最后更新的数据
+        if net_access==True:
+            # 30组数据列表
+            datas_array = []
+            # 首先将得到的数据按照不同的网站处理好
+            if '500wan' in url_used: # 500wan
+                pos = 0
+                for i in range(0, 30):
+                    pos = data_web.find('<tr class="t_tr', pos+1, len(data_web))
+                    t = ''
+                    t = t + '20' + str(data_web[pos+22:pos+22+5])
+                    for j in range(0, 7):
+                        arg = '' #间隔
+                        if j==0:
+                            arg = ' '
+                        elif j>0 and j<6:
+                            arg = ','
+                        else:
+                            arg = '+'
+                        t = t + arg + data_web[pos+53+28*j:pos+53+2+28*j]
+                    datas_array.append(t+'\n')
+            if 'bwlc' in url_used: # bwlc
+                pos = 0
+                for i in range(0, 30):
+                    pos = data_web.find('num_ss_suangse.asp?qitime=', pos+2, len(data_web))
+                    t = ''
+                    t = t + ''.join(data_web[pos+26:pos+34].split('-')) + ' '
+                    for j in range(0, 6):
+                        if j==5:
+                            t = t + data_web[pos+620+97*j:pos+620+2+97*j] + '+'
+                        else:
+                            t = t + data_web[pos+620+97*j:pos+620+2+97*j] + ','
+                    t = t + data_web[pos+1241:pos+1241+2]
+                    datas_array.append(t+'\n')
+            # 显示网络最后更新的数据
+            self.textCtrl1.AppendText(u'网络数据最后更新：\n'+datas_array[0]) #最后更新的数据
             #查看本地数据
             data_string = readDataFileToString()
             self.textCtrl1.AppendText(u'本地数据最后更新：\n'+data_string[:28]+'\n')
-            if int(data_web[pos+17:pos+17+7])==int(data_string[:7]):
+            if int(data_string[:7])==int(datas_array[0][:7]):
                 self.textCtrl1.AppendText(u'本地数据和网络数据已同步，无须更新！\n')
-            if int(data_web[pos+17:pos+17+7])<int(data_string[:7]):
+            if int(data_string[:7]) > int(datas_array[0][:7]):
                 self.textCtrl1.AppendText(u'本地数据比网络数据还要新，无须更新！\n')
-            if int(data_web[pos+17:pos+17+7])>int(data_string[:7]):
+            if int(data_string[:7]) < int(datas_array[0][:7]):
                 self.textCtrl1.AppendText(u'网络数据比本地数据要新，正在更新！\n')
                 #确定需要更新多少组数据
-                group_num = int(data_web[pos+17:pos+17+7]) - int(data_string[:7])
+                group_num = int(datas_array[0][:7]) - int(data_string[:7])
                 self.textCtrl1.AppendText(u'需要更新%d组数据\n'%group_num)
                 #确定需要更新的数据
                 new_data = ''
                 for i in range(0, group_num):
-                    new_data = new_data + (data_web[pos+i*33+17:pos+i*33+17+28]+'\n')
+                    new_data = new_data + datas_array[i]
                 self.textCtrl1.AppendText(new_data)
                 #更新数据
                 writeStringToDataFile(new_data+data_string)

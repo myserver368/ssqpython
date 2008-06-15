@@ -1,4 +1,4 @@
-﻿#  本文档最后编辑时间2008-01-07
+﻿#  本文档最后编辑时间2008-04-03
 #  程序由otherrrr@gmail.com编写
 #  当前版本为1.0.6
 #  主页地址http://code.google.com/p/ssqpython/
@@ -35,7 +35,7 @@ A01:(a)Windows用户下载对应exe_zip压缩包，
       其他发行版本Linux请参考相应官方说明。
       (d)我在wiki上面写了一个详细的“运行环境说明”：
       http://code.google.com/p/ssqpython/wiki/env
-      (e)源码部分最好直接svn。
+      (e)获得最新源码请直接svn checkout http://ssqpython.googlecode.com/svn/trunk/
 
 Q02:主界面上面都是什么？
 A02:“数据文本”以数字形式显示开奖号码；
@@ -120,6 +120,7 @@ A10:通过过滤菜单中的“查看被滤数据”；
       程序自动查找所有位于预测目录下，文件名称包括“被滤数据”的文件，
 	  若文件有多个，则会在左侧依次排列；
 	  可自动依次播放，也可手动播放查看所有的数据。
+      被滤数据是在过滤过程中生成的。
 
 Q11:如何使用机选功能？
 A11:提供四种机选功能：
@@ -210,12 +211,12 @@ A16:0.0.0  主程序图形界面(2007.03.08)
 Q17:代码开放~
 A17:本程序代码完全开放，
       包括Flash源程序和Python源代码，
-      可在网站使用svn下载。
-      http://code.google.com/p/ssqpython/
+      可使用svn下载，
+      svn checkout http://ssqpython.googlecode.com/svn/trunk/
       如想与我一同开发，
-      mailto:otherrrr@gmail.com
+      发E-mail至：otherrrr@gmail.com
 
 Q18:感谢名单~
-A18:感谢Python & wxPython & boa-constructor & Flash & pyinstaller的作者；
-      感谢Neusoft；
+A18:感谢Python&wxPython&boa-constructor&Flash&pyinstaller的开发者及开发团队（公司）；
+      感谢Neusoft提供的工作时间和电脑；
       感谢水木社区上提供Bug反馈和意见的网友！
