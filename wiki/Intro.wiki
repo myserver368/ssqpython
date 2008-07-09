@@ -1,5 +1,5 @@
 #summary 双色蟒介绍
-#labels Phase-Design,Featured
+#labels Phase-Design
 
 = Introduction =
 
