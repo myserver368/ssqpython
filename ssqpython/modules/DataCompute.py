@@ -1875,7 +1875,7 @@ def dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array):#�
                 else:
                     data_f_down.append(data_f[i])                    
         t2 = time.time()
-        print t2-t1,(u'秒').encode(locale.getdefaultlocale()[1])
+        print '%.2f'%(t2-t1),(u'秒').encode(locale.getdefaultlocale()[1])
     #转换回去
     #data_f = data_f_tmp 
     #返回数据    

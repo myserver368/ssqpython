@@ -67,9 +67,9 @@ class SSQPythonApp(wx.App):
                 filter_array[step-1][2] = u'是      ' #utf-8 20071201
                 data_f_down = [] #20071225
                 # 20080526 #不包括“**间隔”、“除*余*”
-                if step<12 or (step>18 and step<20) or step>44: 
-                    data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
-##                data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+##                if step<12 or (step>18 and step<20) or step>44: 
+##                    data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+                data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
                 if step==1:
                     #print u'%.2d time=%d num=%d %s'%(step,int(time.time())-start_time,len(data_f),filter_array[step-1][4]) #windows
                     print u'%.2d time=%d num=%d %s'\
@@ -168,44 +168,46 @@ class SSQPythonApp(wx.App):
                 print u'没有找到对应文件夹:%s'%(date+1)
             else:
                 #求得第2个缩水条件
-                f = open(u'data/缩水条件.txt', 'r')
-                s = f.readlines()
-                f.close()
-                m4 = []
-                for i in range(0, len(s)):
-                    t = []
-                    for j in range(0, 4):
-                        t.append(s[i][j*3:j*3+2])
-                    m4.append(t)
-                print u'四元组个数: %d'%len(m4)
-                print u'每个四元组分布个数在0～1之间'
-                #读取过滤数据
-                predict_data, predict_filter, select_num =readPredictData(date+1)
-                print u'预测数据: %d组'%len(predict_data)
-                data_s2 = [] #使用缩水条件2后的数据
-                for i in range(0, len(predict_data)):
-                    Judge = True
-                    for j in range(0, len(m4)):
-                        option = 0
-                        for k in range(0, 4):
-                            if m4[j][k] in predict_data[i]:
-                                option = option + 1
-                        if option>2:
-                            Judge = False
-                            break
-                    if Judge:
-                        data_s2.append(predict_data[i])
-                    if i%4000==0:
-                        print i, len(data_s2)
-                print u'缩水后的数据: %d组'%len(data_s2)
-                #写出生成数据
-                print u'写入文件:%s/%s缩水数据.txt'%(date+1,date+1)
-                f = open(u'%s/%s缩水数据.txt'%(date+1,date+1), 'w')
-                for i in range(0, len(data_s2)):
-                    f.write('%s %s %s %s %s %s\n'\
-                            %(data_s2[i][0],data_s2[i][1],data_s2[i][2],data_s2[i][3],data_s2[i][4],data_s2[i][5]))
-                f.close()
-                
+                try: # 2008.08.16加（主要是防止没有缩水条件.txt造成的错误）
+                    f = open(u'data/缩水条件.txt', 'r')
+                    s = f.readlines()
+                    f.close()
+                    m4 = []
+                    for i in range(0, len(s)):
+                        t = []
+                        for j in range(0, 4):
+                            t.append(s[i][j*3:j*3+2])
+                        m4.append(t)
+                    print u'四元组个数: %d'%len(m4)
+                    print u'每个四元组分布个数在0～1之间'
+                    #读取过滤数据
+                    predict_data, predict_filter, select_num =readPredictData(date+1)
+                    print u'预测数据: %d组'%len(predict_data)
+                    data_s2 = [] #使用缩水条件2后的数据
+                    for i in range(0, len(predict_data)):
+                        Judge = True
+                        for j in range(0, len(m4)):
+                            option = 0
+                            for k in range(0, 4):
+                                if m4[j][k] in predict_data[i]:
+                                    option = option + 1
+                            if option>2:
+                                Judge = False
+                                break
+                        if Judge:
+                            data_s2.append(predict_data[i])
+                        if i%4000==0:
+                            print i, len(data_s2)
+                    print u'缩水后的数据: %d组'%len(data_s2)
+                    #写出生成数据
+                    print u'写入文件:%s/%s缩水数据.txt'%(date+1,date+1)
+                    f = open(u'%s/%s缩水数据.txt'%(date+1,date+1), 'w')
+                    for i in range(0, len(data_s2)):
+                        f.write('%s %s %s %s %s %s\n'\
+                                %(data_s2[i][0],data_s2[i][1],data_s2[i][2],data_s2[i][3],data_s2[i][4],data_s2[i][5]))
+                    f.close()
+                except:
+                    print u'未找到缩水条件.txt'
             return True
         # 20080526 #判断是否有参数(-a)，有则读取“四个红球.txt”，并过滤（不包括“**间隔”、“除*余*”）
         elif len(sys.argv[1:])!=0 and (sys.argv[1:][0]=='-a' or sys.argv[1:][0]=='a'): 

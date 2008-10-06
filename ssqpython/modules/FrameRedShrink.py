@@ -176,11 +176,13 @@ class FrameRedShrink(wx.Frame):
                 for k in range(0, 4):
                     if m4[j][k] in data_s[i]:
                         option = option + 1
-                if option>2:
+                if option>2:  
                     Judge = False
                     break
             if Judge:
                 data_s2.append(data_s[i])
+            if i%1000==0:
+                print i, len(data_s2)
         print len(data_s2) #命令行显示一下
         self.textCtrl1.AppendText(u'（缩水后的数据：%d组）\n'%len(data_s2))
         #传递值      
