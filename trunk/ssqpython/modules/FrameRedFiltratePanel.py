@@ -609,13 +609,14 @@ class FrameRedFiltratePanel(wx.Frame):
             if continue_f==True:
                 #开始时间
                 start_time = int(time.time())         
-                #--进度条           
-                #dlg = wx.ProgressDialog(u"过滤中……",
-                #                u"请耐心等待！",
-                #                maximum = len(filter_array) + 1 + 1,
-                #                parent = self,
-                #                style = wx.PD_APP_MODAL
-                #                )
+                #--进度条
+                if wx.Platform == '__WXMSW__':
+                    dlg = wx.ProgressDialog(u"过滤中……",
+                                    u"请耐心等待！",
+                                    maximum = len(filter_array) + 1 + 1,
+                                    parent = self,
+                                    style = wx.PD_APP_MODAL
+                                    )
                 #关闭当前窗口（红球过滤面板） #如果不关闭窗口，因为step的变化，窗口中内容也会跟着变化
                 self.Close()           
      
@@ -643,7 +644,8 @@ class FrameRedFiltratePanel(wx.Frame):
                             pos3 = pos3 + 1
                         pos2 = pos2 + 1
                     pos1 = pos1 + 1
-                #dlg.Update(1)  #win
+                if wx.Platform == '__WXMSW__':
+                    dlg.Update(1)  
                 #显示原始注数
                 #print len(data_f)
                 #--开始过滤
@@ -655,9 +657,10 @@ class FrameRedFiltratePanel(wx.Frame):
                     #filter_array[step-1][2] = '是' + filter_array[step-1][2][2:] #gbk10830??
                     filter_array[step-1][2] = u'是      ' #utf-8
                     #过滤
-                    data_f = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
+                    data_f, data_f_down = dataFiltrate(data_array, data_f, step, filter_array, redOrder, bet_array)
                     #更新进度条
-                    #dlg.Update(step+1) #win
+                    if wx.Platform == '__WXMSW__':
+                        dlg.Update(step+1)
                     #显示过滤后的注数
                     #print len(data_f)
                     #控制台输出正在进行的步骤
@@ -668,7 +671,8 @@ class FrameRedFiltratePanel(wx.Frame):
                         print '%.2d time=%d num=%d'%(step,int(time.time())-last_time,len(data_f))
                         last_time = int(time.time())                    
                 #--进度条关闭
-                #dlg.Destroy()
+                if wx.Platform == '__WXMSW__':
+                    dlg.Destroy()
                 #终止时间
                 stop_time = int(time.time())
                 #写数据

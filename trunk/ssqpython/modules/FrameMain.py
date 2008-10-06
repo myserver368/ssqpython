@@ -24,6 +24,8 @@ import FrameOptional
 import FrameReplace
 import FrameSafe
 import FrameCompare
+import FrameSelfReport
+import FrameRandom
 
 import os
 import random
@@ -40,13 +42,16 @@ data_para_array = [] #数据的相关参数(list(dic))
 redOrder = [] #红球号码按着出球次数由大到小排列(list)
 redTimes = [] #红球对应出号次数(list)
 
+display_0_or_1 = [''] #二进制面板显示0或1(str)，默认均不显示
+
 def create(parent):
     return FrameMain(parent)
 
-[wxID_FRAMEMAIN, wxID_FRAMEMAINNOTEBOOK1, wxID_FRAMEMAINPANEL1, 
- wxID_FRAMEMAINSCROLLEDWINDOW1, wxID_FRAMEMAINSTATUSBAR1, 
+[wxID_FRAMEMAIN, wxID_FRAMEMAINBUTTON1, wxID_FRAMEMAINBUTTON2, 
+ wxID_FRAMEMAINNOTEBOOK1, wxID_FRAMEMAINPANEL1, wxID_FRAMEMAINSCROLLEDWINDOW1, 
+ wxID_FRAMEMAINSCROLLEDWINDOW2, wxID_FRAMEMAINSTATUSBAR1, 
  wxID_FRAMEMAINTEXTCTRL1, 
-] = [wx.NewId() for _init_ctrls in range(6)]
+] = [wx.NewId() for _init_ctrls in range(9)]
 
 [wxID_FRAMEMAINMENUDATAITEMSADD, wxID_FRAMEMAINMENUDATAITEMSDEL, 
  wxID_FRAMEMAINMENUDATAITEMSDOWNLOAD, wxID_FRAMEMAINMENUDATAITEMSEXIT, 
@@ -69,9 +74,10 @@ def create(parent):
  wxID_FRAMEMAINMENUFILTRATEREDITEMSREDMEDIA, 
 ] = [wx.NewId() for _init_coll_menuFiltrateRed_Items in range(2)]
 
-[wxID_FRAMEMAINMENURANDOMITEMSDR, wxID_FRAMEMAINMENURANDOMITEMSER, 
- wxID_FRAMEMAINMENURANDOMITEMSFR, wxID_FRAMEMAINMENURANDOMITEMSSR, 
-] = [wx.NewId() for _init_coll_menuRandom_Items in range(4)]
+[wxID_FRAMEMAINMENURANDOMITEMSAR, wxID_FRAMEMAINMENURANDOMITEMSDR, 
+ wxID_FRAMEMAINMENURANDOMITEMSER, wxID_FRAMEMAINMENURANDOMITEMSFR, 
+ wxID_FRAMEMAINMENURANDOMITEMSSR, 
+] = [wx.NewId() for _init_coll_menuRandom_Items in range(5)]
 
 class FrameMain(wx.Frame):
     def _init_coll_menuCheck_Items(self, parent):
@@ -185,6 +191,9 @@ class FrameMain(wx.Frame):
         parent.Append(help=u'\u81ea\u9009\u673a\u9009',
               id=wxID_FRAMEMAINMENURANDOMITEMSER, kind=wx.ITEM_NORMAL,
               text=u'\u81ea\u9009\u673a\u9009(&E)\tCtrl+C')
+        parent.Append(help=u'\u590d\u5f0f\u673a\u9009',
+              id=wxID_FRAMEMAINMENURANDOMITEMSAR, kind=wx.ITEM_NORMAL,
+              text=u'\u590d\u5f0f\u673a\u9009(&A)\tCtrl+X')
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemsdrMenu,
               id=wxID_FRAMEMAINMENURANDOMITEMSDR)
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemsfrMenu,
@@ -193,6 +202,8 @@ class FrameMain(wx.Frame):
               id=wxID_FRAMEMAINMENURANDOMITEMSSR)
         self.Bind(wx.EVT_MENU, self.OnMenuRandomItemserMenu,
               id=wxID_FRAMEMAINMENURANDOMITEMSER)
+        self.Bind(wx.EVT_MENU, self.OnMenuRandomItemsarMenu,
+              id=wxID_FRAMEMAINMENURANDOMITEMSAR)
 
     def _init_coll_menuHelp_Items(self, parent):
         # generated method, don't edit
@@ -211,9 +222,12 @@ class FrameMain(wx.Frame):
 
         parent.AddPage(imageId=-1, page=self.textCtrl1, select=False,
               text=u'\u6570\u636e\u6587\u672c')
-        parent.AddPage(imageId=-1, page=self.scrolledWindow1, select=False,
+        parent.AddPage(imageId=-1, page=self.scrolledWindow1, select=True,
               text=u'\u5206\u5e03\u56fe')
-        parent.AddPage(imageId=-1, page=self.panel1, select=True, text=u'Flash')
+        parent.AddPage(imageId=-1, page=self.scrolledWindow2, select=False,
+              text=u'\u4e8c\u8fdb\u5236')
+        parent.AddPage(imageId=-1, page=self.panel1, select=False,
+              text=u'Flash')
 
     def _init_sizers(self):
         # generated method, don't edit
@@ -245,8 +259,8 @@ class FrameMain(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAMEMAIN, name='', parent=prnt,
-              pos=wx.Point(280, 120), size=wx.Size(620, 415),
-              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2 1.0.6')
+              pos=wx.Point(280, 120), size=wx.Size(620, 422),
+              style=wx.DEFAULT_FRAME_STYLE, title=u'\u53cc\u8272\u87d2 1.0.7')
         self._init_utils()
         self.SetClientSize(wx.Size(612, 388))
         self.SetMenuBar(self.menuBar1)
@@ -260,22 +274,41 @@ class FrameMain(wx.Frame):
 
         self.notebook1 = wx.Notebook(id=wxID_FRAMEMAINNOTEBOOK1,
               name='notebook1', parent=self, pos=wx.Point(0, 0),
-              size=wx.Size(612, 349), style=0)
+              size=wx.Size(612, 346), style=0)
 
         self.textCtrl1 = wx.TextCtrl(id=wxID_FRAMEMAINTEXTCTRL1,
               name='textCtrl1', parent=self.notebook1, pos=wx.Point(0, 0),
-              size=wx.Size(604, 322), style=wx.TE_MULTILINE,
+              size=wx.Size(604, 319), style=wx.TE_MULTILINE,
               value=u'\u7efc\u5408\u6570\u636e\u6587\u672c\u663e\u793a')
 
         self.scrolledWindow1 = wx.ScrolledWindow(id=wxID_FRAMEMAINSCROLLEDWINDOW1,
               name='scrolledWindow1', parent=self.notebook1, pos=wx.Point(0, 0),
-              size=wx.Size(604, 322),
+              size=wx.Size(604, 319),
               style=wx.SUNKEN_BORDER | wx.HSCROLL | wx.VSCROLL)
         self.scrolledWindow1.Bind(wx.EVT_PAINT, self.OnScrolledWindow1Paint)
 
         self.panel1 = wx.Panel(id=wxID_FRAMEMAINPANEL1, name='panel1',
-              parent=self.notebook1, pos=wx.Point(0, 0), size=wx.Size(604, 322),
+              parent=self.notebook1, pos=wx.Point(0, 0), size=wx.Size(604, 319),
               style=wx.TAB_TRAVERSAL)
+
+        self.scrolledWindow2 = wx.ScrolledWindow(id=wxID_FRAMEMAINSCROLLEDWINDOW2,
+              name='scrolledWindow2', parent=self.notebook1, pos=wx.Point(0, 0),
+              size=wx.Size(604, 319), style=wx.HSCROLL | wx.VSCROLL)
+        self.scrolledWindow2.Bind(wx.EVT_PAINT, self.OnScrolledWindow2Paint)
+
+        self.button1 = wx.Button(id=wxID_FRAMEMAINBUTTON1,
+              label=u'\u6807\u8bb00', name='button1',
+              parent=self.scrolledWindow2, pos=wx.Point(560, 40),
+              size=wx.Size(40, 24), style=0)
+        self.button1.Bind(wx.EVT_BUTTON, self.OnButton1Button,
+              id=wxID_FRAMEMAINBUTTON1)
+
+        self.button2 = wx.Button(id=wxID_FRAMEMAINBUTTON2,
+              label=u'\u6807\u8bb01', name='button2',
+              parent=self.scrolledWindow2, pos=wx.Point(560, 80),
+              size=wx.Size(40, 24), style=0)
+        self.button2.Bind(wx.EVT_BUTTON, self.OnButton2Button,
+              id=wxID_FRAMEMAINBUTTON2)
 
         self._init_coll_notebook1_Pages(self.notebook1)
 
@@ -341,7 +374,11 @@ class FrameMain(wx.Frame):
         if wx.Platform == '__WXMSW__': #必须是Windows平台
             #创建Flash显示会调用到的xml[耗时0.015s]
             XmlWrite(u"data/近期数据.xml",data_array,data_para_array,redOrder,redTimes)            
-            from wx.lib.flashwin import FlashWindow
+            ##2008.08.26修改
+            try:
+                from wx.lib.flashwin_old import FlashWindow
+            except:
+                from wx.lib.flashwin import FlashWindow
             #创建一个Flash窗口
             self.panel1.flash = FlashWindow(self.panel1, style=wx.SUNKEN_BORDER)
             #屏蔽Flash的右键
@@ -353,8 +390,12 @@ class FrameMain(wx.Frame):
             self.boxSizer1.Add(self.panel1.flash, proportion=1, flag=wx.EXPAND)
             #强迫sizer重新定位及刷新大小
             self.boxSizer1.SetDimension(0, 0, 604, 322) 
-            #调用Flash的FSCommand
-            from wx.lib.flashwin import EVT_FSCommand
+            #调用Flash的FSCommand（wxPython 2.8.8.1对此作了升级）
+            ##2008.08.26修改
+            try:
+                from wx.lib.flashwin_old import EVT_FSCommand
+            except:
+                from wx.lib.flashwin import EVT_FSCommand
             #将Flash ocx的消息事件绑定到getFlashVars函数上
             self.Bind(EVT_FSCommand, self.getFlashVars)
         else: #__WXGTK__(linux ubuntu 7.10)
@@ -450,6 +491,83 @@ class FrameMain(wx.Frame):
             
         event.Skip()
         
+    def OnScrolledWindow2Paint(self, event):
+        '''绘制二进制'''           
+        pdc = wx.PaintDC(self.scrolledWindow2)
+        #如果没有GCDC，那么就没有透明效果，字体也会有不同
+##        gcdc_open = False
+        try:
+            dc = wx.GCDC(pdc)
+##            gcdc_open = True
+        except:
+            dc = pdc
+##            gcdc_open = False
+            
+        self.scrolledWindow2.DoPrepareDC(dc)       
+        dc.Clear()
+        
+        #设置一个dict，将对应的十进制数字转换为二进制
+        dict_10_to_2 = {'0':'0000','1':'0001','2':'0010','3':'0011',\
+                        '4':'0100','5':'0101','6':'0110','7':'0111',\
+                        '8':'1000','9':'1001'}
+
+        #设置字体
+        dc.SetFont(wx.Font(14, wx.NORMAL, wx.NORMAL, wx.NORMAL))
+        
+        #循环写二进制数据
+        for i in range(0, 20):
+            #第1位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][1])/10)], 74, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][1])%10)], 74+40*1, 300-i*16) 
+            #第2位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][2])/10)], 74+40*2, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][2])%10)], 74+40*3, 300-i*16)
+            #第3位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][3])/10)], 74+40*4, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][3])%10)], 74+40*5, 300-i*16)
+            #第4位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][4])/10)], 74+40*6, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][4])%10)], 74+40*7, 300-i*16)
+            #第5位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][5])/10)], 74+40*8, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][5])%10)], 74+40*9, 300-i*16)
+            #第6位
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][6])/10)], 74+40*10, 300-i*16)
+            dc.DrawText(dict_10_to_2['%d'%(int(data_array[i][6])%10)], 74+40*11, 300-i*16)
+
+        #循环写日期
+        dc.SetTextForeground('BLUE') #蓝色
+        for i in range(0, 20):
+            #日期
+            dc.DrawText(data_array[i][0], 2, 300-i*16)
+
+        #计算一下哪一位是0哪一位是1
+        l = ['']*20
+        for i in range(0, 20):
+            for j in range(1, 6+1):
+                l[i] = l[i] + dict_10_to_2['%d'%(int(data_array[i][j])/10)] + \
+                              dict_10_to_2['%d'%(int(data_array[i][j])%10)]
+            
+        #判断是否高亮显示0或1        
+        if display_0_or_1[0]=='0':
+            dc.SetPen(wx.Pen(wx.Colour(255, 102, 0, wx.ALPHA_OPAQUE))) 
+            dc.SetBrush(wx.Brush(wx.Colour(255, 102, 0, 150)))   
+            for i in range(0, 20):
+                for j in range(0, 48):
+                    if l[i][j] == '0':
+                        dc.DrawRectangle(77+10*j, 304-i*16,8,14)
+                        
+        if display_0_or_1[0]=='1':
+            dc.SetPen(wx.Pen(wx.Colour(0, 153, 102, wx.ALPHA_OPAQUE))) 
+            dc.SetBrush(wx.Brush(wx.Colour(0, 153, 102, 150)))      
+            for i in range(0, 20):
+                for j in range(0, 48):
+                    if l[i][j] == '1':
+                        dc.DrawRectangle(77+10*j, 304-i*16,8,14)
+
+            
+        event.Skip()
+        
 #-------------------------------------------------------------------------------
 #----数据----
     def OnMenuDataItemsdownloadMenu(self, event):
@@ -490,7 +608,13 @@ class FrameMain(wx.Frame):
         dlg.SetValue("%s 01,02,03,04,05,06+07"%str(int(data_array[0][0])+1))
 
         if dlg.ShowModal() == wx.ID_OK:
-            writeStringToDataFile(dlg.GetValue()+'\n'+data_string)
+            # 2008-04-22添加，防止没有逗号添加进去
+            # 其实在读取数据的地方进行判读也可以
+            _v = dlg.GetValue()
+            _s = '%s %s,%s,%s,%s,%s,%s+%s'%(_v[0:7], _v[8:10], _v[11:13], \
+                                            _v[14:16], _v[17:19], _v[20:22], \
+                                            _v[23:25], _v[26:28])
+            writeStringToDataFile(_s+'\n'+data_string)
             #显示一下
             print (u'添加了一组数据').encode(locale.getdefaultlocale()[1])
             #重新读取数据
@@ -557,7 +681,7 @@ class FrameMain(wx.Frame):
 #-------------------------------------------------------------------------------
 #----过滤----
    
-    def OnMenuFiltrateItemsfredMenu(self, event): #红球过滤选好面板
+    def OnMenuFiltrateItemsfredMenu(self, event): #红球过滤选号面板
         '''红球过滤功能选号面板'''
         _FrameRedFiltratePanel = FrameRedFiltratePanel.create(None, choice_num, data_array, bet_array, data_para_array, redOrder, redTimes)
         _FrameRedFiltratePanel.Show() 
@@ -594,21 +718,25 @@ class FrameMain(wx.Frame):
     def OnMenuFiltrateItemssafeMenu(self, event): #稳胆缩水
         '''稳胆缩水功能'''
 
-        #数据最新一期的期号
-        date = int(data_array[0][0])
-        #判断是否存在预测数据，即判断文件夹是否存在
-        if '%s'%(date+1) in os.listdir(os.curdir):
-            #若有则可以打开稳胆缩水面板
-            _FrameSafe = FrameSafe.create(None)
-            _FrameSafe.Show()
-        else :
-            #若没有，则提示需要先过滤数据
-            dlg = wx.MessageDialog(self, u'未找到对应文件夹，请先生成过滤数据！',
-                                   u'提示',
-                                   wx.OK | wx.ICON_INFORMATION
-                                   )
-            dlg.ShowModal()
-            dlg.Destroy()
+        #打开稳胆缩水面板
+        _FrameSafe = FrameSafe.create(None)
+        _FrameSafe.Show()
+        
+##        #数据最新一期的期号
+##        date = int(data_array[0][0])
+##        #判断是否存在预测数据，即判断文件夹是否存在
+##        if '%s'%(date+1) in os.listdir(os.curdir):
+##            #若有则可以打开稳胆缩水面板
+##            _FrameSafe = FrameSafe.create(None)
+##            _FrameSafe.Show()
+##        else :
+##            #若没有，则提示需要先过滤数据
+##            dlg = wx.MessageDialog(self, u'未找到对应文件夹，请先生成过滤数据！',
+##                                   u'提示',
+##                                   wx.OK | wx.ICON_INFORMATION
+##                                   )
+##            dlg.ShowModal()
+##            dlg.Destroy()
             
         event.Skip()
         
@@ -628,7 +756,7 @@ class FrameMain(wx.Frame):
 
     def OnMenuFiltrateItemscompareMenu(self, event): #查看被滤数据
         '''查看被滤数据功能'''
-        _FrameCompare = FrameCompare.create(None)
+        _FrameCompare = FrameCompare.create(None, int(data_array[0][0]))
         _FrameCompare.Show()
         
         event.Skip()
@@ -648,18 +776,19 @@ class FrameMain(wx.Frame):
                     break
             #简单的判断，否则会出一些很不合理的值，比如01 02 03 04 05 06+BB
             option = True
-            if int(num[0])>19: #1.一号位在1－19之间
-                option = False
-            if int(num[1])>24: #2.二号位在2－24之间
-                option = False
-            if int(num[2])>28: #3.三号位在3－28之间
-                option = False
-            if int(num[3])<5 or int(num[3])>31: #4.四号位在5－31之间
-                option = False
-            if int(num[4])<7: #5.五号位在7－32之间
-                option = False
-            if int(num[5])<11: #6.六号位在11－33之间
-                option = False
+            # 2008.07.04 去除判断条件，因为这样反而能中些小奖
+##            if int(num[0])>19: #1.一号位在1－19之间
+##                option = False
+##            if int(num[1])>24: #2.二号位在2－24之间
+##                option = False
+##            if int(num[2])>28: #3.三号位在3－28之间
+##                option = False
+##            if int(num[3])<5 or int(num[3])>31: #4.四号位在5－31之间
+##                option = False
+##            if int(num[4])<7: #5.五号位在7－32之间
+##                option = False
+##            if int(num[5])<11: #6.六号位在11－33之间
+##                option = False
             #机选篮球
             if big==True and option==True:
                 num.append('%.2d'%(random.randint(1,16))) 
@@ -781,7 +910,13 @@ class FrameMain(wx.Frame):
         
         event.Skip()
 
+    def OnMenuRandomItemsarMenu(self, event):
+        '''复式机选'''
+        # 显示复式机选面板
+        _FrameRandom = FrameRandom.create(None)
+        _FrameRandom.Show()
         
+        event.Skip()  
 #-------------------------------------------------------------------------------
 #----对奖----
         
@@ -947,8 +1082,6 @@ class FrameMain(wx.Frame):
                 
     def OnMenuCheckItemscselfMenu(self, event): #自选数据兑奖
         '''选择任意数据进行兑奖'''
-        #数据最新一期的期号
-        date = int(data_array[0][0])
         #显示文件选择框
         dlg = wx.FileDialog(
             self, message=u"选择需要兑奖的文件",
@@ -957,52 +1090,16 @@ class FrameMain(wx.Frame):
             style=wx.OPEN
             )   
         #点击“打开”按钮
-        if dlg.ShowModal()==wx.ID_OK:         
-            #读取选择文件中的数据
-            f = open(dlg.GetPaths()[0], 'r') 
-            s = f.readlines()
-            f.close()
-            #数据转换
-            bets_array = []
-            for i in range(0, len(s)):
-                if len(s)>2:
-                    bets_array.append([s[i][0:2],s[i][3:5],s[i][6:8],s[i][9:11],
-                                      s[i][12:14],s[i][15:17],s[i][18:20]])
-            #兑奖
-            msg = u'' #中奖信息
-            msg = msg + u'文件共有%d注！\n'%(len(s))
-            for i in range(0, len(bets_array)):
-                r_nums = 0 #红球
-                for j in range(0, 6):
-                    if bets_array[i][j] in data_array[0][1:7]: #前6个
-                        r_nums = r_nums + 1
-                b_nums = 0 #蓝球
-                if bets_array[i][6]==data_array[0][7]:
-                    b_nums = 1
-                money = u'' #金额
-                if (r_nums<=3 and b_nums==0): #无
-                    money = u'未中奖'
-                elif (r_nums<=2 and b_nums==1): #6等
-                    money = u'5元'
-                elif (r_nums==4 and b_nums==0) or (r_nums==3 and b_nums==1): #5等
-                    money = u'10元'
-                elif (r_nums==5 and b_nums==0) or (r_nums==4 and b_nums==1): #4等
-                    money = u'200元'
-                elif (r_nums==5 and b_nums==1): #3等
-                    money = u'3000元'
-                elif (r_nums==6 and b_nums==0): #2等
-                    money = u'二等奖'
-                elif (r_nums==6 and b_nums==1): #1等
-                    money = u'一等奖'
-
-                msg = msg+ u'第%d注：%d+%d=%s\n'%(i+1,r_nums,b_nums,money)
+        if dlg.ShowModal()==wx.ID_OK:
+            #延迟显示
+            image = wx.Image("pic/splash.jpg", wx.BITMAP_TYPE_ANY)
+            bmp = image.ConvertToBitmap()
+            wx.SplashScreen(bmp, wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT, 1200, None, -1)
+            wx.Yield()
             
-            dlg = wx.MessageDialog(self, msg, 
-                                   u'%s期对奖结构'%(data_array[0][0]),
-                                   wx.OK | wx.ICON_INFORMATION
-                                   )
-            dlg.ShowModal()
-            dlg.Destroy()             
+            _FrameSelfReport = FrameSelfReport.create(None, dlg.GetPaths()[0], data_array)
+            _FrameSelfReport.Show()
+       
         #关闭    
         dlg.Destroy()
   
@@ -1028,7 +1125,7 @@ class FrameMain(wx.Frame):
         '''提示软件基本信息'''
         info = wx.AboutDialogInfo()
         info.Name = u"双色蟒"
-        info.Version = u"1.0.6"
+        info.Version = u"1.0.7"
         info.Description = wordwrap(
             u"双色蟒彩票分析软件，用于双色球彩票数据分析、对奖及投注过滤。 "
             u"\n\n祝您中奖 :)",
@@ -1386,10 +1483,30 @@ class FrameMain(wx.Frame):
         if len(bad_news)==0:
             s2 = u'无'
         else:
-            s2 = u' '.join(bad_news)         
-        #弹出对话框
+            s2 = u' '.join(bad_news)
+        # 显示最近10期未出的号码（20080822添加）
+        disappear_10 = ''
+        for i in range(1, 33+1):
+            option = True
+            for j in range(0, 10):
+                if '%.2d'%i in data_array[j][1:6+1]:
+                    option = False
+                    break
+            if option:
+                disappear_10 = disappear_10 + '%.2d '%i
+        # 显示最近6期出现2次以上的号码（20080822添加）
+        appear_6 = ''
+        for i in range(1, 33+1):
+            num_tmp = 0
+            for j in range(0, 6):
+                if '%.2d'%i in data_array[j][1:6+1]:
+                    num_tmp = num_tmp + 1
+            if num_tmp>2:
+                appear_6 = appear_6 + '%.2d '%i        
+        #弹出对话框（20080822修改）
         dlg = wx.MessageDialog(self,
-                               u'本期建议选择号码：%s\n本期建议删除号码：%s\n%s'%(s1,s2,s3), 
+                               u'超过10期未出号码：%s\n6期超过2次的号码：%s\n本期建议选择号码：%s\n本期建议删除号码：%s\n%s'\
+                               %(disappear_10,appear_6,s1,s2,s3), 
                                u'心水号码（未通过ISO9001测试！）',
                                wx.OK 
                                )
@@ -1400,4 +1517,27 @@ class FrameMain(wx.Frame):
         self.SetFocus()
         
         event.Skip()
+
+# 二进制画面的两个按钮
+    def OnButton1Button(self, event):
+        # 高亮显示所有0
+        global display_0_or_1
+        display_0_or_1[0] = '0'
+
+        #二进制面板刷新
+        self.scrolledWindow2.Refresh()
+        
+        event.Skip()
+
+    def OnButton2Button(self, event):
+        # 高亮显示所有1
+        global display_0_or_1
+        display_0_or_1[0] = '1'
+        
+        #二进制面板刷新（注意：这里我用的刷新和上面不一样哦）
+        self.Refresh()
+        
+        event.Skip()
+
+
 
